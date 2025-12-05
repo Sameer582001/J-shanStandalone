@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      target: builder # Use the builder stage which has dev dependencies
+    command: npm run dev
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      # Ensure .env is loaded or variables are set here
+
+  frontend:
+    build:
+      context: ./frontend
+      target: builder # Use builder stage (Node image) instead of Nginx
+    command: npm run dev -- --host
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173" # Vite default port
+    environment:
+      - VITE_API_URL=http://localhost:3000

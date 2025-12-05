@@ -1,0 +1,55 @@
+services:
+  # 1. The Database (PostgreSQL)
+  postgres:
+    image: postgres:15-alpine
+    container_name: mlm_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+      POSTGRES_DB: mlm_database
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/src/database/schema.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # 2. The Queue/Cache (Redis)
+  redis:
+    image: redis:alpine
+    container_name: mlm_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  # 3. The Backend API
+  backend:
+    build: ./backend
+    container_name: mlm_backend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=adminpassword
+      - POSTGRES_DB=mlm_database
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - JWT_SECRET=super_secret_jwt_key_change_in_production
+      - DATABASE_URL=postgresql://admin:adminpassword@postgres:5432/mlm_database
+    depends_on:
+      - postgres
+      - redis
+
+  # 4. The Frontend (Web)
+  frontend:
+    build: ./frontend
+    container_name: mlm_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
