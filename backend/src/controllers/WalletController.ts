@@ -25,4 +25,27 @@ export class WalletController {
             res.status(400).json({ message: error.message });
         }
     }
+
+
+
+    static async getUserDashboardStats(req: Request, res: Response) {
+        try {
+            const userId = (req as any).user.id;
+            const stats = await walletService.getUserDashboardStats(userId);
+            res.status(200).json(stats);
+        } catch (error: any) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+
+    static async getRecentTransactions(req: Request, res: Response) {
+        try {
+            const userId = (req as any).user.id;
+            const limit = req.query.limit ? parseInt(req.query.limit as string) : 5;
+            const transactions = await walletService.getRecentTransactions(userId, limit);
+            res.status(200).json(transactions);
+        } catch (error: any) {
+            res.status(500).json({ message: error.message });
+        }
+    }
 }

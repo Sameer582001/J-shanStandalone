@@ -37,6 +37,8 @@ services:
       - POSTGRES_PORT=5432
       - JWT_SECRET=super_secret_jwt_key_change_in_production
       - DATABASE_URL=postgresql://admin:adminpassword@postgres:5432/mlm_database
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       - postgres
       - redis

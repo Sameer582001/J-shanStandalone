@@ -18,16 +18,16 @@ CREATE TABLE Users (
 );
 
 -- Nodes Table
-CREATE TYPE pool_type AS ENUM ('SELF', 'AUTO');
+-- Pool Type Enum Removed as Nodes exist in both simultaneously
 CREATE TYPE node_status AS ENUM ('INACTIVE', 'ACTIVE');
 
 CREATE TABLE Nodes (
     id SERIAL PRIMARY KEY,
     referral_code VARCHAR(50) UNIQUE NOT NULL,
     owner_user_id INTEGER REFERENCES Users(id) ON DELETE CASCADE,
-    sponsor_node_id INTEGER REFERENCES Nodes(id), -- Nullable for Root
-    parent_node_id INTEGER REFERENCES Nodes(id), -- Nullable for Root
-    pool_type pool_type NOT NULL,
+    sponsor_node_id INTEGER REFERENCES Nodes(id), -- The node that introduced this node
+    self_pool_parent_id INTEGER REFERENCES Nodes(id), -- Parent in the Sponsor's 3x10 Tree (Self Pool)
+    auto_pool_parent_id INTEGER REFERENCES Nodes(id), -- Parent in the Global 3x10 Tree (Auto Pool)
     status node_status DEFAULT 'INACTIVE',
     direct_referrals_count INTEGER DEFAULT 0,
     last_activity_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -115,4 +115,5 @@ CREATE INDEX idx_users_mobile ON Users(mobile);
 CREATE INDEX idx_nodes_referral_code ON Nodes(referral_code);
 CREATE INDEX idx_nodes_owner_user_id ON Nodes(owner_user_id);
 CREATE INDEX idx_nodes_sponsor_node_id ON Nodes(sponsor_node_id);
-CREATE INDEX idx_nodes_parent_node_id ON Nodes(parent_node_id);
+CREATE INDEX idx_nodes_self_pool_parent_id ON Nodes(self_pool_parent_id);
+CREATE INDEX idx_nodes_auto_pool_parent_id ON Nodes(auto_pool_parent_id);

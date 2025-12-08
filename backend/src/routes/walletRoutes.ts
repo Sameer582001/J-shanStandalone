@@ -6,5 +6,7 @@ const router = Router();
 
 router.get('/balance', authenticateJWT, WalletController.getBalance);
 router.post('/add-funds', authenticateJWT, WalletController.addFunds);
+router.get('/stats', authenticateJWT, WalletController.getUserDashboardStats);
+router.get('/transactions', authenticateJWT, WalletController.getRecentTransactions);
 
 export default router;

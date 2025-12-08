@@ -1,12 +1,22 @@
 import { query } from '../config/db.js';
 import { WalletService } from './WalletService.js';
+import { Queue } from 'bullmq';
 
 const walletService = new WalletService();
+
+// Initialize Auto Pool Queue
+const autoPoolQueue = new Queue('auto-pool-queue', {
+    connection: {
+        host: process.env.REDIS_HOST || 'localhost',
+        port: parseInt(process.env.REDIS_PORT || '6379')
+    }
+});
 
 export class NodeService {
 
     // BFS Placement Logic (Self Pool - Sponsor Tree)
-    private async findPlacement(sponsorNodeId: number): Promise<{ parentId: number | null }> {
+    // Uses 'self_pool_parent_id'
+    private async findSelfPoolPlacement(sponsorNodeId: number): Promise<{ parentId: number | null }> {
         if (!sponsorNodeId) return { parentId: null };
 
         const queue = [sponsorNodeId];
@@ -14,8 +24,8 @@ export class NodeService {
         while (queue.length > 0) {
             const currentId = queue.shift()!;
 
-            // Check how many children this node has
-            const res = await query('SELECT COUNT(*) as count FROM Nodes WHERE parent_node_id = $1', [currentId]);
+            // Check how many children this node has in Self Pool
+            const res = await query('SELECT COUNT(*) as count FROM Nodes WHERE self_pool_parent_id = $1', [currentId]);
             const count = parseInt(res.rows[0].count);
 
             if (count < 3) {
@@ -23,7 +33,7 @@ export class NodeService {
             }
 
             // If full, add children to queue to search next level
-            const childrenRes = await query('SELECT id FROM Nodes WHERE parent_node_id = $1 ORDER BY created_at ASC', [currentId]);
+            const childrenRes = await query('SELECT id FROM Nodes WHERE self_pool_parent_id = $1 ORDER BY created_at ASC', [currentId]);
             for (const row of childrenRes.rows) {
                 queue.push(row.id);
             }
@@ -44,57 +54,68 @@ export class NodeService {
         const sponsorUserId = sponsorRes.rows[0].owner_user_id;
 
         // 2. Check Balance & Deduct Funds
-        // We use a transaction to ensure atomicity
-        const client = await query('BEGIN');
-        // Note: Our query wrapper might not support returning the client for transactions easily if it's a simple pool wrapper.
-        // Let's assume we can pass a client or we just use the simple query for now and hope for the best (or refactor db.ts later).
-        // For this implementation, I'll assume standard pg pool behavior where we can't easily share client unless db.ts exports pool.
-        // I'll implement "deductFunds" with a check first.
-
         try {
-            // Check and Deduct
             await walletService.deductFunds(userId, NODE_PRICE);
 
-            // 3. Distribute Funds
-            // Rs 300 -> GST (System)
-            // Rs 500 -> Auto Pool (System)
-            // Rs 500 -> Self Pool (System/Network)
-            // Rs 250 -> Sponsor Bonus
-            // Rs 200 -> Product Cost (System)
-
+            // 3. Distribute Funds (Simplify for now, detailed split in spec)
             // Credit Sponsor Bonus
             await walletService.creditFunds(sponsorUserId, 250, 'Sponsor Bonus for new Node');
 
             // 4. Find Placement (Self Pool)
-            const { parentId } = await this.findPlacement(sponsorNodeId);
+            const { parentId: selfPoolParentId } = await this.findSelfPoolPlacement(sponsorNodeId);
 
             // 5. Create Node
+            // Note: auto_pool_parent_id is NULL explicitly, will be set by Worker
             const referralCode = `JSE-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
             const nodeRes = await query(
-                `INSERT INTO Nodes (referral_code, owner_user_id, sponsor_node_id, parent_node_id, pool_type, status, wallet_balance)
-                 VALUES ($1, $2, $3, $4, 'SELF', 'INACTIVE', 0.00) RETURNING id`,
-                [referralCode, userId, sponsorNodeId, parentId]
+                `INSERT INTO Nodes (referral_code, owner_user_id, sponsor_node_id, self_pool_parent_id, auto_pool_parent_id, status, wallet_balance)
+                 VALUES ($1, $2, $3, $4, NULL, 'INACTIVE', 0.00) RETURNING id`,
+                [referralCode, userId, sponsorNodeId, selfPoolParentId]
             );
             const nodeId = nodeRes.rows[0].id;
 
-            // 6. Log Transaction for the Purchase
+            // 6. Log Transaction
             await query(
                 `INSERT INTO Transactions (wallet_owner_id, amount, type, description, status) 
                  VALUES ($1, $2, 'DEBIT', 'Node Purchase', 'COMPLETED')`,
                 [userId, NODE_PRICE]
             );
 
-            // TODO: Add to Auto Pool (Global Matrix) - Placeholder for now
-            // await autoPoolService.addToQueue(nodeId);
+            // 7. Trigger Auto Pool Placement (Async)
+            await autoPoolQueue.add('NEW_REGISTRATION', { nodeId });
 
-            return { nodeId, referralCode, message: 'Node purchased successfully' };
+            return { nodeId, referralCode, message: 'Node purchased successfully. Auto Pool placement in progress.' };
 
         } catch (error) {
-            // If deduction happened but something else failed, we should ideally rollback.
-            // Since we are not using a shared client transaction here (limitation of current db.ts usage),
-            // we might leave the system in an inconsistent state if it crashes mid-way.
-            // For this MVP/Prototype, we proceed. In production, pass `client` to all service methods.
             throw error;
         }
+    }
+
+    async getUserNodes(userId: number) {
+        const res = await query('SELECT * FROM Nodes WHERE owner_user_id = $1 ORDER BY created_at DESC', [userId]);
+        return res.rows;
+    }
+
+    async getNodeStats(nodeId: number) {
+        const nodeRes = await query('SELECT * FROM Nodes WHERE id = $1', [nodeId]);
+        if (nodeRes.rows.length === 0) throw new Error('Node not found');
+        const node = nodeRes.rows[0];
+
+        // Self Pool Count (Children in Self Pool Tree)
+        const selfPoolRes = await query('SELECT COUNT(*) as count FROM Nodes WHERE self_pool_parent_id = $1', [nodeId]);
+        const selfPoolCount = parseInt(selfPoolRes.rows[0].count);
+
+        // Auto Pool Count (Children in Auto Pool Tree)
+        const autoPoolRes = await query('SELECT COUNT(*) as count FROM Nodes WHERE auto_pool_parent_id = $1', [nodeId]);
+        const autoPoolCount = parseInt(autoPoolRes.rows[0].count);
+
+        return {
+            id: node.id,
+            referralCode: node.referral_code,
+            status: node.status,
+            walletBalance: node.wallet_balance, // "Local Node Wallet" locked asset
+            selfPoolTeam: selfPoolCount,
+            autoPoolTeam: autoPoolCount
+        };
     }
 }

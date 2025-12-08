@@ -4,8 +4,12 @@ import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
 import walletRoutes from './routes/walletRoutes.js';
 import nodeRoutes from './routes/nodeRoutes.js';
+import { initAutoPoolWorker } from './workers/AutoPoolWorker.js';
 
 const app = express();
+
+// Start Background Worker
+initAutoPoolWorker();
 
 app.use(cors());
 app.use(express.json());

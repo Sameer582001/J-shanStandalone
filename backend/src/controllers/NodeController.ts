@@ -19,4 +19,24 @@ export class NodeController {
             res.status(400).json({ message: error.message });
         }
     }
+
+    static async getUserNodes(req: any, res: any) {
+        try {
+            const userId = req.user.id;
+            const nodes = await nodeService.getUserNodes(userId);
+            res.json(nodes);
+        } catch (error: any) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+
+    static async getNodeStats(req: any, res: any) {
+        try {
+            const nodeId = parseInt(req.params.id);
+            const stats = await nodeService.getNodeStats(nodeId);
+            res.json(stats);
+        } catch (error: any) {
+            res.status(500).json({ message: error.message });
+        }
+    }
 }

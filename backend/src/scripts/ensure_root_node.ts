@@ -45,8 +45,8 @@ async function ensureRootNode() {
 
         // Create JSE-ROOT
         await client.query(
-            `INSERT INTO Nodes (referral_code, owner_user_id, pool_type, status, direct_referrals_count, sponsor_node_id, parent_node_id)
-             VALUES ('JSE-ROOT', $1, 'SELF', 'ACTIVE', 0, NULL, NULL)`,
+            `INSERT INTO Nodes (referral_code, owner_user_id, status, direct_referrals_count, sponsor_node_id, self_pool_parent_id, auto_pool_parent_id)
+             VALUES ('JSE-ROOT', $1, 'ACTIVE', 0, NULL, NULL, NULL)`,
             [userId]
         );
         console.log('Created JSE-ROOT.');

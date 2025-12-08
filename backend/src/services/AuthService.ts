@@ -8,32 +8,7 @@ const notificationService = new NotificationService();
 
 export class AuthService {
 
-    // BFS Placement Logic
-    private async findPlacement(sponsorNodeId: number): Promise<{ parentId: number | null }> {
-        if (!sponsorNodeId) return { parentId: null }; // Should not happen for normal users
 
-        const queue = [sponsorNodeId];
-
-        while (queue.length > 0) {
-            const currentId = queue.shift()!;
-
-            // Check how many children this node has
-            const res = await query('SELECT COUNT(*) as count FROM Nodes WHERE parent_node_id = $1', [currentId]);
-            const count = parseInt(res.rows[0].count);
-
-            if (count < 3) {
-                return { parentId: currentId };
-            }
-
-            // If full, add children to queue to search next level
-            const childrenRes = await query('SELECT id FROM Nodes WHERE parent_node_id = $1 ORDER BY created_at ASC', [currentId]);
-            for (const row of childrenRes.rows) {
-                queue.push(row.id);
-            }
-        }
-
-        throw new Error('Placement failed: Tree is full or infinite loop detected');
-    }
 
     async register(data: any) {
         const { fullName, email, mobile, password } = data;

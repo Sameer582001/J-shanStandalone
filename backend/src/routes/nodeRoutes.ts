@@ -5,5 +5,7 @@ import { authenticateJWT } from '../middleware/AuthMiddleware.js';
 const router = Router();
 
 router.post('/purchase', authenticateJWT, NodeController.purchaseNode);
+router.get('/my-nodes', authenticateJWT, NodeController.getUserNodes);
+router.get('/:id/stats', authenticateJWT, NodeController.getNodeStats);
 
 export default router;
