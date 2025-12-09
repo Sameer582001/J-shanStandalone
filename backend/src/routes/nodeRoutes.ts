@@ -7,5 +7,6 @@ const router = Router();
 router.post('/purchase', authenticateJWT, NodeController.purchaseNode);
 router.get('/my-nodes', authenticateJWT, NodeController.getUserNodes);
 router.get('/:id/stats', authenticateJWT, NodeController.getNodeStats);
+router.get('/:id/transactions', authenticateJWT, NodeController.getNodeTransactions);
 
 export default router;

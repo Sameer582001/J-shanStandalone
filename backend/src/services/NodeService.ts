@@ -4,13 +4,19 @@ import { Queue } from 'bullmq';
 
 const walletService = new WalletService();
 
-// Initialize Auto Pool Queue
-const autoPoolQueue = new Queue('auto-pool-queue', {
-    connection: {
-        host: process.env.REDIS_HOST || 'localhost',
-        port: parseInt(process.env.REDIS_PORT || '6379')
+// Lazy Init Queue
+let autoPoolQueue: Queue | null = null;
+const getQueue = () => {
+    if (!autoPoolQueue) {
+        autoPoolQueue = new Queue('auto-pool-queue', {
+            connection: {
+                host: process.env.REDIS_HOST || 'localhost',
+                port: parseInt(process.env.REDIS_PORT || '6379')
+            }
+        });
     }
-});
+    return autoPoolQueue;
+};
 
 export class NodeService {
 
@@ -58,8 +64,21 @@ export class NodeService {
             await walletService.deductFunds(userId, NODE_PRICE);
 
             // 3. Distribute Funds (Simplify for now, detailed split in spec)
-            // Credit Sponsor Bonus
-            await walletService.creditFunds(sponsorUserId, 250, 'Sponsor Bonus for new Node');
+            // Credit Sponsor Bonus directly to the Sponsor Node's Wallet
+            // 3. Credit Sponsor Bonus & Update Referral Logic
+            await walletService.creditNodeWallet(sponsorNodeId, 250, 'Sponsor Bonus for new Node');
+
+            // Increment Direct Referrals Count for Sponsor
+            await query(
+                'UPDATE Nodes SET direct_referrals_count = direct_referrals_count + 1 WHERE id = $1',
+                [sponsorNodeId]
+            );
+
+            // Check if Sponsor should become ACTIVE (3 Referrals Condition)
+            const sponsorCheck = await query('SELECT direct_referrals_count, status FROM Nodes WHERE id = $1', [sponsorNodeId]);
+            if (sponsorCheck.rows[0].direct_referrals_count >= 3 && sponsorCheck.rows[0].status === 'INACTIVE') {
+                await query("UPDATE Nodes SET status = 'ACTIVE' WHERE id = $1", [sponsorNodeId]);
+            }
 
             // 4. Find Placement (Self Pool)
             const { parentId: selfPoolParentId } = await this.findSelfPoolPlacement(sponsorNodeId);
@@ -82,7 +101,7 @@ export class NodeService {
             );
 
             // 7. Trigger Auto Pool Placement (Async)
-            await autoPoolQueue.add('NEW_REGISTRATION', { nodeId });
+            await getQueue().add('NEW_REGISTRATION', { nodeId });
 
             return { nodeId, referralCode, message: 'Node purchased successfully. Auto Pool placement in progress.' };
 

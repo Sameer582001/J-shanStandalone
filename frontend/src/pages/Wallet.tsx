@@ -10,7 +10,7 @@ const Wallet: React.FC = () => {
     const fetchBalance = async () => {
         try {
             const res = await api.get('/wallet/balance');
-            setBalance(res.data.balance);
+            setBalance(Number(res.data.balance) || 0);
         } catch (err) {
             console.error('Failed to fetch balance', err);
         }
@@ -40,7 +40,7 @@ const Wallet: React.FC = () => {
                 <div className="flex items-center justify-between">
                     <div>
                         <p className="text-indigo-100 text-sm font-medium uppercase tracking-wider">Master Wallet Balance</p>
-                        <h3 className="text-4xl font-bold mt-2">₹{balance.toFixed(2)}</h3>
+                        <h3 className="text-4xl font-bold mt-2">₹{(balance || 0).toFixed(2)}</h3>
                     </div>
                     <div className="bg-white/20 p-3 rounded-full">
                         <WalletIcon className="w-8 h-8 text-white" />
@@ -78,6 +78,35 @@ const Wallet: React.FC = () => {
                         {message}
                     </p>
                 )}
+                {message && (
+                    <p className={`mt-4 text-sm ${message.includes('success') ? 'text-green-600' : 'text-red-600'}`}>
+                        {message}
+                    </p>
+                )}
+            </div>
+
+            {/* Withdraw Section */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Withdraw Funds</h3>
+                <div className="flex gap-4 items-end">
+                    <div className="flex-1">
+                        <p className="text-sm text-gray-500 mb-2">
+                            Request a payout to your bank account. Admin approval required.
+                        </p>
+                        <a
+                            href="/wallet/requests"
+                            className="text-indigo-600 text-sm font-semibold hover:underline"
+                        >
+                            View Request History
+                        </a>
+                    </div>
+                    <a
+                        href="/wallet/requests"
+                        className="flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                        Request Payout
+                    </a>
+                </div>
             </div>
         </div>
     );

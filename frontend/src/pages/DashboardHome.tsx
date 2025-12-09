@@ -16,11 +16,19 @@ const DashboardHome: React.FC = () => {
         if (!activeNode) return;
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/nodes/${activeNode.id}/stats`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await res.json();
-            if (res.ok) setStats(data);
+            const [statsRes, txRes] = await Promise.all([
+                fetch(`${import.meta.env.VITE_API_URL}/api/nodes/${activeNode.id}/stats`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                fetch(`${import.meta.env.VITE_API_URL}/api/nodes/${activeNode.id}/transactions`, { headers: { 'Authorization': `Bearer ${token}` } })
+            ]);
+
+            if (statsRes.ok) {
+                const data = await statsRes.json();
+                setStats(data);
+            }
+            if (txRes.ok) {
+                const txData = await txRes.json();
+                setTransactions(txData);
+            }
         } catch (error) {
             console.error(error);
         }

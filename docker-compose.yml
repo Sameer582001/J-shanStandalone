@@ -45,7 +45,10 @@ services:
 
   # 4. The Frontend (Web)
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:3000
     container_name: mlm_frontend
     restart: always
     ports:

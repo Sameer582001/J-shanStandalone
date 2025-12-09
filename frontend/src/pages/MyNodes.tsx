@@ -9,6 +9,7 @@ interface Node {
     status: 'ACTIVE' | 'INACTIVE';
     wallet_balance: string;
     created_at: string;
+    direct_referrals_count: number;
 }
 
 const MyNodes: React.FC = () => {
@@ -44,9 +45,10 @@ const MyNodes: React.FC = () => {
             id: node.id,
             referralCode: node.referral_code,
             status: node.status,
-            walletBalance: node.wallet_balance
+            walletBalance: node.wallet_balance,
+            direct_referrals_count: node.direct_referrals_count
         });
-        navigate('/dashboard');
+        navigate('/node/dashboard');
     };
 
     if (loading) return <div className="p-6">Loading nodes...</div>;
@@ -84,8 +86,8 @@ const MyNodes: React.FC = () => {
                         <button
                             onClick={() => handleLoginAsNode(node)}
                             className={`w-full py-2 rounded font-semibold transition-colors ${activeNode?.id === node.id
-                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                    : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md'
+                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md'
                                 }`}
                             disabled={activeNode?.id === node.id}
                         >

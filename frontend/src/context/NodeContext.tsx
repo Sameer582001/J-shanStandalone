@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import { createContext, useState, useContext, useEffect, useCallback, type ReactNode } from 'react';
 
 // Define the Node Type based on Backend Response
 interface Node {
@@ -8,6 +8,7 @@ interface Node {
     walletBalance: string;
     selfPoolTeam?: number;
     autoPoolTeam?: number;
+    direct_referrals_count: number;
 }
 
 interface NodeContextType {
@@ -34,15 +35,15 @@ export const NodeProvider = ({ children }: { children: ReactNode }) => {
         }
     }, []);
 
-    const switchNode = (node: Node) => {
+    const switchNode = useCallback((node: Node) => {
         setActiveNode(node);
         localStorage.setItem('activeNode', JSON.stringify(node));
-    };
+    }, []);
 
-    const clearActiveNode = () => {
+    const clearActiveNode = useCallback(() => {
         setActiveNode(null);
         localStorage.removeItem('activeNode');
-    };
+    }, []);
 
     return (
         <NodeContext.Provider value={{ activeNode, switchNode, clearActiveNode }}>

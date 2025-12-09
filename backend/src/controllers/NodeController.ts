@@ -1,7 +1,10 @@
 import type { Request, Response } from 'express';
 import { NodeService } from '../services/NodeService.js';
 
+import { WalletService } from '../services/WalletService.js';
+
 const nodeService = new NodeService();
+const walletService = new WalletService();
 
 export class NodeController {
     static async purchaseNode(req: Request, res: Response) {
@@ -23,7 +26,9 @@ export class NodeController {
     static async getUserNodes(req: any, res: any) {
         try {
             const userId = req.user.id;
+            console.log(`[MyNodes] Fetching nodes for User ID: ${userId}`);
             const nodes = await nodeService.getUserNodes(userId);
+            console.log(`[MyNodes] Found ${nodes.length} nodes.`);
             res.json(nodes);
         } catch (error: any) {
             res.status(500).json({ message: error.message });
@@ -35,6 +40,16 @@ export class NodeController {
             const nodeId = parseInt(req.params.id);
             const stats = await nodeService.getNodeStats(nodeId);
             res.json(stats);
+        } catch (error: any) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+
+    static async getNodeTransactions(req: any, res: any) {
+        try {
+            const nodeId = parseInt(req.params.id);
+            const transactions = await walletService.getNodeTransactions(nodeId);
+            res.json(transactions);
         } catch (error: any) {
             res.status(500).json({ message: error.message });
         }

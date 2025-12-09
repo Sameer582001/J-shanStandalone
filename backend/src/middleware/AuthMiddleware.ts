@@ -48,3 +48,5 @@ export const authorizeRole = (role: string) => {
         next();
     };
 };
+
+export const requireAdmin = authorizeRole('ADMIN');

@@ -48,4 +48,17 @@ export class WalletController {
             res.status(500).json({ message: error.message });
         }
     }
+    static async transferNodeToMaster(req: Request, res: Response) {
+        try {
+            const userId = (req as any).user.id;
+            const { nodeId, amount } = req.body;
+            if (!nodeId || !amount) {
+                throw new Error('Node ID and Amount are required');
+            }
+            const result = await walletService.transferNodeToMaster(userId, parseInt(nodeId), parseFloat(amount));
+            res.status(200).json(result);
+        } catch (error: any) {
+            res.status(400).json({ message: error.message });
+        }
+    }
 }

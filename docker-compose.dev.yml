@@ -1,30 +1,71 @@
-version: '3.8'
-
 services:
+  # 1. The Database (PostgreSQL) - Same as Prod
+  postgres:
+    image: postgres:15-alpine
+    container_name: mlm_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+      POSTGRES_DB: mlm_database
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/src/database/schema.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # 2. Redis - Same as Prod
+  redis:
+    image: redis:alpine
+    container_name: mlm_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  # 3. Backend (Dev Mode)
   backend:
     build:
       context: ./backend
-      target: builder # Use the builder stage which has dev dependencies
-    command: npm run dev
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
+      target: builder
+    container_name: mlm_backend
+    restart: always
+    ports:
+      - "3000:3000"
     environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=adminpassword
+      - POSTGRES_DB=mlm_database
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
+      - JWT_SECRET=super_secret_jwt_key_change_in_production
+      - DATABASE_URL=postgresql://admin:adminpassword@postgres:5432/mlm_database
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      # Ensure .env is loaded or variables are set here
+    volumes:
+      - ./backend:/app
+      - /app/node_modules # Preserve container node_modules
+    command: npm run dev
+    depends_on:
+      - postgres
+      - redis
 
+  # 4. Frontend (Dev Mode - Vite)
   frontend:
     build:
       context: ./frontend
-      target: builder # Use builder stage (Node image) instead of Nginx
-    command: npm run dev -- --host
+      target: builder
+    container_name: mlm_frontend
+    restart: always
+    ports:
+      - "80:80"
     volumes:
       - ./frontend:/app
-      - /app/node_modules
-    ports:
-      - "5173:5173" # Vite default port
+      - /app/node_modules # Preserve container node_modules
     environment:
       - VITE_API_URL=http://localhost:3000
+    command: npm run dev -- --host 0.0.0.0 --port 80
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

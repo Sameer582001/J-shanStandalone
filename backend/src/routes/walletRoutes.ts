@@ -8,5 +8,6 @@ router.get('/balance', authenticateJWT, WalletController.getBalance);
 router.post('/add-funds', authenticateJWT, WalletController.addFunds);
 router.get('/stats', authenticateJWT, WalletController.getUserDashboardStats);
 router.get('/transactions', authenticateJWT, WalletController.getRecentTransactions);
+router.post('/transfer/node-to-master', authenticateJWT, WalletController.transferNodeToMaster);
 
 export default router;
