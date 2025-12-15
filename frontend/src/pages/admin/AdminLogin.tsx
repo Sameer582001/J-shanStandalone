@@ -10,7 +10,10 @@ const AdminLogin: React.FC = () => {
     const navigate = useNavigate();
 
     const [showInitForm, setShowInitForm] = useState(false);
-    const [initData, setInitData] = useState({ name: '', email: '', mobile: '', password: '' });
+    const [initData, setInitData] = useState({
+        adminMobile: '', adminPassword: '',
+        rootName: '', rootEmail: '', rootMobile: '', rootPassword: ''
+    });
 
     React.useEffect(() => {
         const checkStatus = async () => {
@@ -76,26 +79,43 @@ const AdminLogin: React.FC = () => {
                                 {error}
                             </div>
                         )}
-                        <input
-                            type="text" required placeholder="Full Name"
-                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-700 placeholder-gray-500 text-white bg-gray-800 rounded-t-md focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                            value={initData.name} onChange={e => setInitData({ ...initData, name: e.target.value })}
-                        />
-                        <input
-                            type="email" required placeholder="Email"
-                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-700 placeholder-gray-500 text-white bg-gray-800 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                            value={initData.email} onChange={e => setInitData({ ...initData, email: e.target.value })}
-                        />
-                        <input
-                            type="text" required placeholder="Mobile"
-                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-700 placeholder-gray-500 text-white bg-gray-800 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                            value={initData.mobile} onChange={e => setInitData({ ...initData, mobile: e.target.value })}
-                        />
-                        <input
-                            type="password" required placeholder="Password"
-                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-700 placeholder-gray-500 text-white bg-gray-800 rounded-b-md focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                            value={initData.password} onChange={e => setInitData({ ...initData, password: e.target.value })}
-                        />
+                        <div className="bg-gray-800 p-4 rounded-md space-y-4">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase">1. System Admin (For Login)</h3>
+                            <input
+                                type="text" required placeholder="Admin Mobile"
+                                className="appearance-none block w-full px-3 py-2 border border-gray-700 placeholder-gray-500 text-white bg-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                                value={initData.adminMobile} onChange={e => setInitData({ ...initData, adminMobile: e.target.value })}
+                            />
+                            <input
+                                type="password" required placeholder="Admin Password"
+                                className="appearance-none block w-full px-3 py-2 border border-gray-700 placeholder-gray-500 text-white bg-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                                value={initData.adminPassword} onChange={e => setInitData({ ...initData, adminPassword: e.target.value })}
+                            />
+                        </div>
+
+                        <div className="bg-gray-800 p-4 rounded-md space-y-4">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase">2. Root User (First Member)</h3>
+                            <input
+                                type="text" required placeholder="Root User Name"
+                                className="appearance-none block w-full px-3 py-2 border border-gray-700 placeholder-gray-500 text-white bg-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                                value={initData.rootName} onChange={e => setInitData({ ...initData, rootName: e.target.value })}
+                            />
+                            <input
+                                type="email" required placeholder="Root User Email"
+                                className="appearance-none block w-full px-3 py-2 border border-gray-700 placeholder-gray-500 text-white bg-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                                value={initData.rootEmail} onChange={e => setInitData({ ...initData, rootEmail: e.target.value })}
+                            />
+                            <input
+                                type="text" required placeholder="Root User Mobile (Log in ID)"
+                                className="appearance-none block w-full px-3 py-2 border border-gray-700 placeholder-gray-500 text-white bg-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                                value={initData.rootMobile} onChange={e => setInitData({ ...initData, rootMobile: e.target.value })}
+                            />
+                            <input
+                                type="text" required placeholder="Root User Password"
+                                className="appearance-none block w-full px-3 py-2 border border-gray-700 placeholder-gray-500 text-white bg-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                                value={initData.rootPassword} onChange={e => setInitData({ ...initData, rootPassword: e.target.value })}
+                            />
+                        </div>
                         <button
                             type="submit"
                             className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none"

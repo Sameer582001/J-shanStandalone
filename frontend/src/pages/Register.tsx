@@ -29,17 +29,17 @@ const Register: React.FC = () => {
     return (
         <div>
             <div className="text-center mb-8">
-                <h2 className="text-3xl font-extrabold text-gray-900">Create your account</h2>
-                <p className="mt-2 text-sm text-gray-600">
+                <h2 className="text-3xl font-extrabold text-accent-cyan">Create your account</h2>
+                <p className="mt-2 text-sm text-gray-400">
                     Already have an account?{' '}
-                    <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+                    <Link to="/login" className="font-medium text-accent-teal hover:text-teal-400">
                         Sign in
                     </Link>
                 </p>
             </div>
             <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                 {error && (
-                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <div className="bg-red-900/50 border border-red-500/50 text-red-200 px-4 py-3 rounded relative" role="alert">
                         <span className="block sm:inline">{error}</span>
                     </div>
                 )}
@@ -53,7 +53,7 @@ const Register: React.FC = () => {
                             name="fullName"
                             type="text"
                             required
-                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-700 bg-dark-bg text-white placeholder-gray-500 rounded-t-md focus:outline-none focus:ring-accent-teal focus:border-accent-teal focus:z-10 sm:text-sm"
                             placeholder="Full Name"
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
@@ -69,7 +69,7 @@ const Register: React.FC = () => {
                             type="email"
                             autoComplete="email"
                             required
-                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-700 bg-dark-bg text-white placeholder-gray-500 focus:outline-none focus:ring-accent-teal focus:border-accent-teal focus:z-10 sm:text-sm"
                             placeholder="Email address"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -84,7 +84,7 @@ const Register: React.FC = () => {
                             name="mobile"
                             type="tel"
                             required
-                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-700 bg-dark-bg text-white placeholder-gray-500 focus:outline-none focus:ring-accent-teal focus:border-accent-teal focus:z-10 sm:text-sm"
                             placeholder="Phone Number (e.g., 9876543210)"
                             value={mobile}
                             onChange={(e) => setMobile(e.target.value)}
@@ -100,7 +100,7 @@ const Register: React.FC = () => {
                             type="password"
                             autoComplete="new-password"
                             required
-                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-700 bg-dark-bg text-white placeholder-gray-500 rounded-b-md focus:outline-none focus:ring-accent-teal focus:border-accent-teal focus:z-10 sm:text-sm"
                             placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -111,7 +111,7 @@ const Register: React.FC = () => {
                 <div>
                     <button
                         type="submit"
-                        className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent-teal hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-teal transition-colors"
                     >
                         Register
                     </button>

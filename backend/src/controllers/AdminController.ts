@@ -17,4 +17,21 @@ export class AdminController {
             res.status(500).json({ message: error.message });
         }
     }
+
+    static async resetPassword(req: Request, res: Response) {
+        try {
+            // Expect targetUserId (or email) and newPassword in body
+            const { userId, email, newPassword } = req.body;
+
+            if (!newPassword || (!userId && !email)) {
+                return res.status(400).json({ message: 'User ID/Email and New Password are required' });
+            }
+
+            const target = userId || email;
+            const result = await adminService.resetUserPassword(target, newPassword);
+            res.status(200).json(result);
+        } catch (error: any) {
+            res.status(400).json({ message: error.message });
+        }
+    }
 }

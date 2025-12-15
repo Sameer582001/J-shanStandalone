@@ -2,15 +2,17 @@
     "project_name": "My Custom MLM",
     "currency_symbol": "₹",
     "referral_prefix": "JSE-",
-    "admin_route_secret": "/super-secret-admin-login-v1",
-    "admin": {
-        "mobile": "9999999999",
-        "password": "admin123",
-        "secret_route": "/portal-secure"
-    },
     "matrix": {
         "width": 3,
         "depth": 10
+    },
+    "fees": {
+        "joining_fee": 1750,
+        "distributions": {
+            "self_pool_fee": 500,
+            "direct_referral_bonus": 250,
+            "auto_pool_fee": 500
+        }
     },
     "fast_track": {
         "duration_days": 10,
@@ -54,7 +56,7 @@
             "incoming_per_node": 1000,
             "upgrade_fee": 3000,
             "rebirth": {
-                "cost": 1000,
+                "cost": 500,
                 "count": 2
             },
             "upline_share": 2000,
@@ -67,7 +69,7 @@
             "incoming_per_node": 3000,
             "upgrade_fee": 27000,
             "rebirth": {
-                "cost": 3000,
+                "cost": 500,
                 "count": 6
             },
             "upline_share": 6000,
@@ -80,11 +82,12 @@
             "incoming_per_node": 27000,
             "upgrade_fee": 0,
             "rebirth": {
-                "cost": 27000,
+                "cost": 500,
                 "count": 54
             },
             "upline_share": 54000,
-            "system_fee": 175300
+            "system_fee": 27000,
+            "gifts": 175300
         }
     },
     "governance": {

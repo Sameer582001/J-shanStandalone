@@ -27,22 +27,22 @@ const PurchaseNode: React.FC = () => {
 
     return (
         <div className="max-w-2xl mx-auto space-y-6">
-            <h2 className="text-2xl font-bold text-gray-800">Purchase Node</h2>
+            <h2 className="text-2xl font-bold text-accent-cyan">Purchase Node</h2>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+            <div className="bg-dark-surface rounded-xl shadow-sm border border-gray-800 p-8">
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h3 className="text-lg font-semibold text-gray-900">Standard Node Package</h3>
-                        <p className="text-gray-500 text-sm mt-1">Includes entry to Self Pool & Auto Pool</p>
+                        <h3 className="text-lg font-semibold text-white">Standard Node Package</h3>
+                        <p className="text-gray-400 text-sm mt-1">Includes entry to Self Pool & Auto Pool</p>
                     </div>
                     <div className="text-right">
-                        <p className="text-3xl font-bold text-indigo-600">₹{NODE_PRICE}</p>
+                        <p className="text-3xl font-bold text-accent-cyan">₹{NODE_PRICE}</p>
                     </div>
                 </div>
 
                 <form onSubmit={handlePurchase} className="space-y-6">
                     <div>
-                        <label htmlFor="sponsorCode" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="sponsorCode" className="block text-sm font-medium text-gray-300">
                             Sponsor Code (Referral Code)
                         </label>
                         <div className="mt-1">
@@ -52,7 +52,7 @@ const PurchaseNode: React.FC = () => {
                                 required
                                 value={sponsorCode}
                                 onChange={(e) => setSponsorCode(e.target.value)}
-                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border"
+                                className="block w-full rounded-md border-gray-700 bg-dark-bg text-white shadow-sm focus:border-accent-teal focus:ring-accent-teal sm:text-sm p-3 border placeholder-gray-500 outline-none"
                                 placeholder="Enter Sponsor's Referral Code"
                             />
                         </div>
@@ -62,7 +62,7 @@ const PurchaseNode: React.FC = () => {
                     </div>
 
                     {message && (
-                        <div className={`p-4 rounded-md flex items-start ${message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+                        <div className={`p-4 rounded-md flex items-start ${message.type === 'success' ? 'bg-green-900/50 text-green-200' : 'bg-red-900/50 text-red-200'}`}>
                             {message.type === 'success' ? (
                                 <CheckCircle className="w-5 h-5 mr-2 mt-0.5" />
                             ) : (
@@ -75,7 +75,7 @@ const PurchaseNode: React.FC = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${loading ? 'opacity-75 cursor-not-allowed' : ''}`}
+                        className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-accent-teal hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-teal transition-colors ${loading ? 'opacity-75 cursor-not-allowed' : ''}`}
                     >
                         {loading ? 'Processing...' : (
                             <>
