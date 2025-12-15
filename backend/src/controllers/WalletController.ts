@@ -41,8 +41,11 @@ export class WalletController {
     static async getRecentTransactions(req: Request, res: Response) {
         try {
             const userId = (req as any).user.id;
-            const limit = req.query.limit ? parseInt(req.query.limit as string) : 5;
-            const transactions = await walletService.getRecentTransactions(userId, limit);
+            const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
+            const page = req.query.page ? parseInt(req.query.page as string) : 1;
+            const offset = (page - 1) * limit;
+
+            const transactions = await walletService.getRecentTransactions(userId, limit, offset);
             res.status(200).json(transactions);
         } catch (error: any) {
             res.status(500).json({ message: error.message });

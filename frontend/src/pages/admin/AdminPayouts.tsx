@@ -45,11 +45,11 @@ const AdminPayouts: React.FC = () => {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-white">Pending Payouts</h2>
+            <h2 className="text-2xl font-bold text-accent-cyan">Pending Payouts</h2>
 
-            <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
-                <table className="min-w-full divide-y divide-gray-700">
-                    <thead className="bg-gray-900">
+            <div className="bg-dark-surface rounded-xl border border-gray-800 overflow-hidden">
+                <table className="min-w-full divide-y divide-gray-800">
+                    <thead className="bg-dark-bg">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">User</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Amount</th>
@@ -57,7 +57,7 @@ const AdminPayouts: React.FC = () => {
                             <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
-                    <tbody className="bg-gray-800 divide-y divide-gray-700 text-gray-300">
+                    <tbody className="bg-dark-surface divide-y divide-gray-800 text-gray-300">
                         {payouts.map((p) => (
                             <tr key={p.id} className="hover:bg-gray-700/50">
                                 <td className="px-6 py-4 whitespace-nowrap">

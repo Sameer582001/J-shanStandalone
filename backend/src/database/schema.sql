@@ -32,10 +32,16 @@ CREATE TABLE Nodes (
     direct_referrals_count INTEGER DEFAULT 0,
     last_activity_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     wallet_balance DECIMAL(15, 2) DEFAULT 0.00,
+    
+    -- New Fields for Financial System
+    current_level INT DEFAULT 1,
+    is_rebirth BOOLEAN DEFAULT FALSE,
     origin_node_id INTEGER REFERENCES Nodes(id), -- Points to the main node if this is a rebirth/clone
+    
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
 
 -- Transactions Table
 CREATE TYPE transaction_type AS ENUM ('CREDIT', 'DEBIT');
@@ -108,6 +114,31 @@ CREATE TABLE SupportMessages (
     sender_id INTEGER REFERENCES Users(id), -- Null if system message? Or Admin user.
     message TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- LevelProgress Table (Financial System)
+CREATE TABLE LevelProgress (
+    id SERIAL PRIMARY KEY,
+    node_id INT REFERENCES Nodes(id) NOT NULL,
+    level INT NOT NULL,
+    pool_type VARCHAR(10) DEFAULT 'SELF' CHECK (pool_type IN ('SELF', 'AUTO')),
+    total_revenue NUMERIC(15, 2) DEFAULT 0.00,
+    buckets JSONB DEFAULT '{}',
+    is_completed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(node_id, level, pool_type)
+);
+
+-- Withdrawals Table
+CREATE TABLE Withdrawals (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES Users(id),
+    amount DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'PAID', 'REJECTED')),
+    admin_note TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Indexes

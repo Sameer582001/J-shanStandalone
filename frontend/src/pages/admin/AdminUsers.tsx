@@ -31,14 +31,14 @@ const AdminUsers: React.FC = () => {
 
     return (
         <div className="bg-gray-800 text-white p-6 rounded-lg">
-            <h2 className="text-2xl font-bold mb-4">User Management</h2>
+            <h2 className="text-2xl font-bold mb-4 text-accent-cyan">User Management</h2>
 
             {loading ? (
-                <p>Loading users...</p>
+                <p className="text-gray-400">Loading users...</p>
             ) : (
                 <div className="overflow-x-auto">
-                    <table className="min-w-full bg-gray-700 rounded-lg overflow-hidden">
-                        <thead className="bg-gray-600">
+                    <table className="min-w-full bg-dark-surface rounded-lg overflow-hidden border border-gray-800">
+                        <thead className="bg-dark-bg">
                             <tr>
                                 <th className="px-4 py-3 text-left">ID</th>
                                 <th className="px-4 py-3 text-left">Name</th>
@@ -50,19 +50,19 @@ const AdminUsers: React.FC = () => {
                                 <th className="px-4 py-3 text-left">Joined</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-600">
+                        <tbody className="divide-y divide-gray-800">
                             {users.map(user => (
-                                <tr key={user.id} className="hover:bg-gray-600 transition">
+                                <tr key={user.id} className="hover:bg-gray-800/50 transition">
                                     <td className="px-4 py-3">{user.id}</td>
                                     <td className="px-4 py-3">{user.full_name}</td>
                                     <td className="px-4 py-3">{user.email}</td>
                                     <td className="px-4 py-3">{user.mobile}</td>
                                     <td className="px-4 py-3">
-                                        <span className={`px-2 py-1 rounded text-xs font-bold ${user.role === 'ADMIN' ? 'bg-red-500' : 'bg-green-500'}`}>
+                                        <span className={`px-2 py-1 rounded text-xs font-bold ${user.role === 'ADMIN' ? 'bg-red-900/50 text-red-200' : 'bg-green-900/50 text-green-200'}`}>
                                             {user.role}
                                         </span>
                                     </td>
-                                    <td className="px-4 py-3 text-indigo-400 font-semibold">{user.node_count}</td>
+                                    <td className="px-4 py-3 text-accent-cyan font-semibold">{user.node_count}</td>
                                     <td className="px-4 py-3">₹{user.master_wallet_balance}</td>
                                     <td className="px-4 py-3 text-gray-400 text-sm">
                                         {new Date(user.created_at).toLocaleDateString()}
@@ -78,7 +78,7 @@ const AdminUsers: React.FC = () => {
                 <button
                     disabled={page === 1}
                     onClick={() => setPage(p => Math.max(1, p - 1))}
-                    className="bg-gray-600 px-4 py-2 rounded disabled:opacity-50 hover:bg-gray-500"
+                    className="bg-dark-surface border border-gray-700 px-4 py-2 rounded disabled:opacity-50 hover:bg-gray-800 transition-colors"
                 >
                     Previous
                 </button>
@@ -86,7 +86,7 @@ const AdminUsers: React.FC = () => {
                 <button
                     disabled={page === totalPages}
                     onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                    className="bg-gray-600 px-4 py-2 rounded disabled:opacity-50 hover:bg-gray-500"
+                    className="bg-dark-surface border border-gray-700 px-4 py-2 rounded disabled:opacity-50 hover:bg-gray-800 transition-colors"
                 >
                     Next
                 </button>

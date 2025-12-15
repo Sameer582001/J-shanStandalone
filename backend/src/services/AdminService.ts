@@ -67,4 +67,33 @@ export class AdminService {
             total: parseInt(countRes.rows[0].count)
         };
     }
+
+    // Reset User Password (Admin Override)
+    async resetUserPassword(targetUserIdOrEmail: string | number, newPassword: string) {
+        // 1. Find User
+        let queryStr = '';
+        let param: any;
+
+        if (typeof targetUserIdOrEmail === 'number' || !isNaN(Number(targetUserIdOrEmail))) {
+            queryStr = 'SELECT id FROM Users WHERE id = $1';
+            param = Number(targetUserIdOrEmail);
+        } else {
+            queryStr = 'SELECT id FROM Users WHERE email = $1';
+            param = targetUserIdOrEmail;
+        }
+
+        const userRes = await query(queryStr, [param]);
+        if (userRes.rows.length === 0) {
+            throw new Error('User not found');
+        }
+        const userId = userRes.rows[0].id;
+
+        // 2. Hash New Password
+        const passwordHash = await bcrypt.hash(newPassword, 10);
+
+        // 3. Update Password
+        await query('UPDATE Users SET password_hash = $1 WHERE id = $2', [passwordHash, userId]);
+
+        return { message: 'Password reset successfully' };
+    }
 }

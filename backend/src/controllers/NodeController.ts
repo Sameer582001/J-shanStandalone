@@ -48,8 +48,23 @@ export class NodeController {
     static async getNodeTransactions(req: any, res: any) {
         try {
             const nodeId = parseInt(req.params.id);
-            const transactions = await walletService.getNodeTransactions(nodeId);
+            const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
+            const page = req.query.page ? parseInt(req.query.page as string) : 1;
+            const offset = (page - 1) * limit;
+
+            const transactions = await walletService.getNodeTransactions(nodeId, limit, offset);
             res.json(transactions);
+        } catch (error: any) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+    static async getGenealogy(req: any, res: any) {
+        try {
+            const nodeId = parseInt(req.params.id);
+            const type = (req.query.type as 'SELF' | 'AUTO') || 'SELF';
+            const isGlobal = req.query.global === 'true';
+            const tree = await nodeService.getGenealogy(nodeId, type, isGlobal);
+            res.json(tree);
         } catch (error: any) {
             res.status(500).json({ message: error.message });
         }

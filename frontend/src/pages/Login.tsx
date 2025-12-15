@@ -24,17 +24,17 @@ const Login: React.FC = () => {
     return (
         <div>
             <div className="text-center mb-8">
-                <h2 className="text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
-                <p className="mt-2 text-sm text-gray-600">
+                <h2 className="text-3xl font-extrabold text-accent-cyan">Sign in to your account</h2>
+                <p className="mt-2 text-sm text-gray-400">
                     Or{' '}
-                    <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+                    <Link to="/register" className="font-medium text-accent-teal hover:text-teal-400">
                         create a new account
                     </Link>
                 </p>
             </div>
             <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                 {error && (
-                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <div className="bg-red-900/50 border border-red-500/50 text-red-200 px-4 py-3 rounded relative" role="alert">
                         <span className="block sm:inline">{error}</span>
                     </div>
                 )}
@@ -49,7 +49,7 @@ const Login: React.FC = () => {
                             type="tel"
                             autoComplete="tel"
                             required
-                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-700 bg-dark-bg text-white placeholder-gray-500 rounded-t-md focus:outline-none focus:ring-accent-teal focus:border-accent-teal focus:z-10 sm:text-sm"
                             placeholder="Phone Number"
                             value={mobile}
                             onChange={(e) => setMobile(e.target.value)}
@@ -65,7 +65,7 @@ const Login: React.FC = () => {
                             type="password"
                             autoComplete="current-password"
                             required
-                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-700 bg-dark-bg text-white placeholder-gray-500 rounded-b-md focus:outline-none focus:ring-accent-teal focus:border-accent-teal focus:z-10 sm:text-sm"
                             placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -76,7 +76,7 @@ const Login: React.FC = () => {
                 <div>
                     <button
                         type="submit"
-                        className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-accent-teal hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-teal transition-colors"
                     >
                         Sign in
                     </button>

@@ -1,1 +1,41 @@
 @import "tailwindcss";
+
+@theme {
+  /* Dark Theme Palette */
+  --color-dark-bg: #212121;
+  --color-dark-surface: #323232;
+  --color-accent-teal: #0D7377;
+  --color-accent-cyan: #14FFEC;
+
+  /* Aliases for semantic usage */
+  --color-primary: var(--color-accent-teal);
+  --color-secondary: var(--color-accent-cyan);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-dark-bg);
+  color: #e5e5e5;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif; /* Professional font stack */
+}
+
+/* Scrollbar styling for a premium feel */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-dark-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-dark-surface);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent-teal);
+}

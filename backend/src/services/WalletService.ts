@@ -8,12 +8,13 @@ export class WalletService {
         if (res.rows.length === 0) {
             throw new Error('User not found');
         }
-        return parseFloat(res.rows[0].master_wallet_balance);
+        const val = parseFloat(res.rows[0].master_wallet_balance);
+        return isNaN(val) ? 0 : val;
     }
 
     // Add Funds (Mock/Admin)
     async addFunds(userId: number, amount: number) {
-        if (amount <= 0) throw new Error('Amount must be positive');
+        if (amount < 100) throw new Error('Minimum amount to add is ₹100');
 
         await query('BEGIN');
         try {
@@ -39,7 +40,9 @@ export class WalletService {
         const q = client ? client.query.bind(client) : query;
 
         const res = await q('SELECT master_wallet_balance FROM Users WHERE id = $1 FOR UPDATE', [userId]);
-        const balance = parseFloat(res.rows[0].master_wallet_balance);
+        const rawBalance = res.rows[0].master_wallet_balance;
+        let balance = parseFloat(rawBalance);
+        if (isNaN(balance)) balance = 0;
 
         if (balance < amount) {
             throw new Error('Insufficient funds');
@@ -62,18 +65,20 @@ export class WalletService {
     }
 
 
-    async creditNodeWallet(nodeId: number, amount: number, description: string) {
+    async creditNodeWallet(nodeId: number, amount: number, description: string, client: any = null) {
+        const q = client ? client.query.bind(client) : query;
+
         // 1. Update Node Balance
-        await query('UPDATE Nodes SET wallet_balance = wallet_balance + $1 WHERE id = $2', [amount, nodeId]);
+        await q('UPDATE Nodes SET wallet_balance = wallet_balance + $1 WHERE id = $2', [amount, nodeId]);
 
         // 2. Log Transaction (Using node_id)
         // Need to find owner of the node for the record? No, schema allows wallet_owner_id to be null if we use node_id
         // But schema comment said wallet_owner_id references Users. 
         // Let's get the owner info first to be complete.
-        const res = await query('SELECT owner_user_id FROM Nodes WHERE id = $1', [nodeId]);
+        const res = await q('SELECT owner_user_id FROM Nodes WHERE id = $1', [nodeId]);
         const ownerId = res.rows[0].owner_user_id;
 
-        await query(
+        await q(
             `INSERT INTO Transactions (wallet_owner_id, node_id, amount, type, description, status) 
              VALUES ($1, $2, $3, 'CREDIT', $4, 'COMPLETED')`,
             [ownerId, nodeId, amount, description]
@@ -83,7 +88,9 @@ export class WalletService {
     async getUserDashboardStats(userId: number) {
         // 1. Wallet Balance
         const userRes = await query('SELECT master_wallet_balance FROM Users WHERE id = $1', [userId]);
-        const walletBalance = parseFloat(userRes.rows[0].master_wallet_balance || '0');
+        const rawBalance = userRes.rows[0].master_wallet_balance;
+        let walletBalance = parseFloat(rawBalance);
+        if (isNaN(walletBalance)) walletBalance = 0;
 
         // 2. Total Earnings (Sum of CREDIT transactions)
         // Use COALESCE to handle NULL case if no transactions exist
@@ -118,24 +125,26 @@ export class WalletService {
     }
 
     // Get Recent Transactions
-    async getRecentTransactions(userId: number, limit: number = 5) {
+    // Get Recent Transactions (Master Wallet)
+    async getRecentTransactions(userId: number, limit: number = 20, offset: number = 0) {
         const res = await query(
             `SELECT * FROM Transactions 
-             WHERE wallet_owner_id = $1 
+             WHERE wallet_owner_id = $1 AND node_id IS NULL
              ORDER BY created_at DESC 
-             LIMIT $2`,
-            [userId, limit]
+             LIMIT $2 OFFSET $3`,
+            [userId, limit, offset]
         );
         return res.rows;
     }
+
     // Get Transactions for a specific Node
-    async getNodeTransactions(nodeId: number, limit: number = 5) {
+    async getNodeTransactions(nodeId: number, limit: number = 20, offset: number = 0) {
         const res = await query(
             `SELECT * FROM Transactions 
              WHERE node_id = $1 
              ORDER BY created_at DESC 
-             LIMIT $2`,
-            [nodeId, limit]
+             LIMIT $2 OFFSET $3`,
+            [nodeId, limit, offset]
         );
         return res.rows;
     }
