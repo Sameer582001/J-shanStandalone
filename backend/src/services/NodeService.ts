@@ -3,12 +3,19 @@ import { WalletService } from './WalletService.js';
 import { FinancialService } from './FinancialService.js';
 import { Queue } from 'bullmq';
 import { createRequire } from 'module';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const require = createRequire(import.meta.url);
-const config = require('../config/plan_config.json');
+// Removed top-level config require to prevent caching issues
+// const config = require('../config/plan_config.json');
 
 const walletService = new WalletService();
-const financialService = new FinancialService();
+// const financialService = new FinancialService(); // Removed global instance for isolation
 
 // Lazy Init Queue
 let autoPoolQueue: Queue | null = null;
@@ -30,30 +37,85 @@ export class NodeService {
     // Uses 'self_pool_parent_id'
     private async findSelfPoolPlacement(sponsorNodeId: number, client: any = null): Promise<{ parentId: number | null }> {
         if (!sponsorNodeId) return { parentId: null };
-
         const q = client ? client.query.bind(client) : query;
-
         const queue = [sponsorNodeId];
 
         while (queue.length > 0) {
             const currentId = queue.shift()!;
 
+            // LOCK the parent row to prevent race conditions
+            if (client) {
+                await q('SELECT id FROM Nodes WHERE id = $1 FOR UPDATE', [currentId]);
+            }
+
             // Check how many children this node has in Self Pool
             const res = await q('SELECT COUNT(*) as count FROM Nodes WHERE self_pool_parent_id = $1', [currentId]);
             const count = parseInt(res.rows[0].count);
+
+            // Load Config
+            const configPath = path.resolve(__dirname, '../config/plan_config.json');
+            const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
 
             if (count < config.matrix.width) {
                 return { parentId: currentId };
             }
 
             // If full, add children to queue to search next level
-            const childrenRes = await q('SELECT id FROM Nodes WHERE self_pool_parent_id = $1 ORDER BY created_at ASC', [currentId]);
+            const childrenRes = await q('SELECT id FROM Nodes WHERE self_pool_parent_id = $1 ORDER BY created_at ASC, id ASC', [currentId]);
+            for (const row of childrenRes.rows) {
+                queue.push(row.id);
+            }
+        }
+        throw new Error('Placement failed: Tree is full or infinite loop detected');
+    }
+
+
+    // BFS to find the next available spot in the Global Auto Pool (Synchronous & Locked)
+    private async findGlobalPlacement(client: any): Promise<number> {
+        const q = client.query.bind(client);
+
+        // 1. Get the Root Node (Anchor)
+        let rootId;
+        const rootRes = await q("SELECT id FROM Nodes WHERE referral_code = 'JSE-ROOT'");
+        if (rootRes.rows.length > 0) rootId = rootRes.rows[0].id;
+        else {
+            const altRes = await q("SELECT id FROM Nodes WHERE referral_code = 'JSE-AUTO-ROOT'");
+            if (altRes.rows.length > 0) rootId = altRes.rows[0].id;
+            else throw new Error("No Global Root found");
+        }
+
+        const queue = [rootId];
+
+        while (queue.length > 0) {
+            const currentId = queue.shift()!;
+
+            // LOCK the parent row to prevent race conditions during check-and-insert
+            // We lock 'currentId' to ensure its children count doesn't change while we decide
+            // check: FOR UPDATE might be too heavy? 
+            // Better: We are checking children count.
+            // If we lock 'currentId', nobody else can add a child involving 'currentId' if they also lock it?
+            // Actually, inserting a child doesn't modify Parent Row unless we update a counter.
+            // But we DO update 'auto_pool_parent_id' on the Child.
+            // To block others, we should probably lock the Parent Row for update, 
+            // effectively serializing access to this Parent's slot availability.
+            await q('SELECT id FROM Nodes WHERE id = $1 FOR UPDATE', [currentId]);
+
+            // Count children in Auto Pool
+            const res = await q('SELECT COUNT(*) as count FROM Nodes WHERE auto_pool_parent_id = $1', [currentId]);
+            const count = parseInt(res.rows[0].count);
+
+            if (count < 3) { // Hardcoded 3 for Auto Pool Width
+                return currentId;
+            }
+
+            // If full, add children to queue
+            const childrenRes = await q('SELECT id FROM Nodes WHERE auto_pool_parent_id = $1 ORDER BY created_at ASC, id ASC', [currentId]);
             for (const row of childrenRes.rows) {
                 queue.push(row.id);
             }
         }
 
-        throw new Error('Placement failed: Tree is full or infinite loop detected');
+        throw new Error('Global Matrix full or critical error');
     }
 
     async purchaseNode(userId: number, sponsorCode: string) {
@@ -62,29 +124,27 @@ export class NodeService {
         try {
             await client.query('BEGIN');
 
-            // 1. Validate Sponsor (Can be outside transaction, but safer inside if we want to lock it? No need to lock sponsor yet unless we fear deletion)
-            // Just read is fine.
+            const financialService = new FinancialService(); // Local instance
+
+
+            // Load Config Dynamically
+            const configPath = path.resolve(__dirname, '../config/plan_config.json');
+            const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+
+            // 1. Validate Sponsor
             const sponsorRes = await client.query('SELECT id, owner_user_id, direct_referrals_count, status FROM Nodes WHERE referral_code = $1', [sponsorCode]);
             if (sponsorRes.rows.length === 0) {
                 throw new Error('Invalid Sponsor Code');
             }
             const sponsorNodeId = sponsorRes.rows[0].id;
-            // const sponsorUserId = sponsorRes.rows[0].owner_user_id; // Unused variable warning usually, but kept for context
 
             // 2. Check Balance & Deduct Funds
-            // Pass client to share transaction context (and locks)
             await walletService.deductFunds(userId, config.fees.joining_fee, client);
 
-            // 3. Distribute Funds (Financial System Integration)
-            // Rs 500 goes to Level 1 Logic (Sponsor's Level 1 Progress)
-            const MATRIX_FEE = config.fees.distributions.self_pool_fee;
+            // 3. Distribute Funds (Self Pool + Direct Bonus)
             const DIRECT_BONUS = config.fees.distributions.direct_referral_bonus;
-            // auto_pool_fee = 1000 (implicitly held by system)
+            console.log(`[DEBUG] Direct Bonus: ${DIRECT_BONUS} (Config: ${config.fees.distributions.direct_referral_bonus})`);
 
-            // Financial Service handles the "Waterfall" for the Matrix Fee
-            await financialService.processIncome(sponsorNodeId, MATRIX_FEE, 1, 'SELF', client);
-
-            // Credit Direct Referral Bonus to Sponsor's Node Wallet
             await walletService.creditNodeWallet(
                 sponsorNodeId,
                 DIRECT_BONUS,
@@ -92,44 +152,51 @@ export class NodeService {
                 client
             );
 
-            // Increment Direct Referrals Count for Sponsor
             await client.query(
                 'UPDATE Nodes SET direct_referrals_count = direct_referrals_count + 1 WHERE id = $1',
                 [sponsorNodeId]
             );
 
-            // Check if Sponsor should become ACTIVE (3 Referrals Condition)
             const sponsorCheck = await client.query('SELECT direct_referrals_count, status FROM Nodes WHERE id = $1', [sponsorNodeId]);
             if (sponsorCheck.rows[0].direct_referrals_count >= 3 && sponsorCheck.rows[0].status === 'INACTIVE') {
                 await client.query("UPDATE Nodes SET status = 'ACTIVE' WHERE id = $1", [sponsorNodeId]);
             }
 
-            // 4. Find Placement (Self Pool)
-            // Using updated findSelfPoolPlacement with client
+            // 4. Find Placement (Self Pool) - Existing Logic
             const { parentId: selfPoolParentId } = await this.findSelfPoolPlacement(sponsorNodeId, client);
 
-            // 5. Create Node
+            // 5. Find Placement (Auto Pool) - NEW SYNCHRONOUS LOGIC
+            // This is the "Strong Logic" requested by user.
+            const autoPoolParentId = await this.findGlobalPlacement(client);
+
+            // 6. Create Node (With BOTH Parents set immediately)
             const referralCode = `JSE-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
             const nodeRes = await client.query(
                 `INSERT INTO Nodes (referral_code, owner_user_id, sponsor_node_id, self_pool_parent_id, auto_pool_parent_id, status, wallet_balance)
-                 VALUES ($1, $2, $3, $4, NULL, 'INACTIVE', 0.00) RETURNING id`,
-                [referralCode, userId, sponsorNodeId, selfPoolParentId]
+                 VALUES ($1, $2, $3, $4, $5, 'INACTIVE', 0.00) RETURNING id`,
+                [referralCode, userId, sponsorNodeId, selfPoolParentId, autoPoolParentId]
             );
             const nodeId = nodeRes.rows[0].id;
 
-            // 6. Log Transaction
+            // 7. Log Transaction
             await client.query(
                 `INSERT INTO Transactions (wallet_owner_id, amount, type, description, status) 
                  VALUES ($1, $2, 'DEBIT', 'Node Purchase', 'COMPLETED')`,
                 [userId, config.fees.joining_fee]
             );
 
+            // 8. Process Financials (SELF POOL + AUTO POOL)
+            // Distribute Self Pool Commissions
+            await financialService.distributeNewNodeCommissions(nodeId, 'SELF', client);
+            // Distribute Auto Pool Commissions (Immediate)
+            await financialService.distributeNewNodeCommissions(nodeId, 'AUTO', client);
+
             await client.query('COMMIT');
 
-            // 7. Trigger Auto Pool Placement (Async)
-            await getQueue().add('NEW_REGISTRATION', { nodeId });
+            // 9. Process Rebirths - Handled Synchronously by FinancialService now.
+            // No background queue needed.
 
-            return { nodeId, referralCode, message: 'Node purchased successfully. Financial Distribution Initiated.' };
+            return { nodeId, referralCode, message: 'Node purchased successfully.' };
 
         } catch (error) {
             await client.query('ROLLBACK');
@@ -177,8 +244,6 @@ export class NodeService {
             if (rootRes.rows.length > 0) {
                 anchorNodeId = rootRes.rows[0].id;
             } else {
-                // Fallback or error? For now, fallback to generic Root if Auto Root missing, or just keep current (but that defeats purpose)
-                // Let's assume JSE-AUTO-ROOT exists as per seed. If not, try JSE-ROOT.
                 const fallbackRes = await query("SELECT id FROM Nodes WHERE referral_code = 'JSE-ROOT'");
                 if (fallbackRes.rows.length > 0) {
                     anchorNodeId = fallbackRes.rows[0].id;
@@ -186,12 +251,16 @@ export class NodeService {
             }
         }
 
+        // Use standard current_level for now (Schema update for split levels pending)
+        const levelColumn = 'current_level';
+
         // Recursive CTE to fetch 3 levels down
+
         const res = await query(
             `WITH RECURSIVE genealogy AS (
                 SELECT 
                     id, referral_code, owner_user_id, sponsor_node_id, self_pool_parent_id, auto_pool_parent_id, 
-                    direct_referrals_count, status, created_at, 
+                    direct_referrals_count, status, created_at, ${levelColumn} as current_level, 
                     1 as level, 
                     CAST(id AS VARCHAR) as path
                 FROM Nodes
@@ -199,12 +268,11 @@ export class NodeService {
                 UNION ALL
                 SELECT 
                     n.id, n.referral_code, n.owner_user_id, n.sponsor_node_id, n.self_pool_parent_id, n.auto_pool_parent_id, 
-                    n.direct_referrals_count, n.status, n.created_at, 
+                    n.direct_referrals_count, n.status, n.created_at, n.${levelColumn} as current_level, 
                     g.level + 1,
                     CAST(g.path || '->' || n.id AS VARCHAR)
                 FROM Nodes n
                 INNER JOIN genealogy g ON n.${parentColumn} = g.id
-                WHERE g.level < 4 
             )
             SELECT * FROM genealogy ORDER BY level, created_at`,
             [anchorNodeId]

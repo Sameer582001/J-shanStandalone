@@ -1,0 +1,10 @@
+--- NODE LEVEL STATUS (LEVEL 1 FOCUS) ---
+Node | Rank | Directs | L1 Revenue | L1 Completed?
+JSE-ROOT | 3 | 3 | 1500.00 | true
+JSE-ROOT | 3 | 3 | 1500.00 | true
+RB-SELF-XWHPEA | 1 | 0 | 0 | false
+RB-SELF-IX9LIO | 1 | 0 | 0 | false
+RB-AUTO-EMAN43 | 1 | 0 | 0 | false
+RB-AUTO-5Y7NVO | 1 | 0 | 0 | false
+RB-AUTO-ZN8J2T | 1 | 0 | 0 | false
+RB-AUTO-Z0JS1H | 1 | 0 | 0 | false

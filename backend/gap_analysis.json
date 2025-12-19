@@ -1,0 +1,90 @@
+[
+  {
+    "id": 24,
+    "code": "JSE-O79TFE",
+    "status": "EXISTS",
+    "self_parent": 7,
+    "auto_parent": 7,
+    "is_rebirth": false,
+    "origin": null,
+    "children_self": "3",
+    "children_auto": "3"
+  },
+  {
+    "id": 25,
+    "code": "JSE-OYFU5H",
+    "status": "EXISTS",
+    "self_parent": 8,
+    "auto_parent": 8,
+    "is_rebirth": false,
+    "origin": null,
+    "children_self": "0",
+    "children_auto": "0"
+  },
+  {
+    "id": 26,
+    "code": "JSE-92GUVP",
+    "status": "EXISTS",
+    "self_parent": 8,
+    "auto_parent": 8,
+    "is_rebirth": false,
+    "origin": null,
+    "children_self": "0",
+    "children_auto": "0"
+  },
+  {
+    "id": 27,
+    "code": "JSE-XDWBVC",
+    "status": "EXISTS",
+    "self_parent": 8,
+    "auto_parent": 8,
+    "is_rebirth": false,
+    "origin": null,
+    "children_self": "0",
+    "children_auto": "0"
+  },
+  {
+    "id": 28,
+    "code": "JSE-YIC7MQ",
+    "status": "EXISTS",
+    "self_parent": 9,
+    "auto_parent": 10,
+    "is_rebirth": false,
+    "origin": null,
+    "children_self": "3",
+    "children_auto": "3"
+  },
+  {
+    "id": 29,
+    "code": "RB-SELF-ZONKZV",
+    "status": "EXISTS",
+    "self_parent": 9,
+    "auto_parent": null,
+    "is_rebirth": true,
+    "origin": 3,
+    "children_self": "3",
+    "children_auto": "0"
+  },
+  {
+    "id": 30,
+    "code": "RB-AUTO-93DWT1",
+    "status": "EXISTS",
+    "self_parent": null,
+    "auto_parent": 10,
+    "is_rebirth": true,
+    "origin": 3,
+    "children_self": "0",
+    "children_auto": "3"
+  },
+  {
+    "id": 31,
+    "code": "JSE-78KBZH",
+    "status": "EXISTS",
+    "self_parent": 9,
+    "auto_parent": 10,
+    "is_rebirth": false,
+    "origin": null,
+    "children_self": "1",
+    "children_auto": "1"
+  }
+]

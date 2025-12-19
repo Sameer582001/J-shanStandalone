@@ -1,0 +1,12 @@
+--- DEPTH PAYMENT TEST ---
+Root: 59
+
+--- Processing Gen 1 (60) ---
+
+--- Processing Gen 2 (61) ---
+
+--- Processing Gen 3 (62) ---
+
+--- Root LevelProgress ---
+Level 1: Revenue 500.00 | Buckets: {"upgrade":500}
+Level 2: Revenue 2000.00 | Buckets: {"upgrade":2000}

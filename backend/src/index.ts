@@ -8,11 +8,14 @@ import payoutRoutes from './routes/payoutRoutes.js';
 import nodeRoutes from './routes/nodeRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import { initAutoPoolWorker } from './workers/AutoPoolWorker.js';
+import { CronService } from './services/CronService.js';
 
 const app = express();
 
 // Start Background Worker
 initAutoPoolWorker();
+const cronService = new CronService();
+// cronService.start(); // Disabled (Synchronous Logic Implemented)
 
 app.use(cors());
 app.use(express.json());

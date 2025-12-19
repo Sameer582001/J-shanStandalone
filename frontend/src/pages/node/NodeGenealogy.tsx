@@ -12,6 +12,7 @@ interface ApiTreeNode {
     direct_referrals_count: number;
     children: ApiTreeNode[];
     level: number;
+    current_level: number;
     // self_pool_parent_id / auto_pool_parent_id are implicit in structure
 }
 
@@ -28,7 +29,7 @@ const NodeGenealogy: React.FC = () => {
     const stats = useMemo(() => {
         const total = flatNodes.length;
         const active = flatNodes.filter(n => n.status === 'ACTIVE').length;
-        const depth = flatNodes.reduce((max, n) => Math.max(max, n.current_level), 0);
+        const depth = flatNodes.reduce((max, n) => Math.max(max, n.tree_layer), 0);
         return { total, active, depth };
     }, [flatNodes]);
 
@@ -42,7 +43,7 @@ const NodeGenealogy: React.FC = () => {
             direct_referrals_count: node.direct_referrals_count,
             is_child_node: false, // Default logic
             tree_layer: level,
-            current_level: node.level, // Or calculate absolute level
+            current_level: node.current_level, // Use strict Financial Level from DB
             is_journey_complete: node.status === 'ACTIVE', // Mapping for legacy prop
             parent_id: parentId,
             children: node.children?.map(c => c.id.toString()) || []

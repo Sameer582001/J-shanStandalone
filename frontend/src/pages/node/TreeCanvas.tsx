@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
+import { getLevelName, getLevelColor } from '../../utils/levelUtils';
 
 export interface TreeNodeData {
     id: string;
@@ -37,14 +38,13 @@ export default function TreeCanvas({
     nodes,
     highlightNodeId,
 
-    childNodeIds = [],
     onNodeClick,
 }: TreeCanvasProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [hoveredNode, setHoveredNode] = useState<TreeNodeData | null>(null);
     const [selectedNode, setSelectedNode] = useState<TreeNodeData | null>(null);
-    const [renderedNodes, setRenderedNodes] = useState<RenderedNode[]>([]);
+    // Removed renderedNodes state to prevent loop. Using memoized layout instead.
     const [scale, setScale] = useState(1);
     const [offset, setOffset] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
@@ -55,338 +55,258 @@ export default function TreeCanvas({
     // Responsive sizing based on screen width
     const [isMobile, setIsMobile] = useState(false);
 
+    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
     useEffect(() => {
-        const checkMobile = () => {
-            setIsMobile(window.innerWidth < 768);
+        const updateDimensions = () => {
+            if (containerRef.current) {
+                const { width, height } = containerRef.current.getBoundingClientRect();
+                setDimensions({ width, height });
+                setIsMobile(window.innerWidth < 768);
+            }
         };
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
+
+        updateDimensions();
+        window.addEventListener('resize', updateDimensions);
+        return () => window.removeEventListener('resize', updateDimensions);
+    }, []);
+
+    // Fix Passive Event Listener for Wheel (Zoom)
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const onWheel = (e: WheelEvent) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            setScale(prev => Math.max(0.3, Math.min(3, prev * delta)));
+        };
+
+        canvas.addEventListener('wheel', onWheel, { passive: false });
+        return () => canvas.removeEventListener('wheel', onWheel);
     }, []);
 
     const NODE_RADIUS = isMobile ? 18 : 25;
     const LEVEL_HEIGHT = isMobile ? 80 : 120;
     const HORIZONTAL_SPACING = isMobile ? 50 : 80;
 
-    useEffect(() => {
-        if (!canvasRef.current || !containerRef.current) return;
+    // --- 1. MEMOIZED LAYOUT CALCULATION (Independent of Offset) ---
+    const layout = React.useMemo(() => {
+        if (!dimensions.width || !dimensions.height) return [];
 
+        const { width } = dimensions;
+
+        // Helper: Build Tree Structure
+        const nodeMap = new Map<string, any>();
+        nodes.forEach(node => nodeMap.set(node.id, { ...node, children: [] }));
+        nodes.forEach(node => {
+            if (node.parent_id && nodeMap.has(node.parent_id)) {
+                nodeMap.get(node.parent_id).children.push(nodeMap.get(node.id));
+            }
+        });
+        nodeMap.forEach(node => {
+            node.children.sort((a: any, b: any) => (a.position || 0) - (b.position || 0));
+        });
+        const roots = Array.from(nodeMap.values()).filter(n => !n.parent_id || !nodeMap.has(n.parent_id));
+
+        if (roots.length === 0 && nodes.length > 0) return [];
+
+        // Helper: Calculate Positions
+        const positions = new Map<string, { x: number; y: number }>();
+        const calculatePositions = (curr: any, lvl: number, startX: number) => {
+            const y = lvl * LEVEL_HEIGHT + 60;
+            if (curr.children.length === 0) {
+                positions.set(curr.id, { x: startX, y });
+                return startX + HORIZONTAL_SPACING;
+            }
+            let currentX = startX;
+            const childrenX: number[] = [];
+            curr.children.forEach((child: any) => {
+                const childCenter = calculatePositions(child, lvl + 1, currentX);
+                childrenX.push(positions.get(child.id)?.x || currentX);
+                currentX = childCenter;
+            });
+            const nodeX = (childrenX[0] + childrenX[childrenX.length - 1]) / 2;
+            positions.set(curr.id, { x: nodeX, y });
+            return currentX;
+        };
+
+        let totalWidth = 0;
+        roots.forEach((root, idx) => {
+            totalWidth = calculatePositions(root, 0, totalWidth);
+            if (idx < roots.length - 1) totalWidth += HORIZONTAL_SPACING;
+        });
+
+        // Center the tree
+        const centerAdjustment = (width / scale - totalWidth) / 2;
+
+        const finalNodes: RenderedNode[] = [];
+        positions.forEach((pos, id) => {
+            const node = nodeMap.get(id);
+            if (node) {
+                finalNodes.push({
+                    node,
+                    x: pos.x + centerAdjustment,
+                    y: pos.y,
+                    radius: NODE_RADIUS
+                });
+            }
+        });
+        return finalNodes;
+    }, [nodes, dimensions.width, dimensions.height, scale, NODE_RADIUS, LEVEL_HEIGHT, HORIZONTAL_SPACING]);
+
+    // --- 2. DRAWING EFFECT (Depends on Layout + Offset) ---
+    useEffect(() => {
         const canvas = canvasRef.current;
-        const container = containerRef.current;
+        if (!canvas || !dimensions.width || !dimensions.height) return;
+
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
         const dpr = window.devicePixelRatio || 1;
-        const rect = container.getBoundingClientRect();
-
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
-        canvas.style.width = `${rect.width}px`;
-        canvas.style.height = `${rect.height}px`;
+        canvas.width = dimensions.width * dpr;
+        canvas.height = dimensions.height * dpr;
+        canvas.style.width = `${dimensions.width}px`;
+        canvas.style.height = `${dimensions.height}px`;
 
         ctx.scale(dpr, dpr);
+        ctx.clearRect(0, 0, dimensions.width, dimensions.height);
 
-        // --- Drawing Logic Inside Effect ---
+        ctx.save();
+        ctx.translate(offset.x, offset.y);
+        ctx.scale(scale, scale);
 
-        const buildTree = () => {
-            // Use 'any' to bypass strict intersection checks between TreeNodeData children (string[]) vs internal children (object[])
-            const nodeMap = new Map<string, any>();
-
-            nodes.forEach(node => {
-                nodeMap.set(node.id, { ...node, children: [] });
-            });
-
-            nodes.forEach(node => {
-                if (node.parent_id && nodeMap.has(node.parent_id)) {
-                    const parent = nodeMap.get(node.parent_id)!;
-                    parent.children.push(nodeMap.get(node.id)!);
-                }
-            });
-
-            // Sort children by position to maintain correct tree structure
-            nodeMap.forEach(node => {
-                node.children.sort((a: any, b: any) => (a.position || 0) - (b.position || 0));
-            });
-
-            const roots = Array.from(nodeMap.values()).filter(
-                node => !node.parent_id || !nodeMap.has(node.parent_id)
-            );
-
-            return roots.length > 0 ? roots : [];
-        };
-
-        const calculateNodePositions = (
-            node: any,
-            level: number,
-            x: number,
-            positions: Map<string, { x: number; y: number }>,
-            visited: Set<string> = new Set()
-        ): number => {
-            if (visited.has(node.id)) return x;
-            visited.add(node.id);
-
-            const y = level * LEVEL_HEIGHT + 60;
-
-            if (node.children.length === 0) {
-                positions.set(node.id, { x, y });
-                return x + HORIZONTAL_SPACING;
-            }
-
-            let currentX = x;
-            const childXPositions: number[] = [];
-
-            node.children.forEach((child: any) => {
-                const childCenterX = calculateNodePositions(
-                    child,
-                    level + 1,
-                    currentX,
-                    positions,
-                    visited
-                );
-                childXPositions.push((positions.get(child.id)?.x || currentX));
-                currentX = childCenterX;
-            });
-
-            const nodeX = childXPositions.length > 0
-                ? (childXPositions[0] + childXPositions[childXPositions.length - 1]) / 2
-                : x;
-
-            positions.set(node.id, { x: nodeX, y });
-
-            return currentX;
-        };
-
-        const drawTree = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
-            ctx.clearRect(0, 0, width, height);
-            ctx.save();
-            ctx.translate(offset.x, offset.y);
-            ctx.scale(scale, scale);
-
-            const roots = buildTree();
-
-            // If we have nodes but calculation failed (loops?), restore and return
-            if (nodes.length > 0 && roots.length === 0) {
-                ctx.restore();
-                return;
-            }
-
-            const positions = new Map<string, { x: number; y: number }>();
-            let totalWidth = 0;
-
-            roots.forEach((root, index) => {
-                const startX = totalWidth;
-                totalWidth = calculateNodePositions(root, 0, startX, positions);
-                if (index < roots.length - 1) {
-                    totalWidth += HORIZONTAL_SPACING * 2;
-                }
-            });
-
-            const centerOffset = (width / scale - totalWidth) / 2;
-            positions.forEach((pos) => {
-                pos.x += centerOffset;
-            });
-
-            const nodeMap = new Map<string, TreeNodeData>();
-            nodes.forEach(node => nodeMap.set(node.id, node));
-
-            // Draw connections
-            nodes.forEach(node => {
-                if (node.parent_id && positions.has(node.id) && positions.has(node.parent_id)) {
-                    const parentPos = positions.get(node.parent_id)!;
-                    const childPos = positions.get(node.id)!;
-
+        // Draw Connections
+        const nodeMap = new Map(layout.map(n => [n.node.id, n]));
+        layout.forEach(item => {
+            const node = item.node;
+            if (node.parent_id) {
+                const parent = nodeMap.get(node.parent_id);
+                if (parent) {
                     ctx.beginPath();
-                    ctx.moveTo(parentPos.x, parentPos.y);
-                    ctx.lineTo(childPos.x, childPos.y);
-                    ctx.strokeStyle = '#4b5563'; // Gray-600 for darker theme lines
+                    ctx.moveTo(parent.x, parent.y);
+                    ctx.lineTo(item.x, item.y);
+                    ctx.strokeStyle = '#4b5563';
                     ctx.lineWidth = 2;
                     ctx.stroke();
                 }
-            });
+            }
+        });
 
-            const rendered: RenderedNode[] = [];
-            positions.forEach((pos, nodeId) => {
-                const node = nodeMap.get(nodeId);
-                if (!node) return;
+        // Draw Nodes
+        layout.forEach(item => {
+            const { x, y, radius, node } = item;
+            let outer = '#374151'; let inner = '#030712'; let stroke = '#6b7280'; let width = 2;
+            if (node.status === 'ACTIVE') { outer = '#0f766e'; inner = '#042f2e'; }
+            else if (node.status === 'INACTIVE') { outer = '#991b1b'; inner = '#450a0a'; }
+            if (node.id === highlightNodeId) { stroke = '#a855f7'; width = 4; }
 
-                // Default Colors (Gray)
-                let outerColor = '#374151'; // Gray-700
-                let innerColor = '#030712'; // Gray-950
-                let strokeColor = '#6b7280'; // Gray-500 (Default Outer Ring)
-                let strokeWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
+            g.addColorStop(0, inner);
+            g.addColorStop(1, outer);
+            ctx.fillStyle = g;
+            ctx.fill();
+            ctx.strokeStyle = stroke;
+            ctx.lineWidth = width;
+            ctx.stroke();
 
-                // Status-based Colors
-                if (node.status === 'ACTIVE') {
-                    outerColor = '#0f766e'; // Teal-700
-                    innerColor = '#042f2e'; // Teal-950 (Darker)
-                } else if (node.status === 'INACTIVE') {
-                    outerColor = '#991b1b'; // Red-800
-                    innerColor = '#450a0a'; // Red-950 (Darker)
-                }
+            ctx.fillStyle = '#e5e7eb';
+            ctx.font = 'bold 10px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(node.member_name.split('-')[1]?.slice(0, 4) || node.member_name.slice(0, 4), x, y - 2);
+        });
 
-                // Highlight currently logged-in node with Purple Ring
-                if (nodeId === highlightNodeId) {
-                    strokeWidth = 4;
-                    strokeColor = '#a855f7'; // Purple-500
-                }
+        ctx.restore();
+    }, [layout, offset, scale, dimensions, highlightNodeId]);
 
-                ctx.beginPath();
-                ctx.arc(pos.x, pos.y, NODE_RADIUS, 0, Math.PI * 2);
-
-                // Create Radial Gradient (Center Darker -> Outer Status Color)
-                const gradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, NODE_RADIUS);
-                gradient.addColorStop(0, innerColor);
-                gradient.addColorStop(1, outerColor);
-
-                ctx.fillStyle = gradient;
-                ctx.fill();
-                ctx.strokeStyle = strokeColor;
-                ctx.lineWidth = strokeWidth;
-                ctx.stroke();
-
-                ctx.fillStyle = '#e5e7eb'; // Light text for node labels
-                ctx.font = 'bold 10px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-
-                const label = node.member_name.split('-')[1]?.slice(0, 4) || node.member_name.slice(0, 4);
-
-                ctx.fillText(label, pos.x, pos.y - 2);
-
-                rendered.push({ node, x: pos.x, y: pos.y, radius: NODE_RADIUS });
-            });
-
-            setRenderedNodes(rendered);
-            ctx.restore();
-        };
-
-        drawTree(ctx, rect.width, rect.height);
-    }, [nodes, scale, offset, highlightNodeId, childNodeIds, isMobile, NODE_RADIUS, LEVEL_HEIGHT, HORIZONTAL_SPACING]);
-
+    // --- 3. EVENT HANDLERS (Use Layout) ---
     const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
         if (!canvasRef.current) return;
-
         if (isDragging) {
             const dx = e.clientX - dragStart.x;
             const dy = e.clientY - dragStart.y;
-            setOffset(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+            setOffset(p => ({ x: p.x + dx, y: p.y + dy }));
             setDragStart({ x: e.clientX, y: e.clientY });
             return;
         }
 
         const rect = canvasRef.current.getBoundingClientRect();
-        const x = (e.clientX - rect.left - offset.x) / scale;
-        const y = (e.clientY - rect.top - offset.y) / scale;
+        const mouseX = (e.clientX - rect.left - offset.x) / scale;
+        const mouseY = (e.clientY - rect.top - offset.y) / scale;
 
-        let found = false;
-        for (const rendered of renderedNodes) {
-            const dx = x - rendered.x;
-            const dy = y - rendered.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (distance <= rendered.radius) {
-                setHoveredNode(rendered.node);
-                canvasRef.current.style.cursor = 'pointer';
-                found = true;
+        let foundNode: TreeNodeData | null = null;
+        for (const item of layout) {
+            const dist = Math.hypot(mouseX - item.x, mouseY - item.y);
+            if (dist <= item.radius) {
+                foundNode = item.node;
                 break;
             }
         }
 
-        if (!found) {
-            setHoveredNode(null);
-            canvasRef.current.style.cursor = isDragging ? 'grabbing' : 'grab';
+        // Optimized State Update
+        if (foundNode?.id !== hoveredNode?.id) {
+            setHoveredNode(foundNode);
+            canvasRef.current.style.cursor = foundNode ? 'pointer' : 'grab';
         }
     };
 
     const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
         setIsDragging(true);
         setDragStart({ x: e.clientX, y: e.clientY });
-        if (canvasRef.current) {
-            canvasRef.current.style.cursor = 'grabbing';
-        }
+        e.currentTarget.style.cursor = 'grabbing';
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
         setIsDragging(false);
-        if (canvasRef.current) {
-            canvasRef.current.style.cursor = 'grab';
-        }
+        e.currentTarget.style.cursor = 'grab';
     };
 
     const handleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-        if (!canvasRef.current) return;
-
-        const rect = canvasRef.current.getBoundingClientRect();
+        const rect = e.currentTarget.getBoundingClientRect();
         const x = (e.clientX - rect.left - offset.x) / scale;
         const y = (e.clientY - rect.top - offset.y) / scale;
 
-        for (const rendered of renderedNodes) {
-            const dx = x - rendered.x;
-            const dy = y - rendered.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (distance <= rendered.radius) {
-                setSelectedNode(rendered.node);
-                if (onNodeClick) {
-                    onNodeClick(rendered.node);
-                }
+        for (const item of layout) {
+            if (Math.hypot(x - item.x, y - item.y) <= item.radius) {
+                setSelectedNode(item.node);
+                onNodeClick?.(item.node);
                 break;
             }
         }
     };
 
-    const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
-        e.preventDefault();
-        const delta = e.deltaY > 0 ? 0.9 : 1.1;
-        setScale(prev => Math.max(0.3, Math.min(3, prev * delta)));
-    };
-
-    // Touch handlers for mobile
     const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
         if (e.touches.length === 1) {
-            // Single touch - start panning
             setIsDragging(true);
             setDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
             setLastTouch({ x: e.touches[0].clientX, y: e.touches[0].clientY });
         } else if (e.touches.length === 2) {
-            // Two touches - start pinch zoom
-            const touch1 = e.touches[0];
-            const touch2 = e.touches[1];
-            const distance = Math.hypot(
-                touch2.clientX - touch1.clientX,
-                touch2.clientY - touch1.clientY
+            const d = Math.hypot(
+                e.touches[1].clientX - e.touches[0].clientX,
+                e.touches[1].clientY - e.touches[0].clientY
             );
-            setTouchStart({
-                x: (touch1.clientX + touch2.clientX) / 2,
-                y: (touch1.clientY + touch2.clientY) / 2,
-                distance,
-            });
+            setTouchStart({ x: (e.touches[0].clientX + e.touches[1].clientX) / 2, y: (e.touches[0].clientY + e.touches[1].clientY) / 2, distance: d });
         }
     };
 
     const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
-        e.preventDefault();
+        // e.preventDefault() is handled by style={{ touchAction: 'none' }} and passive listener if needed, but here we just prevent propagation if valid
         if (e.touches.length === 1 && isDragging && lastTouch) {
-            // Single touch - panning
             const dx = e.touches[0].clientX - lastTouch.x;
             const dy = e.touches[0].clientY - lastTouch.y;
-            setOffset(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+            setOffset(p => ({ x: p.x + dx, y: p.y + dy }));
             setLastTouch({ x: e.touches[0].clientX, y: e.touches[0].clientY });
         } else if (e.touches.length === 2 && touchStart) {
-            // Two touches - pinch zoom
-            const touch1 = e.touches[0];
-            const touch2 = e.touches[1];
-            const distance = Math.hypot(
-                touch2.clientX - touch1.clientX,
-                touch2.clientY - touch1.clientY
+            const d = Math.hypot(
+                e.touches[1].clientX - e.touches[0].clientX,
+                e.touches[1].clientY - e.touches[0].clientY
             );
-            const scaleChange = distance / touchStart.distance;
-            setScale(prev => Math.max(0.3, Math.min(3, prev * scaleChange)));
-            setTouchStart({
-                x: (touch1.clientX + touch2.clientX) / 2,
-                y: (touch1.clientY + touch2.clientY) / 2,
-                distance,
-            });
+            const scaleChange = d / touchStart.distance;
+            setScale(p => Math.max(0.3, Math.min(3, p * scaleChange)));
+            setTouchStart(prev => prev ? { ...prev, distance: d } : null);
         }
     };
 
@@ -415,7 +335,6 @@ export default function TreeCanvas({
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
                 onClick={handleClick}
-                onWheel={handleWheel}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -469,7 +388,7 @@ export default function TreeCanvas({
                         </div>
                         <div className="flex justify-between">
                             <span>Level:</span>
-                            <span className="font-semibold text-accent-cyan">{hoveredNode.current_level}</span>
+                            <span className={`font-semibold ${getLevelColor(hoveredNode.current_level)}`}>{getLevelName(hoveredNode.current_level)}</span>
                         </div>
                     </div>
                 </div>

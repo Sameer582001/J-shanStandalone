@@ -1,0 +1,7 @@
+=== Checking Auto Pool Parents for 23-28 ===
+Node 23 (JSE-Y5AVM4) -> AutoParent: 8
+Node 24 (RB-SELF-XIGL4E) -> AutoParent: null
+Node 25 (RB-SELF-IIOYG5) -> AutoParent: null
+Node 26 (RB-AUTO-82ESD8) -> AutoParent: 8
+Node 27 (RB-AUTO-RFWLCE) -> AutoParent: 8
+Node 28 (JSE-WCVBY2) -> AutoParent: 9
