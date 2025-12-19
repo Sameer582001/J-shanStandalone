@@ -1,0 +1,32 @@
+[
+  {
+    "id": 8,
+    "referral_code": "JSE-6QVSCM",
+    "created_at": "2025-12-18T14:26:03.793Z",
+    "auto_pool_parent_id": 3
+  },
+  {
+    "id": 9,
+    "referral_code": "RB-SELF-NVHA6M",
+    "created_at": "2025-12-18T14:26:03.793Z",
+    "auto_pool_parent_id": null
+  },
+  {
+    "id": 10,
+    "referral_code": "RB-AUTO-NRMEQ3",
+    "created_at": "2025-12-18T14:26:03.793Z",
+    "auto_pool_parent_id": 3
+  },
+  {
+    "id": 25,
+    "referral_code": "JSE-OYFU5H",
+    "created_at": "2025-12-18T14:26:24.993Z",
+    "auto_pool_parent_id": 8
+  },
+  {
+    "id": 30,
+    "referral_code": "RB-AUTO-93DWT1",
+    "created_at": "2025-12-18T14:26:30.101Z",
+    "auto_pool_parent_id": 10
+  }
+]

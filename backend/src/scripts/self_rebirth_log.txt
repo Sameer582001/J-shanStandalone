@@ -1,0 +1,9 @@
+--- SELF POOL REBIRTH TEST ---
+Created Node: 26
+Injecting 5000 to Level 2 (SELF)...
+Memory Rebirths: 2
+DB Rebirths Found: 2
+Rebirth 27: Parent 26 (Should be descendent of 26)
+Rebirth 28: Parent 26 (Should be descendent of 26)
+Direct Children of 26: 2 (Should be 2 if placed under root)
+SUCCESS: Self Pool Rebirths placed correctly.

@@ -1,0 +1,9 @@
+Checking Auto Pool Balance...
+Nodes per Depth:
+Depth 1: 1
+Depth 2: 3
+Depth 3: 9
+Depth 4: 27
+Depth 5: 59
+Verifying Fill Order (Parent Saturation)...
+RESULT: STRUCTURE VALID (Fill Order Preserved).

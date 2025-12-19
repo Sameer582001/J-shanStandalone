@@ -1,0 +1,20 @@
+[
+  {
+    "id": 8,
+    "referral_code": "JSE-6QVSCM",
+    "self_pool_parent_id": 3,
+    "auto_pool_parent_id": 3
+  },
+  {
+    "id": 9,
+    "referral_code": "RB-SELF-NVHA6M",
+    "self_pool_parent_id": 3,
+    "auto_pool_parent_id": null
+  },
+  {
+    "id": 10,
+    "referral_code": "RB-AUTO-NRMEQ3",
+    "self_pool_parent_id": null,
+    "auto_pool_parent_id": 3
+  }
+]

@@ -1,0 +1,402 @@
+[
+  {
+    "id": 1,
+    "referral_code": "JSE-ROOT",
+    "created_at": "2025-12-18T14:47:22.756Z",
+    "self_pool_parent_id": null,
+    "auto_pool_parent_id": null,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 2,
+    "referral_code": "JSE-UUSM8F",
+    "created_at": "2025-12-18T14:48:18.362Z",
+    "self_pool_parent_id": 1,
+    "auto_pool_parent_id": 1,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 3,
+    "referral_code": "JSE-B3CPZM",
+    "created_at": "2025-12-18T14:48:20.132Z",
+    "self_pool_parent_id": 1,
+    "auto_pool_parent_id": 1,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 4,
+    "referral_code": "JSE-U69PA7",
+    "created_at": "2025-12-18T14:48:32.207Z",
+    "self_pool_parent_id": 1,
+    "auto_pool_parent_id": 1,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 5,
+    "referral_code": "JSE-ZMNODJ",
+    "created_at": "2025-12-18T14:48:34.171Z",
+    "self_pool_parent_id": 2,
+    "auto_pool_parent_id": 2,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 6,
+    "referral_code": "JSE-C3PGZF",
+    "created_at": "2025-12-18T14:48:35.645Z",
+    "self_pool_parent_id": 2,
+    "auto_pool_parent_id": 2,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 7,
+    "referral_code": "JSE-L0MXUH",
+    "created_at": "2025-12-18T14:48:37.710Z",
+    "self_pool_parent_id": 2,
+    "auto_pool_parent_id": 2,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 8,
+    "referral_code": "JSE-WBUCNH",
+    "created_at": "2025-12-18T14:48:39.107Z",
+    "self_pool_parent_id": 3,
+    "auto_pool_parent_id": 3,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 9,
+    "referral_code": "RB-SELF-OIX05P",
+    "created_at": "2025-12-18T14:48:39.107Z",
+    "self_pool_parent_id": 3,
+    "auto_pool_parent_id": null,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 10,
+    "referral_code": "RB-AUTO-N1VD10",
+    "created_at": "2025-12-18T14:48:39.107Z",
+    "self_pool_parent_id": null,
+    "auto_pool_parent_id": 3,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 11,
+    "referral_code": "JSE-6ARKAN",
+    "created_at": "2025-12-18T14:48:41.264Z",
+    "self_pool_parent_id": 3,
+    "auto_pool_parent_id": 3,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 12,
+    "referral_code": "JSE-DFH9A1",
+    "created_at": "2025-12-18T14:48:43.388Z",
+    "self_pool_parent_id": 4,
+    "auto_pool_parent_id": 4,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 13,
+    "referral_code": "JSE-AJG2W5",
+    "created_at": "2025-12-18T14:48:44.912Z",
+    "self_pool_parent_id": 4,
+    "auto_pool_parent_id": 4,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 14,
+    "referral_code": "JSE-FMWOBA",
+    "created_at": "2025-12-18T14:48:46.434Z",
+    "self_pool_parent_id": 4,
+    "auto_pool_parent_id": 4,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 15,
+    "referral_code": "JSE-J63XAC",
+    "created_at": "2025-12-18T14:48:48.010Z",
+    "self_pool_parent_id": 5,
+    "auto_pool_parent_id": 5,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 16,
+    "referral_code": "JSE-SU50PL",
+    "created_at": "2025-12-18T14:48:49.463Z",
+    "self_pool_parent_id": 5,
+    "auto_pool_parent_id": 5,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 17,
+    "referral_code": "JSE-5FIUVP",
+    "created_at": "2025-12-18T14:48:50.835Z",
+    "self_pool_parent_id": 5,
+    "auto_pool_parent_id": 5,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 18,
+    "referral_code": "JSE-TP2AXB",
+    "created_at": "2025-12-18T14:48:52.266Z",
+    "self_pool_parent_id": 6,
+    "auto_pool_parent_id": 6,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 19,
+    "referral_code": "RB-SELF-P9I8I8",
+    "created_at": "2025-12-18T14:48:52.266Z",
+    "self_pool_parent_id": 6,
+    "auto_pool_parent_id": null,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 20,
+    "referral_code": "RB-AUTO-7BY9AI",
+    "created_at": "2025-12-18T14:48:52.266Z",
+    "self_pool_parent_id": null,
+    "auto_pool_parent_id": 6,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 21,
+    "referral_code": "JSE-XFIOWF",
+    "created_at": "2025-12-18T14:48:54.296Z",
+    "self_pool_parent_id": 6,
+    "auto_pool_parent_id": 6,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 22,
+    "referral_code": "JSE-D91O0N",
+    "created_at": "2025-12-18T14:48:55.874Z",
+    "self_pool_parent_id": 7,
+    "auto_pool_parent_id": 7,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 23,
+    "referral_code": "JSE-T5AB2H",
+    "created_at": "2025-12-18T14:48:57.935Z",
+    "self_pool_parent_id": 7,
+    "auto_pool_parent_id": 7,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 24,
+    "referral_code": "JSE-JPPT1A",
+    "created_at": "2025-12-18T14:48:59.444Z",
+    "self_pool_parent_id": 7,
+    "auto_pool_parent_id": 7,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 25,
+    "referral_code": "JSE-8B48BM",
+    "created_at": "2025-12-18T14:49:00.825Z",
+    "self_pool_parent_id": 8,
+    "auto_pool_parent_id": 8,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 26,
+    "referral_code": "JSE-9RCZ6K",
+    "created_at": "2025-12-18T14:49:30.142Z",
+    "self_pool_parent_id": 8,
+    "auto_pool_parent_id": 8,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 27,
+    "referral_code": "JSE-KE7DE7",
+    "created_at": "2025-12-18T14:49:31.885Z",
+    "self_pool_parent_id": 8,
+    "auto_pool_parent_id": 8,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 28,
+    "referral_code": "JSE-QQ42FI",
+    "created_at": "2025-12-18T14:49:33.445Z",
+    "self_pool_parent_id": 9,
+    "auto_pool_parent_id": 10,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 29,
+    "referral_code": "RB-SELF-H8HNGD",
+    "created_at": "2025-12-18T14:49:33.445Z",
+    "self_pool_parent_id": 9,
+    "auto_pool_parent_id": null,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 30,
+    "referral_code": "RB-AUTO-043RJW",
+    "created_at": "2025-12-18T14:49:33.445Z",
+    "self_pool_parent_id": null,
+    "auto_pool_parent_id": 10,
+    "auto_children_count": "3"
+  },
+  {
+    "id": 31,
+    "referral_code": "JSE-TREE10",
+    "created_at": "2025-12-18T14:49:35.027Z",
+    "self_pool_parent_id": 9,
+    "auto_pool_parent_id": 10,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 32,
+    "referral_code": "JSE-UHLAZN",
+    "created_at": "2025-12-18T14:49:36.487Z",
+    "self_pool_parent_id": 11,
+    "auto_pool_parent_id": 11,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 33,
+    "referral_code": "JSE-CKS4WO",
+    "created_at": "2025-12-18T14:49:38.537Z",
+    "self_pool_parent_id": 11,
+    "auto_pool_parent_id": 11,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 34,
+    "referral_code": "JSE-1P8O10",
+    "created_at": "2025-12-18T14:49:39.940Z",
+    "self_pool_parent_id": 11,
+    "auto_pool_parent_id": 11,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 35,
+    "referral_code": "JSE-9D38JW",
+    "created_at": "2025-12-18T14:49:41.288Z",
+    "self_pool_parent_id": 12,
+    "auto_pool_parent_id": 12,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 36,
+    "referral_code": "JSE-XF59EE",
+    "created_at": "2025-12-18T14:49:42.651Z",
+    "self_pool_parent_id": 12,
+    "auto_pool_parent_id": 12,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 37,
+    "referral_code": "JSE-GGYUBT",
+    "created_at": "2025-12-18T14:49:44.557Z",
+    "self_pool_parent_id": 12,
+    "auto_pool_parent_id": 12,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 38,
+    "referral_code": "JSE-MMBORK",
+    "created_at": "2025-12-18T14:49:46.129Z",
+    "self_pool_parent_id": 13,
+    "auto_pool_parent_id": 13,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 39,
+    "referral_code": "RB-SELF-MOFBOM",
+    "created_at": "2025-12-18T14:49:46.129Z",
+    "self_pool_parent_id": 13,
+    "auto_pool_parent_id": null,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 40,
+    "referral_code": "RB-AUTO-KZ3QVF",
+    "created_at": "2025-12-18T14:49:46.129Z",
+    "self_pool_parent_id": null,
+    "auto_pool_parent_id": 13,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 41,
+    "referral_code": "JSE-M1BCJK",
+    "created_at": "2025-12-18T14:49:47.576Z",
+    "self_pool_parent_id": 13,
+    "auto_pool_parent_id": 13,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 42,
+    "referral_code": "JSE-0MIVQH",
+    "created_at": "2025-12-18T14:49:49.542Z",
+    "self_pool_parent_id": 14,
+    "auto_pool_parent_id": 14,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 43,
+    "referral_code": "JSE-C9KF0H",
+    "created_at": "2025-12-18T14:49:51.449Z",
+    "self_pool_parent_id": 14,
+    "auto_pool_parent_id": 14,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 44,
+    "referral_code": "JSE-6VSUP2",
+    "created_at": "2025-12-18T14:49:57.716Z",
+    "self_pool_parent_id": 14,
+    "auto_pool_parent_id": 14,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 45,
+    "referral_code": "JSE-Z317JA",
+    "created_at": "2025-12-18T14:49:59.637Z",
+    "self_pool_parent_id": 15,
+    "auto_pool_parent_id": 15,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 46,
+    "referral_code": "JSE-SEGDR2",
+    "created_at": "2025-12-18T14:50:01.327Z",
+    "self_pool_parent_id": 15,
+    "auto_pool_parent_id": 15,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 47,
+    "referral_code": "JSE-WLX75B",
+    "created_at": "2025-12-18T14:50:02.951Z",
+    "self_pool_parent_id": 15,
+    "auto_pool_parent_id": 15,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 48,
+    "referral_code": "JSE-DICMU3",
+    "created_at": "2025-12-18T14:50:04.664Z",
+    "self_pool_parent_id": 16,
+    "auto_pool_parent_id": 16,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 49,
+    "referral_code": "RB-SELF-JS38AG",
+    "created_at": "2025-12-18T14:50:04.664Z",
+    "self_pool_parent_id": 16,
+    "auto_pool_parent_id": null,
+    "auto_children_count": "0"
+  },
+  {
+    "id": 50,
+    "referral_code": "RB-AUTO-J1MROX",
+    "created_at": "2025-12-18T14:50:04.664Z",
+    "self_pool_parent_id": null,
+    "auto_pool_parent_id": 16,
+    "auto_children_count": "0"
+  }
+]

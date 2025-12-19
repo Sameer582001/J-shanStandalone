@@ -40,54 +40,160 @@
             "layers": [
                 1
             ],
+            "name": "Silver",
             "incoming_per_node": 500,
-            "upgrade_fee": 1000,
-            "rebirth": {
-                "cost": 0,
-                "count": 0
-            },
-            "upline_share": 200,
-            "system_fee": 0
+            "total_nodes": 3,
+            "total_revenue": 1500,
+            "buckets": [
+                {
+                    "name": "upgrade",
+                    "amount": 1000,
+                    "priority": 1
+                },
+                {
+                    "name": "rebirth",
+                    "amount": 0,
+                    "priority": 2
+                },
+                {
+                    "name": "system",
+                    "amount": 0,
+                    "priority": 3
+                },
+                {
+                    "name": "upline",
+                    "amount": 200,
+                    "priority": 4
+                },
+                {
+                    "name": "gifts",
+                    "amount": 0,
+                    "priority": 5
+                }
+            ],
+            "upgrade_depth": 2
         },
         "2": {
             "layers": [
                 2
             ],
+            "name": "Gold",
             "incoming_per_node": 1000,
-            "upgrade_fee": 3000,
+            "total_nodes": 9,
+            "total_revenue": 9000,
+            "buckets": [
+                {
+                    "name": "upgrade",
+                    "amount": 3000,
+                    "priority": 1
+                },
+                {
+                    "name": "rebirth",
+                    "amount": 1000,
+                    "priority": 2
+                },
+                {
+                    "name": "system",
+                    "amount": 2000,
+                    "priority": 3
+                },
+                {
+                    "name": "upline",
+                    "amount": 2000,
+                    "priority": 4
+                },
+                {
+                    "name": "gifts",
+                    "amount": 0,
+                    "priority": 5
+                }
+            ],
             "rebirth": {
                 "cost": 500,
                 "count": 2
             },
-            "upline_share": 2000,
-            "system_fee": 2000
+            "upgrade_depth": 5
         },
         "3": {
             "layers": [
                 3
             ],
+            "name": "Platinum",
             "incoming_per_node": 3000,
-            "upgrade_fee": 27000,
+            "total_nodes": 27,
+            "total_revenue": 81000,
+            "buckets": [
+                {
+                    "name": "upgrade",
+                    "amount": 27000,
+                    "priority": 1
+                },
+                {
+                    "name": "rebirth",
+                    "amount": 3000,
+                    "priority": 2
+                },
+                {
+                    "name": "system",
+                    "amount": 0,
+                    "priority": 3
+                },
+                {
+                    "name": "upline",
+                    "amount": 6000,
+                    "priority": 4
+                },
+                {
+                    "name": "gifts",
+                    "amount": 0,
+                    "priority": 5
+                }
+            ],
             "rebirth": {
                 "cost": 500,
                 "count": 6
             },
-            "upline_share": 6000,
-            "system_fee": 0
+            "upgrade_depth": 9
         },
         "4": {
             "layers": [
                 4
             ],
+            "name": "Diamond",
             "incoming_per_node": 27000,
-            "upgrade_fee": 0,
+            "total_nodes": 81,
+            "buckets": [
+                {
+                    "name": "upgrade",
+                    "amount": 0,
+                    "priority": 1
+                },
+                {
+                    "name": "rebirth",
+                    "amount": 27000,
+                    "priority": 2
+                },
+                {
+                    "name": "system",
+                    "amount": 27000,
+                    "priority": 3
+                },
+                {
+                    "name": "upline",
+                    "amount": 54000,
+                    "priority": 4
+                },
+                {
+                    "name": "gifts",
+                    "amount": 175300,
+                    "priority": 5
+                }
+            ],
             "rebirth": {
                 "cost": 500,
                 "count": 54
             },
-            "upline_share": 54000,
-            "system_fee": 27000,
-            "gifts": 175300
+            "upgrade_depth": 0
         }
     },
     "governance": {

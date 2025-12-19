@@ -141,6 +141,15 @@ CREATE TABLE Withdrawals (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- NodeWallet Table
+CREATE TABLE NodeWallet (
+    id SERIAL PRIMARY KEY,
+    node_id INTEGER NOT NULL,
+    amount NUMERIC(10, 2) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Indexes
 CREATE INDEX idx_users_mobile ON Users(mobile);
 CREATE INDEX idx_nodes_referral_code ON Nodes(referral_code);

@@ -7,16 +7,25 @@ const walletService = new WalletService();
 // NodeService will be instantiated inside methods or passed to avoid circular dependency if possible.
 // Or we accept we need it for Rebirths. 
 
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const config = require('../config/plan_config.json');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Config loaded lazily
+const loadConfig = () => {
+    const configPath = path.resolve(__dirname, '../config/plan_config.json');
+    return JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+};
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export class FinancialService {
+    public createdRebirthIds: number[] = [];
 
-    // Dynamic Config Loader replaces static LEVEL_CONFIG
     private getConfig(level: number) {
         const lvlStr = level.toString();
-        // @ts-ignore
+        const config = loadConfig();
         const levelData = config.waterfall_levels[lvlStr];
         if (!levelData) throw new Error(`Invalid level configuration: ${level}`);
 
@@ -28,51 +37,54 @@ export class FinancialService {
         // L2: Layer 2 pays to you? If 3x10, L2 has 9 nodes. 9 * 1000 = 9000.
         // Total Required matches 1500 and 9000 in previous static config.
 
-        // We need to construct buckets.
-        // Priorities: Upgrade(1), Rebirth(2), System(3), Upline(4), Profit(5).
+        // 40. Construct buckets from config
+        // The config file structure has changed to use a 'buckets' array directly.
+        // We should use that if available, otherwise fallback (or just error out if schema is strict).
 
-        const buckets = [
-            { name: 'upgrade', amount: levelData.upgrade_fee || 0, priority: 1 },
-            { name: 'rebirth', amount: (levelData.rebirth?.cost || 0) * (levelData.rebirth?.count || 0), priority: 2 },
-            { name: 'system', amount: levelData.system_fee || 0, priority: 3 },
-            { name: 'upline', amount: levelData.upline_share || 0, priority: 4 },
-            { name: 'gifts', amount: levelData.gifts || 0, priority: 5 },
-            // Profit is the remainder?
-            // Let's explicitly calculate expected total.
-            // Assuming 1 layer per level payment as per standard matrix, but config says "layers: [1]".
-            // Let's rely on calculating the specific amounts.
-            // PREVIOUS CODE HAD EXPLICIT PROFIT: L1=300, L2=1000.
-            // (1500 - 1000 - 0 - 0 - 200 = 300). Correct.
-            // (9000 - 3000 - 1000 - 2000 - 2000 = 1000). Correct.
-        ];
+        let buckets = [];
+        if (levelData.buckets && Array.isArray(levelData.buckets)) {
+            buckets = levelData.buckets;
+        } else {
+            // Fallback for old schema (if any)
+            buckets = [
+                { name: 'upgrade', amount: levelData.upgrade_fee || 0, priority: 1 },
+                { name: 'rebirth', amount: (levelData.rebirth?.cost || 0) * (levelData.rebirth?.count || 0), priority: 2 },
+                { name: 'system', amount: levelData.system_fee || 0, priority: 3 },
+                { name: 'upline', amount: levelData.upline_share || 0, priority: 4 },
+                { name: 'gifts', amount: levelData.gifts || 0, priority: 5 },
+            ];
+        }
 
         // Calculate Total Revenue
-        // Assumes current level gets paid by 'level' depth relative to it? 
-        // Or strictly strictly defined by 'incoming_per_node' * (Width ^ Level)?
-        // Config.matrix.width = 3. 
-        // L1 count = 3. Rev = 3 * 500 = 1500.
-        // L2 count = 9. Rev = 9 * 1000 = 9000.
-
         const width = config.matrix.width;
-        const nodeCount = Math.pow(width, level);
-        const totalRequired = nodeCount * levelData.incoming_per_node;
+        let totalNodes = 0;
 
-        const committed = buckets.reduce((acc, b) => acc + b.amount, 0);
-        const profit = totalRequired - committed;
-
-        // Add Profit Bucket
-        if (profit > 0) {
-            buckets.push({ name: 'profit', amount: profit, priority: 6 });
-        } else if (levelData.buckets?.find((b: any) => b.name === 'gifts')) {
-            // Handle L4 specific "Gifts" if present in JSON or inferred?
-            // The static config had "gifts" + "profit".
-            // If profit is huge, we just dump it in profit.
-            // If we want "Gifts", we need to start adding "gifts" to plan_config.json
+        if (levelData.layers && Array.isArray(levelData.layers)) {
+            totalNodes = levelData.layers.reduce((sum: number, layerDepth: number) => {
+                return sum + Math.pow(width, layerDepth);
+            }, 0);
+        } else {
+            totalNodes = Math.pow(width, level);
         }
+
+        const totalRequired = totalNodes * levelData.incoming_per_node;
+
+        // Calculate expected profit based on definitions
+        // (Just for internal validation, really we just pass the buckets back)
 
         // Special Case: Level 4 "Gifts". 
         // If profit is massive (e.g. L4), previous code split it.
         // For dynamic refactor, let's keep it simple: Everything else is Profit.
+
+        // Calculate Profit Bucket
+        const committed = buckets.reduce((acc: number, b: any) => acc + b.amount, 0);
+        const profit = totalRequired - committed;
+
+        if (profit > 0) {
+            buckets.push({ name: 'profit', amount: profit, priority: 100 });
+        }
+
+        console.log(`[DEBUG] getConfig Level ${level}: Expected Revenue ${totalRequired}. Buckets:`, buckets);
 
         return { buckets, totalRequired };
     }
@@ -84,7 +96,7 @@ export class FinancialService {
      * @param level The level for which this income is destined (e.g. Level 1 income)
      * @param client Database client for transaction
      */
-    async processIncome(nodeId: number, amount: number, level: number, poolType: 'SELF' | 'AUTO', client: any) {
+    async processIncome(nodeId: number, amount: number, level: number, poolType: 'SELF' | 'AUTO', client: any, depth: number = 0) {
         if (!client) throw new Error('Transaction client required');
         const q = client.query.bind(client);
 
@@ -96,40 +108,38 @@ export class FinancialService {
 
         let remaining = amount;
 
-        // 3. Process Buckets in Order
-        // We need to know how much has ALREADY been filled.
+        // 3. Process Buckets (Calculate & Update State FIRST)
         const buckets = progress.buckets || {};
-
-        // Get Config
         const config = this.getConfig(level);
         if (!config) throw new Error(`Invalid level configuration: ${level}`);
 
-        // Logic: Iterate priorities. 
-        // We track "global filled amount" against "global target"? 
-        // No, Spec says: "attempts to fill Bucket #1. Once... full, overflows to #2".
-        // This implies specific amounts per bucket.
+        const actions: { bucketName: string, fillAmount: number }[] = [];
 
         for (const bucket of config.buckets) {
             if (remaining <= 0) break;
-            if (bucket.amount === 0) continue; // Skip empty buckets
+            if (bucket.amount === 0) continue;
 
             const currentFilled = Number(buckets[bucket.name] || 0);
             const target = bucket.amount;
 
-            if (currentFilled >= target) continue; // Already full
+            if (currentFilled >= target) continue;
 
             const spaceRemaining = target - currentFilled;
             const fillAmount = Math.min(remaining, spaceRemaining);
 
-            // Action: Where does this money go?
-            await this.executeBucketAction(nodeId, bucket.name, fillAmount, level, poolType, client);
+            // Queue Action
+            console.log(`[DEBUG] Queueing Action: ${bucket.name} Amount: ${fillAmount}`);
+            actions.push({ bucketName: bucket.name, fillAmount });
 
-            // Update State
+            // Update State (In-Memory)
             buckets[bucket.name] = currentFilled + fillAmount;
             remaining -= fillAmount;
         }
 
-        // 4. Update Progress Record
+        console.log(`[DEBUG] Actions to Execute:`, actions);
+
+        // 4. Update Progress Record (COMMIT STATE BEFORE SIDE EFFECTS)
+        // This prevents infinite recursion where re-entrant calls see old empty buckets
         await q(
             `UPDATE LevelProgress 
              SET total_revenue = $1, buckets = $2, updated_at = CURRENT_TIMESTAMP 
@@ -137,14 +147,27 @@ export class FinancialService {
             [newRevenue, JSON.stringify(buckets), progress.id]
         );
 
-        // 5. Check Completion (Full Width) logic?
-        // User asked: "do not level up... until all layers... filled".
-        // That means we might have Paid the Upgrade Fee (Bucket 1 Full), but we don't trigger `Nodes.current_level++` here.
-        // We just verify "Upgrade Fee Paid". 
-        // Actual level up event should check Tree Structure.
+        // 5. Execute Side Effects
+        for (const action of actions) {
+            await this.executeBucketAction(nodeId, action.bucketName, action.fillAmount, level, poolType, client, depth);
+        }
+
+        // 6. Check Completion
+        if (newRevenue >= config.totalRequired) {
+            // Level Complete!
+            await q('UPDATE LevelProgress SET is_completed = TRUE WHERE id = $1', [progress.id]);
+
+            const levelCol = 'current_level'; // Temp
+            const nodeCheck = await q(`SELECT ${levelCol} as current_level FROM Nodes WHERE id = $1`, [nodeId]);
+            const currentLevel = nodeCheck.rows[0].current_level;
+
+            if (currentLevel <= level) {
+                await q(`UPDATE Nodes SET ${levelCol} = $1 WHERE id = $2`, [level + 1, nodeId]);
+            }
+        }
     }
 
-    private async executeBucketAction(nodeId: number, bucketName: string, amount: number, level: number, poolType: 'SELF' | 'AUTO', client: any) {
+    private async executeBucketAction(nodeId: number, bucketName: string, amount: number, level: number, poolType: 'SELF' | 'AUTO', client: any, depth: number) {
         const q = client.query.bind(client);
 
         // Fetch Node Info (for owner/upline/rebirth status)
@@ -152,26 +175,36 @@ export class FinancialService {
         const node = nodeRes.rows[0];
 
         switch (bucketName) {
-            case 'upgrade':
-                // Send to System/Upline? 
-                // Spec L1: "Held by System... Flows up to your 2nd Upline". 
-                // Wait, if it flows to Upline, it's NOT held by system?
-                // Actually, "Upgrade Fee" usually BECOMES the income for the Upline.
-                // L1 Upgrade (1000) -> Becomes "Level 2 Income" for the 2nd Upline?
-                // Spec L2 Source: "When... upgrade to Level 2... pay Rs 1000... to 2nd Upline".
-                // YES. This 1000 is passed up.
-                // Action: Identify Target Upline (Level 1 upgrade -> 2nd Upline).
-                // And call `processIncome(targetUpline, 1000, level + 1)`
-                // EXCEPT: We only do this if the bucket is FULL? 
-                // Or incrementally? "Flows up".
-                // If we do strictly "Waterfall", we pass it up as we get it.
-                await this.passUpUpgradeFee(nodeId, amount, level + 1, poolType, client);
+            case 'upgrade': {
+                // Custom Upgrade Logic (L1->2nd Upline, L2->5th Upline, etc.)
+                const upgradeConfig = loadConfig();
+                // We need the config for the CURRENT level to know the "Upgrade Rules"
+                // But usually, upgrades pay into the "Next Level".
+                // Wait, if I am L1 upgrading to L2, I pay L2 fee.
+                // Does 'upgrade_depth' live on Level 1 config or Level 2 config?
+                // Spec: "Silver Level... 1000 passed to 2nd upline".
+                // So Silver (L1) defines the rule: "When upgrading, pay 2nd upline".
+                // My plan_config has 'upgrade_depth' on the CURRENT level. Correct.
+
+                const levelConfig = upgradeConfig.waterfall_levels[level.toString()];
+                const targetUplineDepth = levelConfig.upgrade_depth || (level + 1); // Fallback to L+1 if undefined
+
+                // Identify Target Upline
+                const targetUplineId = await this.findUpline(nodeId, targetUplineDepth, poolType, client);
+
+                if (targetUplineId) {
+                    await this.processIncome(targetUplineId, amount, level + 1, poolType, client, depth);
+                } else {
+                    // No upline found (Root case or detached). System Profit?
+                    // console.log(`[Financial] No upline found for L${level} Upgrade. Amount: ${amount}`);
+                }
                 break;
+            }
 
             case 'upline':
                 // Commission Split (50/50 Parent/Grandparent)
                 // L1: 200 (100/100)
-                await this.distributeUplineCommission(nodeId, amount, poolType, client);
+                await this.distributeUplineCommission(nodeId, amount, poolType, client); // Upline check recursion? No, it's just wallet credit.
                 break;
 
             case 'profit':
@@ -179,14 +212,13 @@ export class FinancialService {
                 // Sterile Rule: If Rebirth, goes to Origin Node's Wallet
                 const targetNodeId = node.is_rebirth ? node.origin_node_id : nodeId;
 
-                // If rebirth, we need to ensure origin_node_id is valid? Schema guarantees it if is_rebirth is true.
-                // But let's be safe.
                 if (node.is_rebirth && !targetNodeId) {
-                    // Fallback to owner master? No, error.
                     throw new Error(`Rebirth Node ${nodeId} missing origin_node_id`);
                 }
 
-                await walletService.creditNodeWallet(targetNodeId!, amount, `Level ${level} (${poolType}) Profit from Node ${node.referral_code}`, client);
+                const profitConfig = loadConfig();
+                const levelName = profitConfig.waterfall_levels[level.toString()]?.name || `Level ${level}`;
+                await walletService.creditNodeWallet(targetNodeId!, amount, `${levelName} (${poolType}) Profit from Node ${node.referral_code}`, client);
                 break;
 
             case 'rebirth':
@@ -207,16 +239,35 @@ export class FinancialService {
                     if (count > 0) {
                         // Call NodeService to spawn (Need a way to import or use helper)
                         // For now, let's implement a simple spawner here or call a static helper
-                        await this.spawnRebirths(nodeId, count, client);
+                        await this.spawnRebirths(nodeId, count, poolType, client, depth);
                     }
                 }
                 break;
 
             case 'system':
+                // Credit Admin (User 1)
+                // We assume User 1 is the system admin.
+                // In a real system, we might query WHERE role='ADMIN'.
+                const adminId = 1;
+                if (amount > 0) {
+                    await walletService.creditFunds(adminId, amount, `System Fee from Node ${node.referral_code} (Level ${level})`, client);
+                }
+                break;
+
             case 'gifts':
-                // System Profit / Admin Wallet
-                // Implement credit to Admin/System User equivalent (User 1?)
-                // skipping for now or just logging.
+                // Gifts are physical rewards given by Admin (not cash to user).
+                // The money is deducted and sent to the System/Admin to fund the gift purchase.
+                const systemDistId = 1; // Admin User ID
+                if (amount > 0) {
+                    await walletService.creditFunds(systemDistId, amount, `Level ${level} Gift Fund Deduction from Node ${node.referral_code}`, client);
+                }
+                break;
+
+            case 'profit':
+                // Profit goes to the Node's Wallet
+                if (amount > 0) {
+                    await walletService.creditNodeWallet(nodeId, amount, `Level ${level} (${poolType}) Profit`, client);
+                }
                 break;
         }
     }
@@ -236,7 +287,7 @@ export class FinancialService {
         return insert.rows[0];
     }
 
-    private async passUpUpgradeFee(fromNodeId: number, amount: number, targetLevel: number, poolType: 'SELF' | 'AUTO', client: any) {
+    private async passUpUpgradeFee(fromNodeId: number, amount: number, targetLevel: number, poolType: 'SELF' | 'AUTO', client: any, depth: number) {
         // Logic: Level 2 Fee (targetLevel 2) goes to 2nd Upline.
         // Level 3 Fee goes to 3rd Upline.
         // Target Upline Index = targetLevel.
@@ -249,7 +300,7 @@ export class FinancialService {
         if (uplineId) {
             // Recursive Pass-Up
             // The 2nd Upline receives this as "Level 2 Income" in the SAME POOL.
-            await this.processIncome(uplineId, amount, targetLevel, poolType, client);
+            await this.processIncome(uplineId, amount, targetLevel, poolType, client, depth);
         } else {
             // No upline (e.g. Root), goes to System?
         }
@@ -269,13 +320,27 @@ export class FinancialService {
     }
 
     private async distributeUplineCommission(nodeId: number, amount: number, poolType: 'SELF' | 'AUTO', client: any) {
-        const parent = await this.findUpline(nodeId, 1, poolType, client);
-        const grandparent = await this.findUpline(nodeId, 2, poolType, client);
+        // As per user clarification: Parent = Direct Referrer (Sponsor), Grandparent = Sponsor's Sponsor.
+        // This applies regardless of poolType.
+        const parent = await this.findSponsor(nodeId, 1, client);
+        const grandparent = await this.findSponsor(nodeId, 2, client);
 
         const split = amount / 2;
 
         if (parent) await this.creditCommission(parent, split, `Upline Comm (Parent) - ${poolType}`, client);
         if (grandparent) await this.creditCommission(grandparent, split, `Upline Comm (GP) - ${poolType}`, client);
+    }
+
+    private async findSponsor(nodeId: number, generations: number, client: any): Promise<number | null> {
+        const q = client.query.bind(client);
+        let currentId = nodeId;
+
+        for (let i = 0; i < generations; i++) {
+            const res = await q('SELECT sponsor_node_id FROM Nodes WHERE id = $1', [currentId]);
+            if (res.rows.length === 0 || !res.rows[0].sponsor_node_id) return null;
+            currentId = res.rows[0].sponsor_node_id;
+        }
+        return currentId;
     }
 
     private async creditCommission(nodeId: number, amount: number, desc: string, client: any) {
@@ -289,54 +354,106 @@ export class FinancialService {
         return res.rows[0]?.owner_user_id; // Validation needed?
     }
 
-    private async spawnRebirths(originalNodeId: number, count: number, client: any) {
-        // Logic to spawn 'count' nodes.
-        // They need to be placed in the tree.
-        // This requires 'NodeService.purchaseNode' logic essentially, but purely internal.
-        // Implementation:
-        // INSERT into Nodes ... is_rebirth = TRUE, origin_node_id = originalNodeId
-        // Find Placement (Self Pool of originalNodeId?)
-        // Spec: "placed in the Main Node's own tree (Self Pool)".
-
+    private async spawnRebirths(originalNodeId: number, count: number, poolType: 'SELF' | 'AUTO', client: any, depth: number) {
         const q = client.query.bind(client);
         const nodeRes = await q('SELECT owner_user_id FROM Nodes WHERE id = $1', [originalNodeId]);
         const ownerId = nodeRes.rows[0].owner_user_id;
 
-        // We need a helper for placement. Since `NodeService` is complex, 
-        // we might duplicate the placement query here for simplicity or refactor NodeService to be static/shared.
-        // Copying BFS Logic for now to ensure atomic transaction within this Service.
-
         for (let i = 0; i < count; i++) {
-            const parentId = await this.findPlacement(originalNodeId, client);
-            const refCode = `RB-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+            const refCode = `RB-${poolType}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
-            await q(
-                `INSERT INTO Nodes (referral_code, owner_user_id, sponsor_node_id, self_pool_parent_id, status, wallet_balance, is_rebirth, origin_node_id)
-                  VALUES ($1, $2, $3, $4, 'ACTIVE', 0.00, TRUE, $5)`,
-                [refCode, ownerId, originalNodeId, parentId, originalNodeId]
+            let selfParentId = null;
+            let autoParentId = null;
+
+            if (poolType === 'SELF') {
+                console.log(`[DEBUG] Finding Lock Placement (SELF) for ${originalNodeId}...`);
+                // LOCK & PLACE in Self Pool
+                selfParentId = await this.findPlacementWithLock(originalNodeId, 'SELF', client);
+            } else {
+                console.log(`[DEBUG] Finding Lock Placement (AUTO)...`);
+                // LOCK & PLACE in Auto Pool
+                autoParentId = await this.findPlacementWithLock(null, 'AUTO', client);
+            }
+
+            console.log(`[DEBUG] Inserting Rebirth Node ${refCode}...`);
+            // Insert with CONFIRMED parent (No orphans)
+            const insertRes = await q(
+                `INSERT INTO Nodes (referral_code, owner_user_id, sponsor_node_id, self_pool_parent_id, auto_pool_parent_id, status, wallet_balance, is_rebirth, origin_node_id)
+                 VALUES ($1, $2, $3, $4, $5, 'ACTIVE', 0.00, TRUE, $6) RETURNING id`,
+                [refCode, ownerId, originalNodeId, selfParentId, autoParentId, originalNodeId]
             );
-            // Queue Auto Pool? "Rebirth Nodes travel the exact same journey (Levels 1-4) and earn..."
-            // Yes, they enter Auto Pool ideally.
-            // We can't trigger BullMQ here easily without redis connection? 
-            // We can insert a task into a database queue or assume NodeService handles it?
-            // For this MVP, let's omit AutoPool Trigger or handle it later.
-            // Rebirths in Self Pool is the key requirement.
+            const newNodeId = insertRes.rows[0].id;
+
+            console.log(`[DEBUG] Distributing Comm for Rebirth ${newNodeId}... (Depth ${depth})`);
+            // RECURSIVE DISTRIBUTION (Synchronous)
+            await this.distributeNewNodeCommissions(newNodeId, poolType, client, depth + 1);
         }
     }
 
-    private async findPlacement(rootId: number, client: any): Promise<number> {
-        // Simple BFS from rootId
+    private async findPlacementWithLock(rootId: number | null, type: 'SELF' | 'AUTO', client: any): Promise<number> {
         const q = client.query.bind(client);
-        const queue = [rootId];
-        while (queue.length > 0) {
-            const curr = queue.shift()!;
-            const res = await q('SELECT COUNT(*) as count FROM Nodes WHERE self_pool_parent_id = $1', [curr]);
-            if (parseInt(res.rows[0].count) < 3) return curr;
+        let startNodeId = rootId;
 
-            const children = await q('SELECT id FROM Nodes WHERE self_pool_parent_id = $1 ORDER BY created_at ASC', [curr]);
-            for (const r of children.rows) queue.push(r.id);
+        if (type === 'AUTO') {
+            const rootRes = await q("SELECT id FROM Nodes WHERE referral_code = 'JSE-ROOT'");
+            if (rootRes.rows.length > 0) startNodeId = rootRes.rows[0].id;
+            else {
+                const altRes = await q("SELECT id FROM Nodes WHERE referral_code = 'JSE-AUTO-ROOT'");
+                if (altRes.rows.length > 0) startNodeId = altRes.rows[0].id;
+                else throw new Error("No Global Root found for Auto Pool Rebirth");
+            }
         }
-        return rootId; // Should not happen
+
+        if (!startNodeId) throw new Error("Invalid Root for Placement");
+
+        const queue = [startNodeId];
+        const parentCol = type === 'AUTO' ? 'auto_pool_parent_id' : 'self_pool_parent_id';
+
+        while (queue.length > 0) {
+            const currentId = queue.shift()!;
+
+            // LOCK PARENT ROW
+            await q('SELECT id FROM Nodes WHERE id = $1 FOR UPDATE', [currentId]);
+
+            const res = await q(`SELECT COUNT(*) as count FROM Nodes WHERE ${parentCol} = $1`, [currentId]);
+            const count = parseInt(res.rows[0].count);
+
+            if (count < 3) return currentId;
+
+            const childrenRes = await q(`SELECT id FROM Nodes WHERE ${parentCol} = $1 ORDER BY created_at ASC, id ASC`, [currentId]);
+            for (const row of childrenRes.rows) queue.push(row.id);
+        }
+        throw new Error('Placement failed: Tree is full or infinite loop detected');
     }
 
+    /**
+     * Distributes entry fee when a new node is added.
+     * CRITICAL: Each node pays ONLY ₹500 to its immediate parent (Gen 1) for Silver level.
+     * The upgrade cascade (Silver→Gold→Platinum→Diamond) handles all upward flow automatically.
+     * 
+     * @param newNodeId The new node ID
+     * @param poolType 'SELF' or 'AUTO'
+     * @param client Database client
+     */
+    async distributeNewNodeCommissions(newNodeId: number, poolType: 'SELF' | 'AUTO', client: any, depth: number = 0) {
+        if (!client) throw new Error('Client required');
+
+        console.error(`[DEBUG] Distribute Entry Fee for Node ${newNodeId} (${poolType})`);
+
+        // Every node entry pays ₹500 to immediate parent for Silver level (Level 1)
+        // The rest flows naturally through upgrade cascade:
+        // Silver complete → pays to 2nd upline (Gold)
+        // Gold complete → pays to 5th upline (Platinum)
+        // Platinum complete → pays to 9th upline (Diamond)
+
+        const immediateParent = await this.findUpline(newNodeId, 1, poolType, client);
+
+        if (immediateParent) {
+            // Credit ₹500 to parent's Silver level (Level 1) bucket
+            await this.processIncome(immediateParent, 500, 1, poolType, client, depth + 1);
+        } else {
+            // No parent found (root node case) - entry fee goes to system
+            console.error(`[Financial] No parent found for Node ${newNodeId}. Entry fee absorbed by system.`);
+        }
+    }
 }
