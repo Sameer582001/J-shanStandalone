@@ -1,0 +1,75 @@
+=== Gap for Node 2 (195-232) ===
+ID: 196 | Amount: 250.00 | User: 2 | Desc: Direct Referral Bonus from JSE-ROOT
+ID: 197 | Amount: 1750.00 | User: 2 | Desc: Node Purchase
+ID: 198 | Amount: 100.00 | User: 2 | Desc: Upline Comm (Parent) - SELF
+ID: 199 | Amount: 300.00 | User: 2 | Desc: Silver (SELF) Profit from Node JSE-GO305R
+ID: 200 | Amount: 100.00 | User: 2 | Desc: Upline Comm (Parent) - AUTO
+ID: 201 | Amount: 300.00 | User: 2 | Desc: Silver (AUTO) Profit from Node JSE-GO305R
+ID: 202 | Amount: 250.00 | User: 2 | Desc: Direct Referral Bonus from JSE-ROOT
+ID: 203 | Amount: 1750.00 | User: 2 | Desc: Node Purchase
+ID: 204 | Amount: 250.00 | User: 2 | Desc: Upline Comm (Parent) - SELF
+ID: 205 | Amount: 250.00 | User: 2 | Desc: Upline Comm (Parent) - AUTO
+ID: 206 | Amount: 250.00 | User: 2 | Desc: Direct Referral Bonus from JSE-ROOT
+ID: 207 | Amount: 1750.00 | User: 2 | Desc: Node Purchase
+ID: 208 | Amount: 250.00 | User: 2 | Desc: Upline Comm (Parent) - SELF
+ID: 209 | Amount: 250.00 | User: 2 | Desc: Upline Comm (Parent) - AUTO
+ID: 210 | Amount: 250.00 | User: 2 | Desc: Direct Referral Bonus from JSE-ROOT
+ID: 211 | Amount: 1750.00 | User: 2 | Desc: Node Purchase
+ID: 212 | Amount: 100.00 | User: 2 | Desc: Upline Comm (Parent) - SELF
+ID: 213 | Amount: 300.00 | User: 2 | Desc: Silver (SELF) Profit from Node JSE-93DJLD
+ID: 214 | Amount: 100.00 | User: 2 | Desc: Upline Comm (Parent) - AUTO
+ID: 215 | Amount: 300.00 | User: 2 | Desc: Silver (AUTO) Profit from Node JSE-93DJLD
+ID: 216 | Amount: 250.00 | User: 2 | Desc: Direct Referral Bonus from JSE-ROOT
+ID: 217 | Amount: 1750.00 | User: 2 | Desc: Node Purchase
+ID: 218 | Amount: 250.00 | User: 2 | Desc: Upline Comm (Parent) - SELF
+ID: 219 | Amount: 250.00 | User: 2 | Desc: Upline Comm (Parent) - AUTO
+ID: 220 | Amount: 250.00 | User: 2 | Desc: Direct Referral Bonus from JSE-ROOT
+ID: 221 | Amount: 1750.00 | User: 2 | Desc: Node Purchase
+ID: 222 | Amount: 250.00 | User: 2 | Desc: Upline Comm (Parent) - SELF
+ID: 223 | Amount: 250.00 | User: 2 | Desc: Upline Comm (Parent) - AUTO
+ID: 224 | Amount: 250.00 | User: 2 | Desc: Direct Referral Bonus from JSE-ROOT
+ID: 225 | Amount: 1750.00 | User: 2 | Desc: Node Purchase
+ID: 226 | Amount: 100.00 | User: 2 | Desc: Upline Comm (Parent) - SELF
+ID: 227 | Amount: 300.00 | User: 2 | Desc: Silver (SELF) Profit from Node JSE-DNAW7V
+ID: 228 | Amount: 100.00 | User: 2 | Desc: Upline Comm (Parent) - AUTO
+ID: 229 | Amount: 300.00 | User: 2 | Desc: Silver (AUTO) Profit from Node JSE-DNAW7V
+ID: 230 | Amount: 250.00 | User: 2 | Desc: Direct Referral Bonus from JSE-ROOT
+ID: 231 | Amount: 1750.00 | User: 2 | Desc: Node Purchase
+
+=== Gap for Node 3 (302-339) ===
+ID: 303 | Amount: 250.00 | User: 2 | Desc: Direct Referral Bonus from JSE-ROOT
+ID: 304 | Amount: 1750.00 | User: 2 | Desc: Node Purchase
+ID: 305 | Amount: 100.00 | User: 2 | Desc: Upline Comm (Parent) - SELF
+ID: 306 | Amount: 300.00 | User: 2 | Desc: Silver (SELF) Profit from Node JSE-3KYSQF
+ID: 307 | Amount: 100.00 | User: 2 | Desc: Upline Comm (Parent) - AUTO
+ID: 308 | Amount: 300.00 | User: 2 | Desc: Silver (AUTO) Profit from Node JSE-3KYSQF
+ID: 309 | Amount: 250.00 | User: 2 | Desc: Direct Referral Bonus from JSE-ROOT
+ID: 310 | Amount: 1750.00 | User: 2 | Desc: Node Purchase
+ID: 311 | Amount: 250.00 | User: 2 | Desc: Upline Comm (Parent) - SELF
+ID: 312 | Amount: 250.00 | User: 2 | Desc: Upline Comm (Parent) - AUTO
+ID: 313 | Amount: 250.00 | User: 2 | Desc: Direct Referral Bonus from JSE-ROOT
+ID: 314 | Amount: 1750.00 | User: 2 | Desc: Node Purchase
+ID: 315 | Amount: 250.00 | User: 2 | Desc: Upline Comm (Parent) - SELF
+ID: 316 | Amount: 250.00 | User: 2 | Desc: Upline Comm (Parent) - AUTO
+ID: 317 | Amount: 250.00 | User: 2 | Desc: Direct Referral Bonus from JSE-ROOT
+ID: 318 | Amount: 1750.00 | User: 2 | Desc: Node Purchase
+ID: 319 | Amount: 100.00 | User: 2 | Desc: Upline Comm (Parent) - SELF
+ID: 320 | Amount: 300.00 | User: 2 | Desc: Silver (SELF) Profit from Node JSE-VLRI4K
+ID: 321 | Amount: 100.00 | User: 2 | Desc: Upline Comm (Parent) - AUTO
+ID: 322 | Amount: 300.00 | User: 2 | Desc: Silver (AUTO) Profit from Node JSE-VLRI4K
+ID: 323 | Amount: 250.00 | User: 2 | Desc: Direct Referral Bonus from JSE-ROOT
+ID: 324 | Amount: 1750.00 | User: 2 | Desc: Node Purchase
+ID: 325 | Amount: 250.00 | User: 2 | Desc: Upline Comm (Parent) - SELF
+ID: 326 | Amount: 250.00 | User: 2 | Desc: Upline Comm (Parent) - AUTO
+ID: 327 | Amount: 250.00 | User: 2 | Desc: Direct Referral Bonus from JSE-ROOT
+ID: 328 | Amount: 1750.00 | User: 2 | Desc: Node Purchase
+ID: 329 | Amount: 250.00 | User: 2 | Desc: Upline Comm (Parent) - SELF
+ID: 330 | Amount: 250.00 | User: 2 | Desc: Upline Comm (Parent) - AUTO
+ID: 331 | Amount: 250.00 | User: 2 | Desc: Direct Referral Bonus from JSE-ROOT
+ID: 332 | Amount: 1750.00 | User: 2 | Desc: Node Purchase
+ID: 333 | Amount: 100.00 | User: 2 | Desc: Upline Comm (Parent) - SELF
+ID: 334 | Amount: 300.00 | User: 2 | Desc: Silver (SELF) Profit from Node JSE-VUV711
+ID: 335 | Amount: 100.00 | User: 2 | Desc: Upline Comm (Parent) - AUTO
+ID: 336 | Amount: 300.00 | User: 2 | Desc: Silver (AUTO) Profit from Node JSE-VUV711
+ID: 337 | Amount: 250.00 | User: 2 | Desc: Direct Referral Bonus from JSE-ROOT
+ID: 338 | Amount: 1750.00 | User: 2 | Desc: Node Purchase

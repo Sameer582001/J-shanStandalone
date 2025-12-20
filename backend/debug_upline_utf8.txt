@@ -1,0 +1,6 @@
+=== Debugging Upline Logic for Node 2 ===
+Parent Found: 1
+Grandparent Found: null
+Split Amount: 1000
+-> WOULD Credit Parent 1: 1000
+-> Grandparent invalid, skipping credit.

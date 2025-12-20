@@ -127,13 +127,22 @@ export class FinancialService {
             const spaceRemaining = target - currentFilled;
             const fillAmount = Math.min(remaining, spaceRemaining);
 
-            // Queue Action
-            console.log(`[DEBUG] Queueing Action: ${bucket.name} Amount: ${fillAmount}`);
-            actions.push({ bucketName: bucket.name, fillAmount });
-
             // Update State (In-Memory)
-            buckets[bucket.name] = currentFilled + fillAmount;
+            const newFilled = currentFilled + fillAmount;
+            buckets[bucket.name] = newFilled;
             remaining -= fillAmount;
+
+            // ATOMIC PAYOUT LOGIC:
+            // Only trigger action if the bucket JUST completed (reached target).
+            // We verify this because valid buckets pass the `if (currentFilled >= target) continue` check above.
+            if (newFilled >= target && fillAmount > 0) {
+                console.log(`[DEBUG] Bucket ${bucket.name} Completed! Queueing Full Action: ${target}`);
+                // Payout the FULL target amount in one go
+                // This ensures "Gold Upline" is 1000 in one transaction, not 4x250.
+                actions.push({ bucketName: bucket.name, fillAmount: target });
+            } else {
+                console.log(`[DEBUG] Bucket ${bucket.name} Filling... (${newFilled}/${target}). Deferring Payout.`);
+            }
         }
 
         console.log(`[DEBUG] Actions to Execute:`, actions);
@@ -204,7 +213,7 @@ export class FinancialService {
             case 'upline':
                 // Commission Split (50/50 Parent/Grandparent)
                 // L1: 200 (100/100)
-                await this.distributeUplineCommission(nodeId, amount, poolType, client); // Upline check recursion? No, it's just wallet credit.
+                await this.distributeUplineCommission(nodeId, node.referral_code, amount, poolType, client);
                 break;
 
             case 'profit':
@@ -319,7 +328,7 @@ export class FinancialService {
         return currentId;
     }
 
-    private async distributeUplineCommission(nodeId: number, amount: number, poolType: 'SELF' | 'AUTO', client: any) {
+    private async distributeUplineCommission(nodeId: number, sourceCode: string, amount: number, poolType: 'SELF' | 'AUTO', client: any) {
         // As per user clarification: Parent = Direct Referrer (Sponsor), Grandparent = Sponsor's Sponsor.
         // This applies regardless of poolType.
         const parent = await this.findSponsor(nodeId, 1, client);
@@ -327,8 +336,8 @@ export class FinancialService {
 
         const split = amount / 2;
 
-        if (parent) await this.creditCommission(parent, split, `Upline Comm (Parent) - ${poolType}`, client);
-        if (grandparent) await this.creditCommission(grandparent, split, `Upline Comm (GP) - ${poolType}`, client);
+        if (parent) await this.creditCommission(parent, split, `Upline Comm (Parent) - ${poolType} from Node ${sourceCode}`, client);
+        if (grandparent) await this.creditCommission(grandparent, split, `Upline Comm (GP) - ${poolType} from Node ${sourceCode}`, client);
     }
 
     private async findSponsor(nodeId: number, generations: number, client: any): Promise<number | null> {

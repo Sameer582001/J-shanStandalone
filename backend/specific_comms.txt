@@ -1,0 +1,33 @@
+=== Commission History for Nodes 2 & 3 ===
+
+--- Searching for 4IB6ZS ---
+ID: 17 | Amount: 300.00 | User: 2 | Desc: Silver (SELF) Profit from Node JSE-4IB6ZS | Date: Fri Dec 19 2025 22:50:05 GMT+0530 (India Standard Time)
+ID: 19 | Amount: 300.00 | User: 2 | Desc: Silver (AUTO) Profit from Node JSE-4IB6ZS | Date: Fri Dec 19 2025 22:50:05 GMT+0530 (India Standard Time)
+ID: 176 | Amount: 500.00 | User: 1 | Desc: System Fee from Node JSE-4IB6ZS (Level 2) | Date: Fri Dec 19 2025 22:59:47 GMT+0530 (India Standard Time)
+ID: 177 | Amount: 500.00 | User: 1 | Desc: System Fee from Node JSE-4IB6ZS (Level 2) | Date: Fri Dec 19 2025 22:59:47 GMT+0530 (India Standard Time)
+ID: 180 | Amount: 500.00 | User: 1 | Desc: System Fee from Node JSE-4IB6ZS (Level 2) | Date: Fri Dec 19 2025 22:59:49 GMT+0530 (India Standard Time)
+ID: 181 | Amount: 500.00 | User: 1 | Desc: System Fee from Node JSE-4IB6ZS (Level 2) | Date: Fri Dec 19 2025 22:59:49 GMT+0530 (India Standard Time)
+ID: 190 | Amount: 500.00 | User: 1 | Desc: System Fee from Node JSE-4IB6ZS (Level 2) | Date: Fri Dec 19 2025 22:59:53 GMT+0530 (India Standard Time)
+ID: 191 | Amount: 500.00 | User: 1 | Desc: System Fee from Node JSE-4IB6ZS (Level 2) | Date: Fri Dec 19 2025 22:59:53 GMT+0530 (India Standard Time)
+ID: 194 | Amount: 500.00 | User: 1 | Desc: System Fee from Node JSE-4IB6ZS (Level 2) | Date: Fri Dec 19 2025 22:59:55 GMT+0530 (India Standard Time)
+ID: 195 | Amount: 500.00 | User: 1 | Desc: System Fee from Node JSE-4IB6ZS (Level 2) | Date: Fri Dec 19 2025 22:59:55 GMT+0530 (India Standard Time)
+ID: 232 | Amount: 500.00 | User: 2 | Desc: Gold (SELF) Profit from Node JSE-4IB6ZS | Date: Fri Dec 19 2025 23:01:06 GMT+0530 (India Standard Time)
+ID: 233 | Amount: 500.00 | User: 2 | Desc: Gold (AUTO) Profit from Node JSE-4IB6ZS | Date: Fri Dec 19 2025 23:01:06 GMT+0530 (India Standard Time)
+ID: 236 | Amount: 500.00 | User: 2 | Desc: Gold (SELF) Profit from Node JSE-4IB6ZS | Date: Fri Dec 19 2025 23:01:08 GMT+0530 (India Standard Time)
+ID: 237 | Amount: 500.00 | User: 2 | Desc: Gold (AUTO) Profit from Node JSE-4IB6ZS | Date: Fri Dec 19 2025 23:01:08 GMT+0530 (India Standard Time)
+
+--- Searching for YACLQH ---
+ID: 27 | Amount: 300.00 | User: 2 | Desc: Silver (SELF) Profit from Node JSE-YACLQH | Date: Fri Dec 19 2025 22:50:11 GMT+0530 (India Standard Time)
+ID: 29 | Amount: 300.00 | User: 2 | Desc: Silver (AUTO) Profit from Node JSE-YACLQH | Date: Fri Dec 19 2025 22:50:11 GMT+0530 (India Standard Time)
+ID: 283 | Amount: 500.00 | User: 1 | Desc: System Fee from Node JSE-YACLQH (Level 2) | Date: Fri Dec 19 2025 23:32:53 GMT+0530 (India Standard Time)
+ID: 284 | Amount: 500.00 | User: 1 | Desc: System Fee from Node JSE-YACLQH (Level 2) | Date: Fri Dec 19 2025 23:32:53 GMT+0530 (India Standard Time)
+ID: 287 | Amount: 500.00 | User: 1 | Desc: System Fee from Node JSE-YACLQH (Level 2) | Date: Fri Dec 19 2025 23:32:55 GMT+0530 (India Standard Time)
+ID: 288 | Amount: 500.00 | User: 1 | Desc: System Fee from Node JSE-YACLQH (Level 2) | Date: Fri Dec 19 2025 23:32:55 GMT+0530 (India Standard Time)
+ID: 297 | Amount: 500.00 | User: 1 | Desc: System Fee from Node JSE-YACLQH (Level 2) | Date: Fri Dec 19 2025 23:34:15 GMT+0530 (India Standard Time)
+ID: 298 | Amount: 500.00 | User: 1 | Desc: System Fee from Node JSE-YACLQH (Level 2) | Date: Fri Dec 19 2025 23:34:15 GMT+0530 (India Standard Time)
+ID: 301 | Amount: 500.00 | User: 1 | Desc: System Fee from Node JSE-YACLQH (Level 2) | Date: Fri Dec 19 2025 23:34:17 GMT+0530 (India Standard Time)
+ID: 302 | Amount: 500.00 | User: 1 | Desc: System Fee from Node JSE-YACLQH (Level 2) | Date: Fri Dec 19 2025 23:34:17 GMT+0530 (India Standard Time)
+ID: 339 | Amount: 500.00 | User: 2 | Desc: Gold (SELF) Profit from Node JSE-YACLQH | Date: Fri Dec 19 2025 23:34:31 GMT+0530 (India Standard Time)
+ID: 340 | Amount: 500.00 | User: 2 | Desc: Gold (AUTO) Profit from Node JSE-YACLQH | Date: Fri Dec 19 2025 23:34:31 GMT+0530 (India Standard Time)
+ID: 343 | Amount: 500.00 | User: 2 | Desc: Gold (SELF) Profit from Node JSE-YACLQH | Date: Fri Dec 19 2025 23:34:35 GMT+0530 (India Standard Time)
+ID: 344 | Amount: 500.00 | User: 2 | Desc: Gold (AUTO) Profit from Node JSE-YACLQH | Date: Fri Dec 19 2025 23:34:35 GMT+0530 (India Standard Time)

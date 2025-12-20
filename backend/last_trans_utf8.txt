@@ -1,0 +1,11 @@
+=== Last 10 Transactions ===
+ID: 353 | Amount: 1000.00 | Desc: Upline Comm (Parent) - AUTO | Date: Sat Dec 20 2025 13:53:38 GMT+0530 (India Standard Time)
+ID: 352 | Amount: 1750.00 | Desc: Node Purchase | Date: Sat Dec 20 2025 13:46:41 GMT+0530 (India Standard Time)
+ID: 351 | Amount: 250.00 | Desc: Direct Referral Bonus from JSE-ROOT | Date: Sat Dec 20 2025 13:46:41 GMT+0530 (India Standard Time)
+ID: 350 | Amount: 300.00 | Desc: Silver (AUTO) Profit from Node JSE-NBAWKB | Date: Fri Dec 19 2025 23:35:17 GMT+0530 (India Standard Time)
+ID: 349 | Amount: 100.00 | Desc: Upline Comm (Parent) - AUTO | Date: Fri Dec 19 2025 23:35:17 GMT+0530 (India Standard Time)
+ID: 348 | Amount: 300.00 | Desc: Silver (SELF) Profit from Node JSE-NBAWKB | Date: Fri Dec 19 2025 23:35:17 GMT+0530 (India Standard Time)
+ID: 347 | Amount: 100.00 | Desc: Upline Comm (Parent) - SELF | Date: Fri Dec 19 2025 23:35:17 GMT+0530 (India Standard Time)
+ID: 346 | Amount: 1750.00 | Desc: Node Purchase | Date: Fri Dec 19 2025 23:35:17 GMT+0530 (India Standard Time)
+ID: 345 | Amount: 250.00 | Desc: Direct Referral Bonus from JSE-ROOT | Date: Fri Dec 19 2025 23:35:17 GMT+0530 (India Standard Time)
+ID: 344 | Amount: 500.00 | Desc: Gold (AUTO) Profit from Node JSE-YACLQH | Date: Fri Dec 19 2025 23:34:35 GMT+0530 (India Standard Time)
