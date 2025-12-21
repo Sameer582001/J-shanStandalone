@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { NodeProvider } from './context/NodeContext';
+import { Toaster } from 'react-hot-toast';
 
 // Layouts
 import AuthLayout from './layouts/AuthLayout';
@@ -19,6 +20,7 @@ import MyNodes from './pages/MyNodes';
 import Wallet from './pages/Wallet';
 import WalletRequests from './pages/WalletRequests';
 import WalletTransactions from './pages/wallet/WalletTransactions';
+import Profile from './pages/Profile';
 
 // Pages - Node
 import NodeDashboard from './pages/node/NodeDashboard';
@@ -31,10 +33,15 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminPayouts from './pages/admin/AdminPayouts';
 import AdminSettings from './pages/admin/AdminSettings';
+import AddFunds from './pages/AddFunds';
+import AdminFundRequests from './pages/admin/AdminFundRequests';
+import AdminFastTrack from './pages/admin/AdminFastTrack';
+
 
 const App: React.FC = () => {
   return (
     <NodeProvider>
+      <Toaster position="top-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
       <BrowserRouter>
         <Routes>
           {/* Public Routes (Auth) */}
@@ -43,15 +50,7 @@ const App: React.FC = () => {
             <Route path="/register" element={<Register />} />
           </Route>
 
-          {/* User Routes (Master Account) */}
-          <Route element={<UserLayout />}>
-            <Route path="/dashboard" element={<DashboardHome />} />
-            <Route path="/wallet" element={<Wallet />} />
-            <Route path="/wallet/transactions" element={<WalletTransactions />} />
-            <Route path="/purchase-node" element={<PurchaseNode />} />
-            <Route path="/my-nodes" element={<MyNodes />} />
-            <Route path="/wallet/requests" element={<WalletRequests />} />
-          </Route>
+
 
           {/* Node Routes (Isolated) */}
           <Route path="/node" element={<NodeLayout />}>
@@ -69,7 +68,21 @@ const App: React.FC = () => {
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="payouts" element={<AdminPayouts />} />
+            <Route path="fund-requests" element={<AdminFundRequests />} />
+            <Route path="fast-track" element={<AdminFastTrack />} />
             <Route path="settings" element={<AdminSettings />} />
+          </Route>
+
+          {/* User Routes (Master Account) */}
+          <Route element={<UserLayout />}>
+            <Route path="/dashboard" element={<DashboardHome />} />
+            <Route path="/wallet" element={<Wallet />} />
+            <Route path="/wallet/add-funds" element={<AddFunds />} />
+            <Route path="/wallet/transactions" element={<WalletTransactions />} />
+            <Route path="/purchase-node" element={<PurchaseNode />} />
+            <Route path="/my-nodes" element={<MyNodes />} />
+            <Route path="/wallet/requests" element={<WalletRequests />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
 
           {/* Default Redirect */}

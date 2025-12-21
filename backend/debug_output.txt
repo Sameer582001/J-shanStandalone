@@ -1,0 +1,14 @@
+START_DEBUG
+Checking Node 5...
+RESULT: Node 5 Found: {
+  "id": 5,
+  "referral_code": "JSE-33FB0L",
+  "owner_user_id": 2,
+  "is_rebirth": false
+}
+Checking User 3...
+RESULT: User 3 Found: {
+  "id": 3,
+  "full_name": "sahil",
+  "email": "sonuuk943@gmail.com"
+}

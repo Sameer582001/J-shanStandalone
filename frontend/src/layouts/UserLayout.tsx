@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, LogOut, User, Wallet, ShoppingCart, Layers, History } from 'lucide-react';
+import { LayoutDashboard, LogOut, User, Wallet, ShoppingCart, Layers, History, PlusCircle } from 'lucide-react';
 
 import { useNode } from '../context/NodeContext';
 
@@ -51,11 +51,25 @@ const UserLayout: React.FC = () => {
                         My Wallet
                     </Link>
                     <Link
+                        to="/wallet/add-funds"
+                        className="flex items-center px-4 py-3 text-gray-400 hover:bg-dark-bg hover:text-accent-cyan rounded-xl transition-all font-medium"
+                    >
+                        <PlusCircle className="w-5 h-5 mr-3" />
+                        Add Funds
+                    </Link>
+                    <Link
                         to="/wallet/transactions"
                         className="flex items-center px-4 py-3 text-gray-400 hover:bg-dark-bg hover:text-accent-cyan rounded-xl transition-all font-medium"
                     >
                         <History className="w-5 h-5 mr-3" />
                         Wallet History
+                    </Link>
+                    <Link
+                        to="/profile"
+                        className="flex items-center px-4 py-3 text-gray-400 hover:bg-dark-bg hover:text-accent-cyan rounded-xl transition-all font-medium"
+                    >
+                        <User className="w-5 h-5 mr-3" />
+                        My Profile
                     </Link>
                     <Link
                         to="/purchase-node"

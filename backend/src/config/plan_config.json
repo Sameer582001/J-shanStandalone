@@ -18,6 +18,10 @@
         "duration_days": 10,
         "tiers": [
             {
+                "referrals": 0,
+                "reward_value": 1750
+            },
+            {
                 "referrals": 3,
                 "reward_value": 5000
             },

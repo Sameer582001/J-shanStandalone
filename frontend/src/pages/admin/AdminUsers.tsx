@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react';
+import { Layers } from 'lucide-react';
+import { UserNodesModal } from '../../components/admin/UserNodesModal';
 
 const AdminUsers: React.FC = () => {
     const [users, setUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+
+    // Modal State
+    const [selectedUser, setSelectedUser] = useState<{ id: number; name: string } | null>(null);
+    const [isNodesModalOpen, setIsNodesModalOpen] = useState(false);
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -29,6 +35,11 @@ const AdminUsers: React.FC = () => {
         fetchUsers();
     }, [page]);
 
+    const handleViewNodes = (user: any) => {
+        setSelectedUser({ id: user.id, name: user.full_name });
+        setIsNodesModalOpen(true);
+    };
+
     return (
         <div className="bg-gray-800 text-white p-6 rounded-lg">
             <h2 className="text-2xl font-bold mb-4 text-accent-cyan">User Management</h2>
@@ -48,6 +59,7 @@ const AdminUsers: React.FC = () => {
                                 <th className="px-4 py-3 text-left">Nodes</th>
                                 <th className="px-4 py-3 text-left">Balance</th>
                                 <th className="px-4 py-3 text-left">Joined</th>
+                                <th className="px-4 py-3 text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-800">
@@ -66,6 +78,15 @@ const AdminUsers: React.FC = () => {
                                     <td className="px-4 py-3">₹{user.master_wallet_balance}</td>
                                     <td className="px-4 py-3 text-gray-400 text-sm">
                                         {new Date(user.created_at).toLocaleDateString()}
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                        <button
+                                            onClick={() => handleViewNodes(user)}
+                                            className="p-2 bg-accent-teal/10 hover:bg-accent-teal/20 text-accent-teal rounded-lg transition-colors group"
+                                            title="View Nodes"
+                                        >
+                                            <Layers className="w-4 h-4" />
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -91,6 +112,14 @@ const AdminUsers: React.FC = () => {
                     Next
                 </button>
             </div>
+
+            {/* User Nodes Modal */}
+            <UserNodesModal
+                isOpen={isNodesModalOpen}
+                onClose={() => setIsNodesModalOpen(false)}
+                userId={selectedUser?.id || null}
+                userName={selectedUser?.name || ''}
+            />
         </div>
     );
 };

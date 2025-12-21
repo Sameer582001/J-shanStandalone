@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, LogOut, Users, Settings, CreditCard } from 'lucide-react';
+import { LayoutDashboard, LogOut, Users, Settings, CreditCard, Gift } from 'lucide-react';
 
 const AdminLayout: React.FC = () => {
     const navigate = useNavigate();
@@ -55,6 +55,20 @@ const AdminLayout: React.FC = () => {
                     >
                         <CreditCard className="w-5 h-5 mr-3" />
                         Payouts
+                    </Link>
+                    <Link
+                        to="/admin/fund-requests"
+                        className="flex items-center px-6 py-3 text-gray-400 hover:bg-dark-bg hover:text-accent-cyan transition-colors"
+                    >
+                        <CreditCard className="w-5 h-5 mr-3" />
+                        Fund Requests
+                    </Link>
+                    <Link
+                        to="/admin/fast-track"
+                        className="flex items-center px-6 py-3 text-gray-400 hover:bg-dark-bg hover:text-accent-cyan transition-colors"
+                    >
+                        <Gift className="w-5 h-5 mr-3" />
+                        Fast Track
                     </Link>
                     <Link
                         to="/admin/settings"

@@ -68,20 +68,39 @@ export class WalletService {
     async creditNodeWallet(nodeId: number, amount: number, description: string, client: any = null) {
         const q = client ? client.query.bind(client) : query;
 
-        // 1. Update Node Balance
-        await q('UPDATE Nodes SET wallet_balance = wallet_balance + $1 WHERE id = $2', [amount, nodeId]);
+        // 1. Get Node Details (Check if Rebirth)
+        const nodeRes = await q('SELECT id, referral_code, is_rebirth, origin_node_id, owner_user_id FROM Nodes WHERE id = $1', [nodeId]);
+        if (nodeRes.rows.length === 0) throw new Error(`Node ${nodeId} not found`);
 
-        // 2. Log Transaction (Using node_id)
-        // Need to find owner of the node for the record? No, schema allows wallet_owner_id to be null if we use node_id
-        // But schema comment said wallet_owner_id references Users. 
-        // Let's get the owner info first to be complete.
-        const res = await q('SELECT owner_user_id FROM Nodes WHERE id = $1', [nodeId]);
-        const ownerId = res.rows[0].owner_user_id;
+        const node = nodeRes.rows[0];
+        let targetNodeId = nodeId;
+        let finalDesc = description;
+
+        // INCOME REDIRECTION LOGIC:
+        // If this is a Rebirth Node, all income goes to the Mother (Origin) Node.
+        if (node.is_rebirth) {
+            if (!node.origin_node_id) throw new Error(`Rebirth Node ${nodeId} missing origin_node_id`);
+
+            targetNodeId = node.origin_node_id;
+            finalDesc = `${description} (via Rebirth Node ${node.referral_code})`;
+
+            // Verify Origin Node exists
+            const originRes = await q('SELECT id, owner_user_id FROM Nodes WHERE id = $1', [targetNodeId]);
+            if (originRes.rows.length === 0) throw new Error(`Origin Node ${targetNodeId} not found`);
+        }
+
+        // 2. Update Target Node Balance
+        await q('UPDATE Nodes SET wallet_balance = wallet_balance + $1 WHERE id = $2', [amount, targetNodeId]);
+
+        // 3. Log Transaction
+        // We log it under the OWNER of the Target Node (which should be the same owner, but let's be safe)
+        const ownerRes = await q('SELECT owner_user_id FROM Nodes WHERE id = $1', [targetNodeId]);
+        const ownerId = ownerRes.rows[0].owner_user_id;
 
         await q(
             `INSERT INTO Transactions (wallet_owner_id, node_id, amount, type, description, status) 
              VALUES ($1, $2, $3, 'CREDIT', $4, 'COMPLETED')`,
-            [ownerId, nodeId, amount, description]
+            [ownerId, targetNodeId, amount, finalDesc]
         );
     }
 
@@ -153,24 +172,36 @@ export class WalletService {
 
     // 1. Request Payout
     async requestPayout(userId: number, amount: number) {
-        if (amount <= 0) throw new Error('Invalid amount');
+        // 1. Check Bank Details
+        const userRes = await query('SELECT account_number FROM Users WHERE id = $1', [userId]);
+        if (!userRes.rows[0]?.account_number) {
+            throw new Error('Bank details not found. Please complete your profile first.');
+        }
+
+        if (amount < 500) throw new Error('Minimum withdrawal amount is ₹500');
+
+        const serviceCharge = amount * 0.05;
+        const tdsCharge = amount * 0.05;
+        const netAmount = amount - serviceCharge - tdsCharge;
 
         await query('BEGIN');
         try {
             // Check & Deduct Funds
             await this.deductFunds(userId, amount);
 
-            // Create Withdrawal Record
-            await query(
-                `INSERT INTO Withdrawals (user_id, amount, status) VALUES ($1, $2, 'PENDING')`,
+            // 1. Create Transaction Record FIRST to get ID
+            const txnRes = await query(
+                `INSERT INTO Transactions (wallet_owner_id, amount, type, description, status) 
+                 VALUES ($1, $2, 'DEBIT', 'Payout Request', 'PENDING') RETURNING id`,
                 [userId, amount]
             );
+            const transactionId = txnRes.rows[0].id;
 
-            // Log Transaction
+            // 2. Create Withdrawal Record Linked to Transaction
             await query(
-                `INSERT INTO Transactions (wallet_owner_id, amount, type, description, status) 
-                 VALUES ($1, $2, 'DEBIT', 'Payout Request', 'PENDING')`,
-                [userId, amount]
+                `INSERT INTO Withdrawals (user_id, amount, service_charge, tds_charge, net_amount, status, transaction_id) 
+                 VALUES ($1, $2, $3, $4, $5, 'PENDING', $6)`,
+                [userId, amount, serviceCharge, tdsCharge, netAmount, transactionId]
             );
 
             await query('COMMIT');
@@ -189,13 +220,23 @@ export class WalletService {
 
     // 3. Admin: Get All Payouts
     async getAllPayouts(status: string = 'PENDING') {
+        let condition = 'w.status = $1';
+        let params = [status];
+
+        // Special flag for History
+        if (status === 'HISTORY') {
+            condition = "w.status IN ('PAID', 'REJECTED')";
+            params = [];
+        }
+
         const res = await query(
-            `SELECT w.*, u.full_name, u.mobile, u.email 
+            `SELECT w.*, u.full_name, u.mobile, u.email,
+                    u.account_holder_name, u.account_number, u.ifsc_code, u.bank_name
              FROM Withdrawals w 
              JOIN Users u ON w.user_id = u.id 
-             WHERE w.status = $1 
-             ORDER BY w.created_at ASC`,
-            [status]
+             WHERE ${condition} 
+             ORDER BY w.created_at DESC`, // Sort by newest first
+            params
         );
         return res.rows;
     }
@@ -218,12 +259,18 @@ export class WalletService {
             );
 
             if (status === 'REJECTED') {
-                // Refund User
+                // Refund User (Credit Transaction)
                 await this.creditFunds(payout.user_id, parseFloat(payout.amount), 'Payout Rejected Refund');
+
+                // Update Original Transaction to REJECTED
+                if (payout.transaction_id) {
+                    await query("UPDATE Transactions SET status = 'REJECTED' WHERE id = $1", [payout.transaction_id]);
+                }
             } else {
-                // Mark Transaction as Completed (if we linked it, but currently logged as loose Debit)
-                // Optional: Update the original 'Payout Request' transaction status from PENDING to COMPLETED?
-                // For now, let's leave as is or add a log.
+                // PAID: Update Original Transaction to COMPLETED
+                if (payout.transaction_id) {
+                    await query("UPDATE Transactions SET status = 'COMPLETED' WHERE id = $1", [payout.transaction_id]);
+                }
             }
 
             await query('COMMIT');

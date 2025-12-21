@@ -23,6 +23,18 @@ export class NodeController {
         }
     }
 
+    static async verifySponsor(req: Request, res: Response) {
+        try {
+            const { code } = req.params;
+            if (!code) throw new Error("Referral Code is required");
+
+            const data = await nodeService.verifySponsor(code);
+            res.json(data);
+        } catch (error: any) {
+            res.status(400).json({ message: error.message });
+        }
+    }
+
     static async getUserNodes(req: any, res: any) {
         try {
             const userId = req.user.id;
@@ -65,6 +77,20 @@ export class NodeController {
             const isGlobal = req.query.global === 'true';
             const tree = await nodeService.getGenealogy(nodeId, type, isGlobal);
             res.json(tree);
+        } catch (error: any) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+
+    static async getFastTrackStatus(req: Request, res: Response) {
+        try {
+            const nodeId = parseInt(req.params.id || '');
+            if (isNaN(nodeId)) throw new Error('Invalid Node ID');
+
+            const { FastTrackService } = await import('../services/FastTrackService.js');
+            const fastTrackService = new FastTrackService();
+            const status = await fastTrackService.getFastTrackStatus(nodeId);
+            res.json(status);
         } catch (error: any) {
             res.status(500).json({ message: error.message });
         }

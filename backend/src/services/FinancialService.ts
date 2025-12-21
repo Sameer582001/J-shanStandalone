@@ -232,22 +232,21 @@ export class FinancialService {
 
             case 'rebirth':
                 // Auto-Creation
-                // If Rebirth Node: "Deduct fee but keep as System Profit".
+                // If Rebirth Node: "Deduct fee but keep as System Profit" (Sterile).
                 if (node.is_rebirth) {
                     // Burn/System Profit
-                    // No action (or credit Admin Wallet?)
+                    const adminId = 1;
+                    if (amount > 0) {
+                        await walletService.creditFunds(adminId, amount, `System Profit from Sterile Rebirth Node ${node.referral_code}`, client);
+                    }
                 } else {
                     // Create Rebirths
                     // We need to calculate how many based on amount?
                     // E.g. L2 Rebirth is 1000 total (2 IDs). 
-                    // If we get 500, we create 1 ID?
                     // Let's assume unit price 500.
                     const count = Math.floor(amount / 500);
-                    // This creates partial logic issues if amount is 250.
-                    // Assuming multiples of 500 based on input.
+
                     if (count > 0) {
-                        // Call NodeService to spawn (Need a way to import or use helper)
-                        // For now, let's implement a simple spawner here or call a static helper
                         await this.spawnRebirths(nodeId, count, poolType, client, depth);
                     }
                 }
