@@ -20,10 +20,15 @@ const cronService = new CronService();
 app.use(cors());
 app.use(express.json());
 
+import profileRoutes from './routes/profileRoutes.js';
+
 app.use('/api/auth', authRoutes);
 app.use('/api/wallet', walletRoutes);
 app.use('/api/nodes', nodeRoutes);
 app.use('/api/payout', payoutRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/profile', profileRoutes);
+import fundRoutes from './routes/fundRoutes.js';
+app.use('/api/funds', fundRoutes);
 
 app.listen(3000, () => console.log('Backend running on 3000'));

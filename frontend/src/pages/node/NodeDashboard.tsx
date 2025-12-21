@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNode } from '../../context/NodeContext';
 import { Wallet, Users, Share2, ArrowRight, Lock } from 'lucide-react';
 import api from '../../api/axios';
+import { FastTrackStatus } from '../../components/dashboard/FastTrackStatus';
 
 const NodeDashboard: React.FC = () => {
     const { activeNode } = useNode(); // switchNode used to update context if needed (e.g. balance)
@@ -147,6 +148,9 @@ const NodeDashboard: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Fast Track Status */}
+            <FastTrackStatus nodeId={activeNode.id} />
 
             <div className="bg-dark-surface border border-accent-teal/20 rounded-xl p-6">
                 <h3 className="text-accent-cyan font-semibold mb-2">Node Status: {activeNode.status}</h3>

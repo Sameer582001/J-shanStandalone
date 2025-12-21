@@ -35,13 +35,12 @@ const mockClient = {
 
         return { rows: [] };
     },
-    release: () => { },
-    query: async (text, params) => { return mockClient.query(text, params); } // Duplicate for nested calls
+    release: () => { }
 };
 
 // Mock Pool
 import pool from './config/db.js';
-pool.connect = async () => mockClient;
+pool.connect = async () => mockClient as any;
 
 async function runTest() {
     console.log("--- Testing Purchase Node Bonus ---");

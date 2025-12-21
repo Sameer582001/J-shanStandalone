@@ -33,6 +33,29 @@ const getQueue = () => {
 
 export class NodeService {
 
+    // Verify Sponsor Code and Return Owner Name
+    async verifySponsor(referralCode: string) {
+        const res = await query(
+            `SELECT n.id, u.full_name, n.status, n.direct_referrals_count 
+             FROM Nodes n 
+             JOIN Users u ON n.owner_user_id = u.id 
+             WHERE n.referral_code = $1`,
+            [referralCode]
+        );
+
+        if (res.rows.length === 0) {
+            throw new Error('Invalid Sponsor Code');
+        }
+
+        const node = res.rows[0];
+        return {
+            valid: true,
+            sponsorName: node.full_name,
+            nodeId: node.id,
+            status: node.status
+        };
+    }
+
     // BFS Placement Logic (Self Pool - Sponsor Tree)
     // Uses 'self_pool_parent_id'
     private async findSelfPoolPlacement(sponsorNodeId: number, client: any = null): Promise<{ parentId: number | null }> {
@@ -260,7 +283,7 @@ export class NodeService {
             `WITH RECURSIVE genealogy AS (
                 SELECT 
                     id, referral_code, owner_user_id, sponsor_node_id, self_pool_parent_id, auto_pool_parent_id, 
-                    direct_referrals_count, status, created_at, ${levelColumn} as current_level, 
+                    direct_referrals_count, status, created_at, ${levelColumn} as current_level, is_rebirth, origin_node_id,
                     1 as level, 
                     CAST(id AS VARCHAR) as path
                 FROM Nodes
@@ -268,7 +291,7 @@ export class NodeService {
                 UNION ALL
                 SELECT 
                     n.id, n.referral_code, n.owner_user_id, n.sponsor_node_id, n.self_pool_parent_id, n.auto_pool_parent_id, 
-                    n.direct_referrals_count, n.status, n.created_at, n.${levelColumn} as current_level, 
+                    n.direct_referrals_count, n.status, n.created_at, n.${levelColumn} as current_level, n.is_rebirth, n.origin_node_id,
                     g.level + 1,
                     CAST(g.path || '->' || n.id AS VARCHAR)
                 FROM Nodes n
@@ -306,5 +329,86 @@ export class NodeService {
         });
 
         return root;
+    }
+
+    // Admin: Transfer Node Ownership
+    async transferNode(targetNodeId: number, newOwnerId: number, adminId: number) {
+        if (!targetNodeId || !newOwnerId) throw new Error('Target Node ID and New Owner ID are required');
+
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+
+            // 1. Verify New Owner Exists
+            const userRes = await client.query('SELECT id, email FROM Users WHERE id = $1', [newOwnerId]);
+            if (userRes.rows.length === 0) throw new Error('New Owner User not found');
+            const newOwnerEmail = userRes.rows[0].email;
+
+            // 2. Verify Target Node & Current Ownership
+            // We LOCK the row to prevent concurrent modifications
+            const nodeRes = await client.query('SELECT id, referral_code, owner_user_id, is_rebirth, wallet_balance FROM Nodes WHERE id = $1 FOR UPDATE', [targetNodeId]);
+            if (nodeRes.rows.length === 0) throw new Error('Target Node not found');
+
+            const node = nodeRes.rows[0];
+            const oldOwnerId = node.owner_user_id;
+
+            if (node.is_rebirth) {
+                // We disallow transferring a Rebirth Node individually because it breaks the "Origin linkage" logic.
+                // Rebirths must stay with their Mother.
+                throw new Error('Cannot transfer a Rebirth Node strictly. Please transfer the Mother/Origin Node instead.');
+            }
+
+            if (oldOwnerId === newOwnerId) {
+                throw new Error('Node is already owned by this user');
+            }
+
+            // 3. Update Target Node Owner
+            await client.query('UPDATE Nodes SET owner_user_id = $1 WHERE id = $2', [newOwnerId, targetNodeId]);
+
+            // 4. Update ALL Rebirths of this Node
+            // We assume rebirths are linked via origin_node_id
+            const rebirthUpdateRes = await client.query(
+                'UPDATE Nodes SET owner_user_id = $1 WHERE origin_node_id = $2 AND is_rebirth = TRUE',
+                [newOwnerId, targetNodeId]
+            );
+            const rebirthsCount = rebirthUpdateRes.rowCount;
+
+            // 5. Audit Logging (Transactions or SystemLogs)
+            // Log for Old Owner (DEBIT 0 - Asset Lost)
+            await client.query(
+                `INSERT INTO Transactions (wallet_owner_id, amount, type, description, status) 
+                 VALUES ($1, 0, 'DEBIT', $2, 'COMPLETED')`,
+                [oldOwnerId, `Node ${node.referral_code} transferred OUT to User ${newOwnerId} by Admin`]
+            );
+
+            // Log for New Owner (CREDIT 0 - Asset Gained)
+            await client.query(
+                `INSERT INTO Transactions (wallet_owner_id, amount, type, description, status) 
+                 VALUES ($1, 0, 'CREDIT', $2, 'COMPLETED')`,
+                [newOwnerId, `Node ${node.referral_code} transferred IN from User ${oldOwnerId} by Admin`]
+            );
+
+            // Log Admin Action (System Log) - Using CREDIT 0 as general system record
+            await client.query(
+                `INSERT INTO Transactions (wallet_owner_id, amount, type, description, status) 
+                 VALUES ($1, 0, 'CREDIT', $2, 'COMPLETED')`,
+                [adminId, `Admin transferred Node ${node.referral_code} (Balance: ${node.wallet_balance}) from ${oldOwnerId} to ${newOwnerId}. Rebirths moved: ${rebirthsCount}`]
+            );
+
+            await client.query('COMMIT');
+
+            return {
+                success: true,
+                message: `Transferred Node ${node.referral_code} and ${rebirthsCount} Rebirths to User ${newOwnerEmail}`,
+                rebirthsTransferred: rebirthsCount,
+                nodeBalance: node.wallet_balance
+            };
+
+        } catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
+        } finally {
+            client.release();
+        }
     }
 }

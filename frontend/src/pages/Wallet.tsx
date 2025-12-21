@@ -4,8 +4,6 @@ import { Wallet as WalletIcon, PlusCircle } from 'lucide-react';
 
 const Wallet: React.FC = () => {
     const [balance, setBalance] = useState<number>(0);
-    const [amount, setAmount] = useState<string>('');
-    const [message, setMessage] = useState<string>('');
 
     const fetchBalance = async () => {
         try {
@@ -19,23 +17,6 @@ const Wallet: React.FC = () => {
     useEffect(() => {
         fetchBalance();
     }, []);
-
-    const handleAddFunds = async () => {
-        const val = parseFloat(amount);
-        if (isNaN(val) || val < 100) {
-            setMessage('Minimum amount to add is ₹100');
-            return;
-        }
-
-        try {
-            await api.post('/wallet/add-funds', { amount: val });
-            setMessage('Funds added successfully!');
-            setAmount('');
-            fetchBalance();
-        } catch (err: any) {
-            setMessage(err.response?.data?.message || 'Failed to add funds');
-        }
-    };
 
     return (
         <div className="space-y-6">
@@ -56,35 +37,21 @@ const Wallet: React.FC = () => {
 
             {/* Add Funds Section */}
             <div className="bg-dark-surface rounded-xl shadow-sm border border-gray-800 p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Add Funds (Mock)</h3>
-                <div className="flex gap-4 items-end">
+                <h3 className="text-lg font-semibold text-white mb-4">Add Funds</h3>
+                <div className="flex gap-4 items-center">
                     <div className="flex-1">
-                        <label htmlFor="amount" className="block text-sm font-medium text-gray-400 mb-1">
-                            Amount (₹)
-                        </label>
-                        <input
-                            type="number"
-                            id="amount"
-                            value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
-                            className="block w-full rounded-md border-gray-700 bg-dark-bg text-white shadow-sm focus:border-accent-teal focus:ring-accent-teal sm:text-sm p-2 border placeholder-gray-500 outline-none"
-                            placeholder="Enter amount"
-                        />
+                        <p className="text-sm text-gray-400 mb-2">
+                            Add funds to your Master Wallet using QR Code or UPI.
+                        </p>
                     </div>
-                    <button
-                        onClick={handleAddFunds}
+                    <a
+                        href="/wallet/add-funds"
                         className="flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-accent-teal hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-teal transition-colors"
                     >
                         <PlusCircle className="w-4 h-4 mr-2" />
-                        Add Funds
-                    </button>
+                        Add Money
+                    </a>
                 </div>
-                {message && (
-                    <p className={`mt-4 text-sm ${message.includes('success') ? 'text-green-600' : 'text-red-600'}`}>
-                        {message}
-                    </p>
-                )}
-
             </div>
 
             {/* Withdraw Section */}

@@ -1,0 +1,372 @@
+=== Direct Referrals of Node 1 ===
+
+Node 2 (JSE-4IB6ZS):
+  [Gold L2 - SELF] Revenue: 9000.00 | Completed: true | Buckets: {"profit":1000,"system":2000,"upline":2000,"rebirth":1000,"upgrade":3000}
+  [Gold L2 - AUTO] Revenue: 9000.00 | Completed: true | Buckets: {"profit":1000,"system":2000,"upline":2000,"rebirth":1000,"upgrade":3000}
+  [Plat L3] No Progress
+
+Node 3 (JSE-YACLQH):
+  [Gold L2 - SELF] Revenue: 9000.00 | Completed: true | Buckets: {"profit":1000,"system":2000,"upline":2000,"rebirth":1000,"upgrade":3000}
+  [Gold L2 - AUTO] Revenue: 9000.00 | Completed: true | Buckets: {"profit":1000,"system":2000,"upline":2000,"rebirth":1000,"upgrade":3000}
+  [Plat L3] No Progress
+
+Node 4 (JSE-TV9RCZ):
+  [Gold L2 - SELF] Revenue: 500.00 | Completed: false | Buckets: {"upgrade":500}
+  [Gold L2 - AUTO] Revenue: 500.00 | Completed: false | Buckets: {"upgrade":500}
+  [Plat L3] No Progress
+
+Node 5 (JSE-6Q3FA7):
+  [Gold L2 - AUTO] Revenue: 8000.00 | Completed: false | Buckets: {"system":2000,"upline":2000,"rebirth":1000,"upgrade":3000}
+  [Plat L3] No Progress
+
+Node 6 (JSE-LB2FJ1):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 7 (JSE-RMMORY):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 8 (JSE-2O84WN):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 9 (JSE-J1TBJB):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 10 (JSE-8EKOF2):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 11 (JSE-93P2LL):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 12 (JSE-TUYLU6):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 13 (JSE-UHD2I8):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 14 (JSE-3ACRF9):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 15 (JSE-YXGQ45):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 16 (JSE-583D3K):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 17 (JSE-1KXFS5):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 18 (JSE-HJPSV2):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 19 (JSE-GO305R):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 20 (JSE-93DJLD):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 21 (JSE-DNAW7V):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 22 (JSE-3J0VIP):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 23 (JSE-Y5AVM4):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 24 (RB-SELF-XIGL4E):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 25 (RB-SELF-IIOYG5):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 26 (RB-AUTO-82ESD8):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 27 (RB-AUTO-RFWLCE):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 28 (JSE-WCVBY2):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 29 (JSE-WD9JNJ):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 30 (JSE-3KYSQF):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 31 (JSE-VLRI4K):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 32 (JSE-VUV711):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 33 (JSE-NBAWKB):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 34 (JSE-VFOAIQ):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 35 (JSE-NMGZXK):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 36 (JSE-WMK1LG):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 37 (JSE-BPWH4M):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 38 (JSE-5XBT53):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 39 (JSE-H1F190):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 40 (JSE-Y5W4HT):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 41 (JSE-IVLW7O):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 42 (JSE-9ET233):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 43 (JSE-OZO9YY):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 44 (JSE-18787F):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 45 (JSE-H5IEDU):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 46 (JSE-MO0ZZ2):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 47 (JSE-6CHV6W):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 48 (JSE-T4N0OF):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 49 (JSE-CCSEPB):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 50 (JSE-IXY48U):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 51 (JSE-J53HJI):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 52 (JSE-CTB166):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 57 (JSE-M0FJ2M):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 58 (JSE-SHEO4G):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 59 (JSE-VWLAVC):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 60 (JSE-Q8LENL):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 61 (JSE-5E0SI7):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 62 (JSE-NGHIUS):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 63 (JSE-G3EIIP):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 64 (JSE-4HO4C6):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 65 (JSE-K8L45Z):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 66 (JSE-BJAP04):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 67 (JSE-VQFTS7):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 68 (JSE-56L9NV):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 69 (JSE-38LAZN):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 70 (JSE-UWMQJO):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 71 (JSE-XYKSQ3):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 72 (JSE-CUSLYV):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 73 (JSE-4IQTEA):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 74 (JSE-P1S9IS):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 75 (JSE-ZJ3AYY):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 76 (JSE-A8S2V0):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 77 (JSE-Z98GXS):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 78 (JSE-9CV0DY):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 79 (JSE-N815OA):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 80 (JSE-M11PWZ):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 81 (JSE-IOCS5C):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 86 (JSE-6AB2RL):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 87 (JSE-SSW124):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 88 (JSE-9T1CRW):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 89 (JSE-AMACYB):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 90 (JSE-2EJ7PO):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 91 (JSE-2FBZX0):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 92 (JSE-EVL5D6):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 93 (JSE-I2LV7D):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 94 (JSE-LLTWV6):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 95 (JSE-FLHGMR):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 96 (JSE-QC9VZ9):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 97 (JSE-7905WB):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 98 (JSE-XMJIKC):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 99 (JSE-4519EE):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 100 (JSE-Z8YI2U):
+  [Gold L2] No Progress
+  [Plat L3] No Progress
+
+Node 101 (JSE-AX6AX2):
+  [Gold L2] No Progress
+  [Plat L3] No Progress

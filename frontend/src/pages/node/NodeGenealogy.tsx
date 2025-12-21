@@ -13,6 +13,9 @@ interface ApiTreeNode {
     children: ApiTreeNode[];
     level: number;
     current_level: number;
+    is_rebirth?: boolean;
+    owner_user_id: number;
+    origin_node_id?: number | null; // Added
     // self_pool_parent_id / auto_pool_parent_id are implicit in structure
 }
 
@@ -45,6 +48,9 @@ const NodeGenealogy: React.FC = () => {
             tree_layer: level,
             current_level: node.current_level, // Use strict Financial Level from DB
             is_journey_complete: node.status === 'ACTIVE', // Mapping for legacy prop
+            is_rebirth: !!node.is_rebirth,
+            owner_user_id: node.owner_user_id,
+            origin_node_id: node.origin_node_id, // Map it
             parent_id: parentId,
             children: node.children?.map(c => c.id.toString()) || []
         };
@@ -160,7 +166,8 @@ const NodeGenealogy: React.FC = () => {
                     <TreeCanvas
                         nodes={flatNodes}
                         highlightNodeId={activeNode.id.toString()}
-                        childNodeIds={[]} // Add child logic if needed
+                        originIdToCheck={activeNode.id} // Proper fix: Pass Active ID as origin-to-match
+                        childNodeIds={[]}
                     />
                 ) : (
                     <div className="absolute inset-0 flex items-center justify-center flex-col gap-2 text-gray-400">

@@ -14,9 +14,12 @@ export interface TreeNodeData {
     parent_id?: string | null;
     position?: number;
     children?: string[];
-    status?: 'ACTIVE' | 'INACTIVE'; // Added for compatibility
-    total_earned?: number; // Added for compatibility
-    direct_referrals_count?: number; // Added for compatibility
+    status?: 'ACTIVE' | 'INACTIVE';
+    total_earned?: number;
+    direct_referrals_count?: number;
+    is_rebirth?: boolean;
+    owner_user_id?: number;
+    origin_node_id?: number | null;
 }
 
 interface TreeCanvasProps {
@@ -24,6 +27,8 @@ interface TreeCanvasProps {
     highlightNodeId?: string;
     highlightColor?: string;
     childNodeIds?: string[];
+    checkOwnerId?: number; // Kept for optionality, but main check is below
+    originIdToCheck?: number; // New Prop: The "Mother Node" ID
     onNodeClick?: (node: TreeNodeData) => void;
 }
 
@@ -37,14 +42,14 @@ interface RenderedNode {
 export default function TreeCanvas({
     nodes,
     highlightNodeId,
-
+    checkOwnerId,
+    originIdToCheck,
     onNodeClick,
 }: TreeCanvasProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [hoveredNode, setHoveredNode] = useState<TreeNodeData | null>(null);
     const [selectedNode, setSelectedNode] = useState<TreeNodeData | null>(null);
-    // Removed renderedNodes state to prevent loop. Using memoized layout instead.
     const [scale, setScale] = useState(1);
     const [offset, setOffset] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
@@ -52,9 +57,7 @@ export default function TreeCanvas({
     const [touchStart, setTouchStart] = useState<{ x: number; y: number; distance: number } | null>(null);
     const [lastTouch, setLastTouch] = useState<{ x: number; y: number } | null>(null);
 
-    // Responsive sizing based on screen width
     const [isMobile, setIsMobile] = useState(false);
-
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
     useEffect(() => {
@@ -71,7 +74,6 @@ export default function TreeCanvas({
         return () => window.removeEventListener('resize', updateDimensions);
     }, []);
 
-    // Fix Passive Event Listener for Wheel (Zoom)
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -90,13 +92,11 @@ export default function TreeCanvas({
     const LEVEL_HEIGHT = isMobile ? 80 : 120;
     const HORIZONTAL_SPACING = isMobile ? 50 : 80;
 
-    // --- 1. MEMOIZED LAYOUT CALCULATION (Independent of Offset) ---
     const layout = React.useMemo(() => {
         if (!dimensions.width || !dimensions.height) return [];
 
         const { width } = dimensions;
 
-        // Helper: Build Tree Structure
         const nodeMap = new Map<string, any>();
         nodes.forEach(node => nodeMap.set(node.id, { ...node, children: [] }));
         nodes.forEach(node => {
@@ -111,7 +111,6 @@ export default function TreeCanvas({
 
         if (roots.length === 0 && nodes.length > 0) return [];
 
-        // Helper: Calculate Positions
         const positions = new Map<string, { x: number; y: number }>();
         const calculatePositions = (curr: any, lvl: number, startX: number) => {
             const y = lvl * LEVEL_HEIGHT + 60;
@@ -137,7 +136,6 @@ export default function TreeCanvas({
             if (idx < roots.length - 1) totalWidth += HORIZONTAL_SPACING;
         });
 
-        // Center the tree
         const centerAdjustment = (width / scale - totalWidth) / 2;
 
         const finalNodes: RenderedNode[] = [];
@@ -155,7 +153,6 @@ export default function TreeCanvas({
         return finalNodes;
     }, [nodes, dimensions.width, dimensions.height, scale, NODE_RADIUS, LEVEL_HEIGHT, HORIZONTAL_SPACING]);
 
-    // --- 2. DRAWING EFFECT (Depends on Layout + Offset) ---
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas || !dimensions.width || !dimensions.height) return;
@@ -176,7 +173,6 @@ export default function TreeCanvas({
         ctx.translate(offset.x, offset.y);
         ctx.scale(scale, scale);
 
-        // Draw Connections
         const nodeMap = new Map(layout.map(n => [n.node.id, n]));
         layout.forEach(item => {
             const node = item.node;
@@ -193,12 +189,31 @@ export default function TreeCanvas({
             }
         });
 
-        // Draw Nodes
         layout.forEach(item => {
             const { x, y, radius, node } = item;
             let outer = '#374151'; let inner = '#030712'; let stroke = '#6b7280'; let width = 2;
-            if (node.status === 'ACTIVE') { outer = '#0f766e'; inner = '#042f2e'; }
-            else if (node.status === 'INACTIVE') { outer = '#991b1b'; inner = '#450a0a'; }
+
+            if (node.status === 'ACTIVE') {
+                outer = '#0f766e';
+                inner = '#042f2e';
+            } else if (node.status === 'INACTIVE') {
+                outer = '#991b1b';
+                inner = '#450a0a';
+            }
+
+            // Rebirth Customization: Yellow Inner Fill
+            // STRICT RULE: Only highlight Rebirth nodes that originated from the CURRENTLY VIEWED MOTHER NODE
+            // We check if origin_node_id matches the passed originIdToCheck
+            const isMyRebirth = node.is_rebirth &&
+                originIdToCheck &&
+                node.origin_node_id &&
+                (Number(node.origin_node_id) === Number(originIdToCheck));
+
+            if (isMyRebirth) {
+                inner = '#713f12'; // Deep Amber/Brown
+                outer = '#a16207'; // Dark Gold
+            }
+
             if (node.id === highlightNodeId) { stroke = '#a855f7'; width = 4; }
 
             ctx.beginPath();
@@ -216,13 +231,16 @@ export default function TreeCanvas({
             ctx.font = 'bold 10px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(node.member_name.split('-')[1]?.slice(0, 4) || node.member_name.slice(0, 4), x, y - 2);
+
+            // Parse Label: Handle 'JSE-CODE' vs 'RB-TYPE-CODE'
+            const parts = node.member_name.split('-');
+            const label = parts[0] === 'RB' ? parts[2] : parts[1];
+            ctx.fillText(label?.slice(0, 4) || node.member_name.slice(0, 4), x, y - 2);
         });
 
         ctx.restore();
-    }, [layout, offset, scale, dimensions, highlightNodeId]);
+    }, [layout, offset, scale, dimensions, highlightNodeId, checkOwnerId, originIdToCheck]);
 
-    // --- 3. EVENT HANDLERS (Use Layout) ---
     const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
         if (!canvasRef.current) return;
         if (isDragging) {
@@ -246,7 +264,6 @@ export default function TreeCanvas({
             }
         }
 
-        // Optimized State Update
         if (foundNode?.id !== hoveredNode?.id) {
             setHoveredNode(foundNode);
             canvasRef.current.style.cursor = foundNode ? 'pointer' : 'grab';
@@ -293,7 +310,6 @@ export default function TreeCanvas({
     };
 
     const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
-        // e.preventDefault() is handled by style={{ touchAction: 'none' }} and passive listener if needed, but here we just prevent propagation if valid
         if (e.touches.length === 1 && isDragging && lastTouch) {
             const dx = e.touches[0].clientX - lastTouch.x;
             const dy = e.touches[0].clientY - lastTouch.y;
@@ -421,6 +437,12 @@ export default function TreeCanvas({
                             <span className="text-gray-400">Direct Referrals:</span>
                             <span className="font-medium text-accent-cyan">{selectedNode.direct_referrals_count || 0}</span>
                         </div>
+                        {selectedNode.is_rebirth && selectedNode.origin_node_id && (
+                            <div className="flex justify-between py-1 border-b border-gray-700">
+                                <span className="text-gray-400">Origin Node:</span>
+                                <span className="font-medium text-yellow-500">{selectedNode.origin_node_id}</span>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
