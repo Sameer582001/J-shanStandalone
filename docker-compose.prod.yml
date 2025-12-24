@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   # 1. Database (PostgreSQL)
   postgres:
@@ -53,7 +55,7 @@ services:
     build:
       context: ./frontend
       args:
-        VITE_API_URL: http://localhost:3000 # Since Nginx serves this, the browser needs to know where API is. 
+        VITE_API_URL: https://jshan.in # HTTPS via Nginx Proxy Manager 
         # CAUTION: If hosting properly, this should be the public domain/IP. 
         # For local "prod" simulation, localhost:3000 works if user exposes 3000.
         # But wait, we closed port 3000 on backend? 

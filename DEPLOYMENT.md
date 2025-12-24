@@ -59,8 +59,24 @@ args:
 *If you don't do this, users will try to connect to their OWN computers (localhost) instead of your server.*
 
 ## Step 4: Run Production Build
-Run the production compose file.
+## Step 4: Run Production Build
+
+We have included a helper script `restart.sh` to make this easy and clean up any old containers (preventing errors).
+
+1.  **Give permission** (run once):
+    ```bash
+    chmod +x restart.sh
+    ```
+
+2.  **Run Deployment**:
+    ```bash
+    ./restart.sh
+    ```
+    *This script automatically pulls the latest code, stops old containers (fixing common errors), and rebuilds everything.*
+
+Alternatively, the manual command is:
 ```bash
+docker-compose -f docker-compose.prod.yml down
 docker-compose -f docker-compose.prod.yml up -d --build
 ```
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api/axios'; // Import configured instance
 import { toast } from 'react-hot-toast';
 import { Check, X } from 'lucide-react';
 
@@ -37,10 +37,7 @@ const AdminFundRequests: React.FC = () => {
     const fetchRequests = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`http://localhost:3000/api/funds/admin/requests?status=${filterStatus}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get(`/funds/admin/requests?status=${filterStatus}`);
             setRequests(res.data);
         } catch (error) {
             console.error('Error fetching requests:', error);
@@ -68,14 +65,12 @@ const AdminFundRequests: React.FC = () => {
         if (!adminUtr || !adminAmount) return toast.error('Both fields are strictly required');
 
         try {
-            const token = localStorage.getItem('token');
-            await axios.post('http://localhost:3000/api/funds/admin/verify',
+            await api.post('/funds/admin/verify',
                 {
                     requestId: selectedRequest.id,
                     adminUtr,
                     adminAmount: parseFloat(adminAmount)
-                },
-                { headers: { Authorization: `Bearer ${token}` } }
+                }
             );
             toast.success('Request Approved & Funds Added');
             setIsVerifyModalOpen(false);
@@ -90,10 +85,8 @@ const AdminFundRequests: React.FC = () => {
         if (!rejectReason) return toast.error('Reason is required');
 
         try {
-            const token = localStorage.getItem('token');
-            await axios.post('http://localhost:3000/api/funds/admin/reject',
-                { requestId: selectedRequest.id, remarks: rejectReason },
-                { headers: { Authorization: `Bearer ${token}` } }
+            await api.post('/funds/admin/reject',
+                { requestId: selectedRequest.id, remarks: rejectReason }
             );
             toast.success('Request Rejected');
             setIsRejectModalOpen(false);
