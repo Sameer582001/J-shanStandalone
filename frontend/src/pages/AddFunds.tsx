@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api/axios'; // Import configured instance
 import { toast } from 'react-hot-toast';
 import { QrCode, Copy, History, AlertCircle } from 'lucide-react';
 import QRCode from "react-qr-code";
@@ -32,10 +32,7 @@ const AddFunds: React.FC = () => {
 
     const fetchQrData = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:3000/api/funds/qr', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get('/funds/qr');
             setQrData(res.data);
         } catch (error) {
             console.error('Error fetching QR:', error);
@@ -44,10 +41,7 @@ const AddFunds: React.FC = () => {
 
     const fetchHistory = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:3000/api/funds/my-requests', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get('/funds/my-requests');
             setRequests(res.data);
         } catch (error) {
             console.error('Error fetching history:', error);
@@ -60,10 +54,8 @@ const AddFunds: React.FC = () => {
 
         setLoading(true);
         try {
-            const token = localStorage.getItem('token');
-            await axios.post('http://localhost:3000/api/funds/request',
-                { amount: parseFloat(amount), utrNumber },
-                { headers: { Authorization: `Bearer ${token}` } }
+            await api.post('/funds/request',
+                { amount: parseFloat(amount), utrNumber }
             );
             toast.success('Request submitted successfully!');
             setAmount('');
