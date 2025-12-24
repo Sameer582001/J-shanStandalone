@@ -89,11 +89,92 @@ To use a domain like `www.example.com` instead of an IP address:
     docker-compose -f docker-compose.prod.yml up -d --build
     ```
 
-## Optional: HTTPS (SSL Security) - Standard Production
-The setup above uses HTTP (Not Secure). To get the green lock (HTTPS), you should set up a **Reverse Proxy**.
-The easiest way for Docker users is **Nginx Proxy Manager**:
-1.  It handles SSL certificates for free (Let's Encrypt).
-2.  It forwards `https://example.com` -> Frontend Container (Port 80).
-3.  It forwards `https://api.example.com` -> Backend Container (Port 3000).
+## Step 7: Setting up SSL (HTTPS) with Nginx Proxy Manager
 
-For now, start with the IP/Domain setup above to confirm it works, then look into "Nginx Proxy Manager" for SSL.
+To get the green lock (HTTPS) on your domain, we will add **Nginx Proxy Manager** (NPM) to your Docker setup. This tool handles certificates automatically.
+
+### 1. Update `docker-compose.prod.yml`
+You need to make two changes:
+1.  **Free up Port 80**: Change the Frontend port so NPM can take over Port 80/443.
+2.  **Add NPM Service**: Add the proxy container.
+
+Update your `docker-compose.prod.yml` to look like this (focus on the **ports** and **npm** service):
+
+```yaml
+services:
+  # ... postgres and redis remain the same ...
+
+  backend:
+    # ... build/env/depends_on remain the same ...
+    ports:
+      - "3000:3000" # Keep this open so NPM can talk to it (or backend can talk to frontend)
+    # ...
+
+  frontend:
+    # ... build/depends_on remain the same ...
+    ports:
+      # CHANGE THIS: Move frontend away from Port 80 so SSL Proxy can have it
+      - "8080:80" 
+    container_name: mlm_frontend_prod
+
+  # ADD THIS NEW SERVICE
+  npm:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'   # Public HTTP
+      - '81:81'   # Admin Panel
+      - '443:443' # Public HTTPS
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    depends_on:
+      - frontend
+      - backend
+```
+
+### 2. Apply Changes
+1.  Stop the running containers: `docker-compose -f docker-compose.prod.yml down`
+2.  Start the new setup: `docker-compose -f docker-compose.prod.yml up -d --build`
+
+### 3. Log in to Nginx Proxy Manager
+1.  Open your browser and go to: `http://YOUR_VPS_IP:81`
+2.  **Default Login**:
+    *   Email: `admin@example.com`
+    *   Password: `changeme`
+3.  Update your credentials when prompted.
+
+### 4. Configure Proxy Hosts (The Connections)
+Now tell NPM how to route traffic.
+
+#### A. Frontend (www.example.com)
+1.  Click **"Proxy Hosts"** -> **"Add Proxy Host"**.
+2.  **Details Tab**:
+    *   **Domain Names**: `example.com` (and `www.example.com` -> hit Add)
+    *   **Scheme**: `http`
+    *   **Forward Hostname / IP**: `mlm_frontend_prod` (This is the container name!)
+    *   **Forward Port**: `80` (Internal container port)
+    *   **Cache Assets**: Enable 
+    *   **Block Common Exploits**: Enable
+    *   **Websockets Support**: Enable
+3.  **SSL Tab**:
+    *   **SSL Certificate**: "Request a new SSL Certificate"
+    *   **Force SSL**: Enable
+    *   **HTTP/2 Support**: Enable
+    *   **Email**: Enter your email.
+    *   **Agree to Terms**: Check.
+4.  Click **Save**.
+
+#### B. Backend API (api.example.com) - *Optional but Recommended*
+If you want your API to be secure too (e.g., `https://api.example.com`):
+1.  Add another **Proxy Host**.
+2.  **Domain Names**: `api.example.com` (Ensure you added this DNS record!)
+3.  **Forward Hostname / IP**: `mlm_backend_prod`
+4.  **Forward Port**: `3000`
+5.  **SSL Tab**: Same settings (Request new cert, Force SSL).
+
+### 5. Final Check
+Update your `VITE_API_URL` in `docker-compose.prod.yml` to point to the **HTTPS** version now:
+`VITE_API_URL: https://api.example.com` (or `https://example.com:3000` if you didn't proxy the API separately, but proxying is better).
+Then rebuild: `docker-compose -f docker-compose.prod.yml up -d --build frontend`
+
