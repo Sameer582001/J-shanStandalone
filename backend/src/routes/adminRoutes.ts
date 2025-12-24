@@ -29,4 +29,10 @@ router.post('/transfer-node', AdminController.transferNode);
 router.get('/fast-track/eligible', AdminController.getFastTrackClaims);
 router.post('/fast-track/settle', AdminController.settleFastTrackClaim);
 
+// Impersonate User (Ghost Login)
+router.post('/impersonate', AdminController.impersonateUser);
+
+// Manual User Migration
+router.post('/migrate-user', AdminController.migrateUser);
+
 export default router;

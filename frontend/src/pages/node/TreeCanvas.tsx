@@ -341,7 +341,7 @@ export default function TreeCanvas({
         <div className="relative w-full h-full" ref={containerRef}>
             <canvas
                 ref={canvasRef}
-                className="w-full h-full bg-dark-surface rounded-lg touch-none shadow-inner border border-gray-800"
+                className="w-full h-full bg-card rounded-lg touch-none shadow-inner border border-border"
                 style={{
                     cursor: 'grab',
                     touchAction: 'none'
@@ -360,21 +360,21 @@ export default function TreeCanvas({
             <div className="absolute top-4 right-4 flex flex-col gap-2 z-20">
                 <button
                     onClick={() => setScale(prev => Math.min(3, prev * 1.2))}
-                    className="p-2 bg-dark-surface hover:bg-gray-700 text-gray-200 rounded-lg border border-gray-700 shadow-sm transition-colors"
+                    className="p-2 bg-card hover:bg-muted text-foreground rounded-lg border border-border shadow-sm transition-colors"
                     aria-label="Zoom in"
                 >
                     +
                 </button>
                 <button
                     onClick={() => setScale(prev => Math.max(0.3, prev * 0.8))}
-                    className="p-2 bg-dark-surface hover:bg-gray-700 text-gray-200 rounded-lg border border-gray-700 shadow-sm transition-colors"
+                    className="p-2 bg-card hover:bg-muted text-foreground rounded-lg border border-border shadow-sm transition-colors"
                     aria-label="Zoom out"
                 >
                     -
                 </button>
                 <button
                     onClick={handleReset}
-                    className="px-3 py-2 bg-dark-surface hover:bg-gray-700 text-gray-200 rounded-lg border border-gray-700 shadow-sm transition-colors text-xs font-medium"
+                    className="px-3 py-2 bg-card hover:bg-muted text-foreground rounded-lg border border-border shadow-sm transition-colors text-xs font-medium"
                     aria-label="Reset view"
                 >
                     Reset
@@ -384,7 +384,7 @@ export default function TreeCanvas({
             {/* Hover Tooltip */}
             {hoveredNode && (
                 <div
-                    className="absolute pointer-events-none bg-dark-surface border border-gray-700 rounded-xl p-3 shadow-2xl z-30"
+                    className="absolute pointer-events-none bg-card border border-border rounded-xl p-3 shadow-2xl z-30"
                     style={{
                         left: '50%',
                         bottom: '20px',
@@ -393,14 +393,14 @@ export default function TreeCanvas({
                     }}
                 >
                     <div className="flex items-center gap-2 mb-2">
-                        <div className={`w-3 h-3 rounded-full ${hoveredNode.status === 'ACTIVE' ? 'bg-accent-teal' : 'bg-red-500'}`}></div>
-                        <p className="font-bold text-white">{hoveredNode.member_name}</p>
+                        <div className={`w-3 h-3 rounded-full ${hoveredNode.status === 'ACTIVE' ? 'bg-primary' : 'bg-red-500'}`}></div>
+                        <p className="font-bold text-foreground">{hoveredNode.member_name}</p>
                     </div>
 
-                    <div className="space-y-1 text-xs text-gray-400">
+                    <div className="space-y-1 text-xs text-muted-foreground">
                         <div className="flex justify-between">
                             <span>Refs:</span>
-                            <span className="font-semibold text-accent-cyan">{hoveredNode.direct_referrals_count || 0}</span>
+                            <span className="font-semibold text-secondary">{hoveredNode.direct_referrals_count || 0}</span>
                         </div>
                         <div className="flex justify-between">
                             <span>Level:</span>
@@ -412,34 +412,34 @@ export default function TreeCanvas({
 
             {/* Selected Node Details */}
             {selectedNode && (
-                <div className="absolute top-4 left-4 bg-dark-surface border border-gray-700 rounded-xl p-4 shadow-2xl max-w-xs z-30 animate-in fade-in slide-in-from-left-4 duration-200">
+                <div className="absolute top-4 left-4 bg-card border border-border rounded-xl p-4 shadow-2xl max-w-xs z-30 animate-in fade-in slide-in-from-left-4 duration-200">
                     <div className="flex items-start justify-between mb-4">
                         <div>
-                            <h3 className="font-bold text-lg text-white">{selectedNode.member_name}</h3>
+                            <h3 className="font-bold text-lg text-foreground">{selectedNode.member_name}</h3>
                             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${selectedNode.status === 'ACTIVE' ? 'bg-teal-900/50 text-teal-200' : 'bg-red-900/50 text-red-200'}`}>
                                 {selectedNode.status}
                             </span>
                         </div>
                         <button
                             onClick={() => setSelectedNode(null)}
-                            className="text-gray-500 hover:text-gray-300"
+                            className="text-muted-foreground hover:text-foreground"
                         >
                             <X className="w-5 h-5" />
                         </button>
                     </div>
 
                     <div className="space-y-2 text-sm">
-                        <div className="flex justify-between py-1 border-b border-gray-700">
-                            <span className="text-gray-400">ID:</span>
-                            <span className="font-medium text-gray-200">{selectedNode.id}</span>
+                        <div className="flex justify-between py-1 border-b border-border">
+                            <span className="text-muted-foreground">ID:</span>
+                            <span className="font-medium text-foreground">{selectedNode.id}</span>
                         </div>
-                        <div className="flex justify-between py-1 border-b border-gray-700">
-                            <span className="text-gray-400">Direct Referrals:</span>
-                            <span className="font-medium text-accent-cyan">{selectedNode.direct_referrals_count || 0}</span>
+                        <div className="flex justify-between py-1 border-b border-border">
+                            <span className="text-muted-foreground">Direct Referrals:</span>
+                            <span className="font-medium text-secondary">{selectedNode.direct_referrals_count || 0}</span>
                         </div>
                         {selectedNode.is_rebirth && selectedNode.origin_node_id && (
-                            <div className="flex justify-between py-1 border-b border-gray-700">
-                                <span className="text-gray-400">Origin Node:</span>
+                            <div className="flex justify-between py-1 border-b border-border">
+                                <span className="text-muted-foreground">Origin Node:</span>
                                 <span className="font-medium text-yellow-500">{selectedNode.origin_node_id}</span>
                             </div>
                         )}
@@ -447,9 +447,9 @@ export default function TreeCanvas({
                 </div>
             )}
 
-            <div className="absolute bottom-4 left-4 bg-dark-surface/90 backdrop-blur-sm border border-gray-700 rounded-lg p-3 text-xs text-gray-400 z-20 shadow-sm hidden md:block">
-                <p className="flex items-center gap-2"><span className="w-4 h-4 border border-gray-600 rounded flex items-center justify-center">🖱️</span> Drag to pan</p>
-                <p className="flex items-center gap-2 mt-1"><span className="w-4 h-4 border border-gray-600 rounded flex items-center justify-center">🔍</span> Scroll to zoom</p>
+            <div className="absolute bottom-4 left-4 bg-card/90 backdrop-blur-sm border border-border rounded-lg p-3 text-xs text-muted-foreground z-20 shadow-sm hidden md:block">
+                <p className="flex items-center gap-2"><span className="w-4 h-4 border border-border rounded flex items-center justify-center">🖱️</span> Drag to pan</p>
+                <p className="flex items-center gap-2 mt-1"><span className="w-4 h-4 border border-border rounded flex items-center justify-center">🔍</span> Scroll to zoom</p>
             </div>
         </div>
     );

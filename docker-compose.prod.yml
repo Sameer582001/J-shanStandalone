@@ -1,0 +1,71 @@
+services:
+  # 1. Database (PostgreSQL)
+  postgres:
+    image: postgres:15-alpine
+    container_name: mlm_postgres_prod
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+      POSTGRES_DB: mlm_database
+    # Ports removed for security (only accessible internally)
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+      - ./backend/src/database/schema.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # 2. Redis Cache
+  redis:
+    image: redis:alpine
+    container_name: mlm_redis_prod
+    restart: always
+    # Ports removed for security
+
+    # 3. Backend API
+  backend:
+    build:
+      context: ./backend
+      target: production # Explicitly target the production stage (though it is default)
+    container_name: mlm_backend_prod
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=adminpassword
+      - POSTGRES_DB=mlm_database
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - JWT_SECRET=super_secret_jwt_key_change_in_production
+      - DATABASE_URL=postgresql://admin:adminpassword@postgres:5432/mlm_database
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - SIB_API_KEY=${SIB_API_KEY} # Inject from host .env
+    # We need to expose Backend Port 3000 so the Frontend can reach it
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./backend/uploads:/app/uploads # Persist user uploads
+
+  # 4. Frontend (Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:3000 # Since Nginx serves this, the browser needs to know where API is. 
+        # CAUTION: If hosting properly, this should be the public domain/IP. 
+        # For local "prod" simulation, localhost:3000 works if user exposes 3000.
+        # But wait, we closed port 3000 on backend? 
+        # If backend 3000 is closed, frontend (browser) cannot reach it.
+        # We must expose backend 3000 OR use Nginx as a reverse proxy.
+        # Current Nginx config has commented out proxy.
+    container_name: mlm_frontend_prod
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata_prod:

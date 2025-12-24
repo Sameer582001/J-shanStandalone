@@ -42,6 +42,8 @@ services:
     depends_on:
       - postgres
       - redis
+    volumes:
+      - ./backend/uploads:/app/uploads
 
   # 4. The Frontend (Web)
   frontend:

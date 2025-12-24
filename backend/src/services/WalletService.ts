@@ -34,6 +34,9 @@ export class WalletService {
             throw error;
         }
     }
+    async creditMasterWallet(userId: number, amount: number, description: string, client: any = null) {
+        return this.creditFunds(userId, amount, description, client);
+    }
 
     // Deduct Funds (Internal Helper)
     async deductFunds(userId: number, amount: number, client: any = null) {
@@ -180,9 +183,9 @@ export class WalletService {
 
         if (amount < 500) throw new Error('Minimum withdrawal amount is ₹500');
 
-        const serviceCharge = amount * 0.05;
-        const tdsCharge = amount * 0.05;
-        const netAmount = amount - serviceCharge - tdsCharge;
+        const serviceCharge = 0;
+        const tdsCharge = 0;
+        const netAmount = amount;
 
         await query('BEGIN');
         try {
@@ -298,29 +301,51 @@ export class WalletService {
             }
 
             // Check Balance
+            // Check Balance
             const currentBalance = parseFloat(node.wallet_balance);
             if (currentBalance < amount) {
                 throw new Error('Insufficient node wallet balance');
             }
 
+            // Calculate Deductions & Net
+            const serviceCharge = amount * 0.05;
+            const tdsCharge = amount * 0.05;
+            const netAmount = amount - serviceCharge - tdsCharge;
+
             // 2. Debit Node Wallet
             await query('UPDATE Nodes SET wallet_balance = wallet_balance - $1 WHERE id = $2', [amount, nodeId]);
 
-            // 3. Credit Master Wallet
-            await query('UPDATE Users SET master_wallet_balance = master_wallet_balance + $1 WHERE id = $2', [amount, userId]);
+            // 3. Credit Master Wallet (Net Amount)
+            await query('UPDATE Users SET master_wallet_balance = master_wallet_balance + $1 WHERE id = $2', [netAmount, userId]);
 
-            // 4. Log Transaction (Debit from Node)
+            // 4. Log Transaction (Debit from Node - Full Amount)
             await query(
                 `INSERT INTO Transactions (wallet_owner_id, node_id, amount, type, description, status) 
                  VALUES ($1, $2, $3, 'DEBIT', 'Transfer to Master Wallet', 'COMPLETED')`,
                 [userId, nodeId, amount]
             );
 
-            // 5. Log Transaction (Credit to Master)
+            // 5. Log Transaction (Credit to Master - Net Amount)
             await query(
                 `INSERT INTO Transactions (wallet_owner_id, amount, type, description, status) 
                  VALUES ($1, $2, 'CREDIT', $3, 'COMPLETED')`,
-                [userId, amount, `Transfer from Node ${node.referral_code}`]
+                [userId, netAmount, `Transfer from Node ${node.referral_code}`]
+            );
+
+            // 6. Log Deductions (Zero-Value Information Logs)
+            // We credit the Net Amount, so we don't deduct these from the balance again.
+            // We log them with 0 amount so the user sees the record but balance math stays consistent.
+
+            await query(
+                `INSERT INTO Transactions (wallet_owner_id, amount, type, description, status) 
+                 VALUES ($1, $2, 'DEBIT', $3, 'COMPLETED')`,
+                [userId, 0, `Service Charge (5%): ₹${serviceCharge.toFixed(2)}`]
+            );
+
+            await query(
+                `INSERT INTO Transactions (wallet_owner_id, amount, type, description, status) 
+                 VALUES ($1, $2, 'DEBIT', $3, 'COMPLETED')`,
+                [userId, 0, `TDS Deduction (5%): ₹${tdsCharge.toFixed(2)}`]
             );
 
             await query('COMMIT');

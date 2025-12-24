@@ -79,7 +79,7 @@ const AdminLogin: React.FC = () => {
                                 {error}
                             </div>
                         )}
-                        <div className="bg-gray-800 p-4 rounded-md space-y-4">
+                        <div className="bg-card p-4 rounded-md space-y-4">
                             <h3 className="text-sm font-bold text-gray-400 uppercase">1. System Admin (For Login)</h3>
                             <input
                                 type="text" required placeholder="Admin Mobile"
@@ -93,7 +93,7 @@ const AdminLogin: React.FC = () => {
                             />
                         </div>
 
-                        <div className="bg-gray-800 p-4 rounded-md space-y-4">
+                        <div className="bg-card p-4 rounded-md space-y-4">
                             <h3 className="text-sm font-bold text-gray-400 uppercase">2. Root User (First Member)</h3>
                             <input
                                 type="text" required placeholder="Root User Name"
@@ -129,22 +129,22 @@ const AdminLogin: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8">
                 <div>
-                    <div className="mx-auto h-12 w-12 text-indigo-500 flex justify-center">
+                    <div className="mx-auto h-12 w-12 text-primary flex justify-center">
                         <ShieldAlert className="w-12 h-12" />
                     </div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
+                    <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">
                         Restricted Access
                     </h2>
-                    <p className="mt-2 text-center text-sm text-gray-400">
+                    <p className="mt-2 text-center text-sm text-muted-foreground">
                         Authorized Personnel Only
                     </p>
                 </div>
                 <form className="mt-8 space-y-6" onSubmit={handleLoginSubmit}>
                     {error && (
-                        <div className="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded relative" role="alert">
+                        <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded relative" role="alert">
                             <span className="block sm:inline">{error}</span>
                         </div>
                     )}
@@ -158,7 +158,7 @@ const AdminLogin: React.FC = () => {
                                 name="mobile"
                                 type="text"
                                 required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-700 placeholder-gray-500 text-white bg-gray-800 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-border placeholder-muted-foreground text-foreground bg-card rounded-t-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                                 placeholder="Admin Mobile"
                                 value={mobile}
                                 onChange={(e) => setMobile(e.target.value)}
@@ -173,7 +173,7 @@ const AdminLogin: React.FC = () => {
                                 name="password"
                                 type="password"
                                 required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-700 placeholder-gray-500 text-white bg-gray-800 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-border placeholder-muted-foreground text-foreground bg-card rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                                 placeholder="Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -184,7 +184,7 @@ const AdminLogin: React.FC = () => {
                     <div>
                         <button
                             type="submit"
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                         >
                             Authenticate
                         </button>

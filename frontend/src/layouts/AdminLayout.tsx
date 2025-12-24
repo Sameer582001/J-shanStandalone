@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, LogOut, Users, Settings, CreditCard, Gift } from 'lucide-react';
+import { LayoutDashboard, Users, CreditCard, Settings, LogOut, Megaphone, Image as ImageIcon, Gift, FileText, UserPlus } from 'lucide-react';
 
 const AdminLayout: React.FC = () => {
     const navigate = useNavigate();
@@ -28,51 +28,86 @@ const AdminLayout: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-dark-bg flex text-white">
+        <div className="min-h-screen bg-background flex text-foreground">
             {/* Sidebar */}
-            <aside className="w-64 bg-dark-surface shadow-md hidden md:block border-r border-gray-800">
-                <div className="p-6">
-                    <h1 className="text-2xl font-bold text-accent-cyan tracking-tight">Admin Panel</h1>
+            <aside className="w-64 glass-panel hidden md:block m-4 rounded-xl h-[calc(100vh-2rem)] flex flex-col fixed left-0 top-0">
+                <div className="p-6 border-b border-white/10">
+                    <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-red-600 tracking-tight">Admin Panel</h1>
                 </div>
-                <nav className="mt-6">
+                <nav className="mt-6 px-4 space-y-1 flex-1 overflow-y-auto">
                     <Link
                         to="/admin/dashboard"
-                        className="flex items-center px-6 py-3 text-gray-400 hover:bg-dark-bg hover:text-accent-cyan transition-colors"
+                        className="flex items-center px-4 py-3 text-muted-foreground hover:bg-white/5 hover:text-primary rounded-xl transition-all font-medium"
                     >
                         <LayoutDashboard className="w-5 h-5 mr-3" />
                         Dashboard
                     </Link>
                     <Link
                         to="/admin/users"
-                        className="flex items-center px-6 py-3 text-gray-400 hover:bg-dark-bg hover:text-accent-cyan transition-colors"
+                        className="flex items-center px-4 py-3 text-muted-foreground hover:bg-white/5 hover:text-primary rounded-xl transition-all font-medium"
                     >
                         <Users className="w-5 h-5 mr-3" />
                         Users
                     </Link>
                     <Link
+                        to="/admin/migration"
+                        className="flex items-center px-4 py-3 text-muted-foreground hover:bg-white/5 hover:text-primary rounded-xl transition-all font-medium"
+                    >
+                        <UserPlus className="w-5 h-5 mr-3" />
+                        Migration Tool
+                    </Link>
+                    <Link
                         to="/admin/payouts"
-                        className="flex items-center px-6 py-3 text-gray-400 hover:bg-dark-bg hover:text-accent-cyan transition-colors"
+                        className="flex items-center px-4 py-3 text-muted-foreground hover:bg-white/5 hover:text-primary rounded-xl transition-all font-medium"
                     >
                         <CreditCard className="w-5 h-5 mr-3" />
                         Payouts
                     </Link>
                     <Link
                         to="/admin/fund-requests"
-                        className="flex items-center px-6 py-3 text-gray-400 hover:bg-dark-bg hover:text-accent-cyan transition-colors"
+                        className="flex items-center px-4 py-3 text-muted-foreground hover:bg-white/5 hover:text-primary rounded-xl transition-all font-medium"
                     >
                         <CreditCard className="w-5 h-5 mr-3" />
                         Fund Requests
                     </Link>
                     <Link
                         to="/admin/fast-track"
-                        className="flex items-center px-6 py-3 text-gray-400 hover:bg-dark-bg hover:text-accent-cyan transition-colors"
+                        className="flex items-center px-4 py-3 text-muted-foreground hover:bg-white/5 hover:text-primary rounded-xl transition-all font-medium"
                     >
                         <Gift className="w-5 h-5 mr-3" />
                         Fast Track
                     </Link>
                     <Link
+                        to="/admin/news"
+                        className="flex items-center px-4 py-3 text-muted-foreground hover:bg-white/5 hover:text-primary rounded-xl transition-all font-medium"
+                    >
+                        <Megaphone className="w-5 h-5 mr-3" />
+                        News & Updates
+                    </Link>
+                    <Link
+                        to="/admin/gallery"
+                        className="flex items-center px-4 py-3 text-muted-foreground hover:bg-white/5 hover:text-primary rounded-xl transition-all font-medium"
+                    >
+                        <ImageIcon className="w-5 h-5 mr-3" />
+                        Awards Gallery
+                    </Link>
+                    <Link
+                        to="/admin/documents"
+                        className="flex items-center px-4 py-3 text-muted-foreground hover:bg-white/5 hover:text-primary rounded-xl transition-all font-medium"
+                    >
+                        <FileText className="w-5 h-5 mr-3" />
+                        Legal Docs
+                    </Link>
+                    <Link
+                        to="/admin/tickets"
+                        className="flex items-center px-4 py-3 text-muted-foreground hover:bg-white/5 hover:text-primary rounded-xl transition-all font-medium"
+                    >
+                        <Megaphone className="w-5 h-5 mr-3" />
+                        Tickets
+                    </Link>
+                    <Link
                         to="/admin/settings"
-                        className="flex items-center px-6 py-3 text-gray-400 hover:bg-dark-bg hover:text-accent-cyan transition-colors"
+                        className="flex items-center px-4 py-3 text-muted-foreground hover:bg-white/5 hover:text-primary rounded-xl transition-all font-medium"
                     >
                         <Settings className="w-5 h-5 mr-3" />
                         Settings
@@ -81,19 +116,19 @@ const AdminLayout: React.FC = () => {
             </aside>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col md:ml-72 transition-all duration-300">
                 {/* Topbar */}
-                <header className="bg-dark-surface shadow-sm h-16 flex items-center justify-between px-6 border-b border-gray-800">
+                <header className="glass-panel mx-4 mt-4 rounded-xl shadow-sm h-16 flex items-center justify-between px-6 z-10 sticky top-4">
                     <div className="md:hidden">
-                        <h1 className="text-xl font-bold text-accent-cyan">Admin</h1>
+                        <h1 className="text-xl font-bold text-primary">Admin</h1>
                     </div>
                     <div className="flex items-center space-x-4 ml-auto">
-                        <div className="flex items-center text-gray-300">
-                            <span className="text-sm font-medium text-accent-teal">Administrator</span>
+                        <div className="flex items-center text-muted-foreground">
+                            <span className="text-sm font-medium text-primary">Administrator</span>
                         </div>
                         <button
                             onClick={handleLogout}
-                            className="flex items-center text-gray-400 hover:text-red-400 transition-colors"
+                            className="flex items-center text-muted-foreground hover:text-red-500 transition-colors"
                             title="Logout"
                         >
                             <LogOut className="w-5 h-5" />
@@ -102,7 +137,7 @@ const AdminLayout: React.FC = () => {
                 </header>
 
                 {/* Page Content */}
-                <main className="flex-1 p-6 overflow-auto bg-dark-bg">
+                <main className="flex-1 p-6 overflow-auto bg-background">
                     <Outlet />
                 </main>
             </div>

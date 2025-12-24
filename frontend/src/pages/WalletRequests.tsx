@@ -23,9 +23,7 @@ const WalletRequests: React.FC = () => {
 
     // Calculated values
     const numAmount = parseFloat(amount) || 0;
-    const serviceCharge = numAmount * 0.05;
-    const tdsCharge = numAmount * 0.05;
-    const netAmount = numAmount - serviceCharge - tdsCharge;
+    const netAmount = numAmount;
 
     const fetchRequests = async () => {
         try {
@@ -82,16 +80,16 @@ const WalletRequests: React.FC = () => {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-accent-cyan">Withdrawal Requests</h2>
+            <h2 className="text-2xl font-bold text-secondary">Withdrawal Requests</h2>
 
             {/* Request Form */}
-            <div className="bg-dark-surface p-6 rounded-xl shadow-sm border border-gray-800">
-                <h3 className="text-lg font-semibold mb-4 text-white">New Request</h3>
+            <div className="bg-card p-6 rounded-xl shadow-sm border border-border">
+                <h3 className="text-lg font-semibold mb-4 text-card-foreground">New Request</h3>
 
                 {!hasBankDetails && (
-                    <div className="mb-4 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-200 text-sm flex items-center justify-between">
+                    <div className="mb-4 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-500 text-sm flex items-center justify-between">
                         <span>You must complete your Bank Details to request a withdrawal.</span>
-                        <a href="/profile" className="px-3 py-1 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-200 rounded-md transition-colors font-medium text-xs">
+                        <a href="/profile" className="px-3 py-1 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-500 rounded-md transition-colors font-medium text-xs">
                             Go to Profile
                         </a>
                     </div>
@@ -99,33 +97,28 @@ const WalletRequests: React.FC = () => {
 
                 <form onSubmit={handleRequest} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-1">Amount (₹)</label>
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Amount (₹)</label>
                         <input
                             type="number"
                             min="500"
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
-                            className="block w-full rounded-md border-gray-700 bg-dark-bg text-white shadow-sm focus:border-accent-teal focus:ring-accent-teal sm:text-sm p-2 border placeholder-gray-500 outline-none"
+                            className="block w-full rounded-md border-input bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2 border placeholder-muted-foreground outline-none"
                             placeholder="Min ₹500"
                             required
                         />
                         {numAmount > 0 && (
-                            <div className="mt-2 text-sm text-gray-400 space-y-1">
+                            <div className="mt-2 text-sm text-muted-foreground space-y-1">
                                 <div className="flex justify-between">
                                     <span>Requested Amount:</span>
-                                    <span className="text-white">₹{numAmount.toFixed(2)}</span>
+                                    <span className="text-foreground">₹{numAmount.toFixed(2)}</span>
                                 </div>
-                                <div className="flex justify-between text-yellow-500/80">
-                                    <span>Service Charge (5%):</span>
-                                    <span>- ₹{serviceCharge.toFixed(2)}</span>
-                                </div>
-                                <div className="flex justify-between text-yellow-500/80">
-                                    <span>TDS (5%):</span>
-                                    <span>- ₹{tdsCharge.toFixed(2)}</span>
-                                </div>
-                                <div className="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-green-400">
+                                <div className="border-t border-border pt-1 mt-1 flex justify-between font-bold text-green-500">
                                     <span>Net Receivable:</span>
                                     <span>₹{netAmount.toFixed(2)}</span>
+                                </div>
+                                <div className="text-xs text-muted-foreground mt-1">
+                                    * No deductions on withdrawal. Charges applied during Transfer to Master Wallet.
                                 </div>
                             </div>
                         )}
@@ -134,7 +127,7 @@ const WalletRequests: React.FC = () => {
                     <button
                         type="submit"
                         disabled={loading || numAmount < 500 || !hasBankDetails}
-                        className="w-full px-6 py-2 bg-accent-teal text-white rounded-md font-medium hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="w-full px-6 py-2 bg-primary text-primary-foreground rounded-md font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                         {loading ? 'Processing...' : 'Submit Request'}
                     </button>
@@ -147,36 +140,36 @@ const WalletRequests: React.FC = () => {
             </div>
 
             {/* History Table */}
-            <div className="bg-dark-surface rounded-xl shadow-sm border border-gray-800 overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-800">
-                    <h3 className="text-lg font-semibold text-white">Request History</h3>
+            <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
+                <div className="px-6 py-4 border-b border-border">
+                    <h3 className="text-lg font-semibold text-card-foreground">Request History</h3>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-800">
-                        <thead className="bg-dark-bg">
+                    <table className="min-w-full divide-y divide-border">
+                        <thead className="bg-muted/50">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Gross</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Deductions</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Net</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Note</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Gross</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Deductions</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Net</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Note</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-dark-surface divide-y divide-gray-800">
+                        <tbody className="bg-card divide-y divide-border">
                             {requests.map((req) => (
                                 <tr key={req.id}>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                                         {new Date(req.created_at).toLocaleDateString()}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                                         ₹{req.amount}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-red-300">
+                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-red-500/80">
                                         <div>S: ₹{req.service_charge || '0.00'}</div>
                                         <div>T: ₹{req.tds_charge || '0.00'}</div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-400">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-500">
                                         ₹{req.net_amount || req.amount}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
@@ -187,14 +180,14 @@ const WalletRequests: React.FC = () => {
                                             {req.status}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-400">
+                                    <td className="px-6 py-4 text-sm text-muted-foreground">
                                         {req.admin_note || '-'}
                                     </td>
                                 </tr>
                             ))}
                             {requests.length === 0 && (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-4 text-center text-gray-500">No history found.</td>
+                                    <td colSpan={6} className="px-6 py-4 text-center text-muted-foreground">No history found.</td>
                                 </tr>
                             )}
                         </tbody>

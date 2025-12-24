@@ -67,6 +67,7 @@ export default function AdminFastTrack() {
                                     <TableHead className="text-slate-400">User</TableHead>
                                     <TableHead className="text-slate-400">Referrals</TableHead>
                                     <TableHead className="text-slate-400">Reward</TableHead>
+                                    <TableHead className="text-slate-400">Time Left</TableHead>
                                     <TableHead className="text-slate-400">Status</TableHead>
                                     <TableHead className="text-slate-400">Actions</TableHead>
                                 </TableRow>
@@ -81,20 +82,32 @@ export default function AdminFastTrack() {
                                                 <span className="text-xs text-slate-500">{claim.mobile}</span>
                                             </div>
                                         </TableCell>
-                                        <TableCell>{claim.achieved_tier_referrals}</TableCell>
-                                        <TableCell className="text-yellow-400 font-bold">₹{claim.reward_value}</TableCell>
+                                        <TableCell className="font-mono text-lg">{claim.achieved_tier_referrals}</TableCell>
+                                        <TableCell className={`font-bold ${claim.status === 'PENDING' ? 'text-slate-500' : 'text-yellow-400'}`}>
+                                            ₹{claim.reward_value}
+                                        </TableCell>
                                         <TableCell>
-                                            {claim.status === 'CLAIMED' ? (
-                                                <span className="text-green-400 text-xs bg-green-900/30 px-2 py-1 rounded">CLAIMED</span>
+                                            {claim.status === 'PENDING' ? (
+                                                <span className="text-orange-400 font-medium">{claim.days_remaining} Days</span>
                                             ) : (
+                                                <span className="text-slate-600">-</span>
+                                            )}
+                                        </TableCell>
+                                        <TableCell>
+                                            {claim.status === 'CLAIMED' && (
+                                                <span className="text-green-400 text-xs bg-green-900/30 px-2 py-1 rounded">CLAIMED</span>
+                                            )}
+                                            {claim.status === 'ELIGIBLE' && (
                                                 <span className="text-blue-400 text-xs bg-blue-900/30 px-2 py-1 rounded">ELIGIBLE</span>
+                                            )}
+                                            {claim.status === 'PENDING' && (
+                                                <span className="text-yellow-500 text-xs bg-yellow-900/30 px-2 py-1 rounded">ACTIVE</span>
                                             )}
                                         </TableCell>
                                         <TableCell>
                                             {claim.status === 'ELIGIBLE' && (
                                                 <Button
-                                                    size="sm"
-                                                    className="bg-purple-600 hover:bg-purple-700"
+                                                    className="bg-purple-600 hover:bg-purple-700 h-8 px-3 text-xs"
                                                     onClick={() => setSelectedClaim(claim)}
                                                 >
                                                     Settle
@@ -102,6 +115,9 @@ export default function AdminFastTrack() {
                                             )}
                                             {claim.status === 'CLAIMED' && (
                                                 <span className="text-xs text-gray-500 break-all">{claim.product_codes}</span>
+                                            )}
+                                            {claim.status === 'PENDING' && (
+                                                <span className="text-xs text-slate-600 italic">In Progress</span>
                                             )}
                                         </TableCell>
                                     </TableRow>
@@ -129,7 +145,7 @@ export default function AdminFastTrack() {
                         />
                     </div>
                     <DialogFooter>
-                        <Button variant="ghost" onClick={() => setSelectedClaim(null)}>Cancel</Button>
+                        <Button className="bg-transparent hover:bg-slate-800 text-slate-300 hover:text-white" onClick={() => setSelectedClaim(null)}>Cancel</Button>
                         <Button
                             className="bg-purple-600 hover:bg-purple-700"
                             onClick={handleSettle}

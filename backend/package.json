@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/multer": "^2.0.0",
     "bcrypt": "^6.0.0",
     "bullmq": "^5.65.1",
     "cors": "^2.8.5",
@@ -20,11 +21,13 @@
     "express": "^5.2.1",
     "express-validator": "^7.3.1",
     "helmet": "^8.1.0",
-    "jsonwebtoken": "^9.0.2",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.0.2",
     "node-fetch": "^3.3.2",
-    "nodemailer": "^7.0.11",
+    "nodemailer": "^7.0.12",
     "pg": "^8.16.3",
     "redis": "^5.10.0",
+    "sib-api-v3-sdk": "^8.5.0",
     "socket.io": "^4.8.1",
     "swagger-ui-express": "^5.0.1"
   },

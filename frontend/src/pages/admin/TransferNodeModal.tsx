@@ -47,15 +47,15 @@ export const TransferNodeModal: React.FC<TransferNodeModalProps> = ({ isOpen, on
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="bg-dark-surface border border-gray-700 rounded-xl p-6 w-full max-w-md shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            <div className="bg-card border border-border rounded-xl p-6 w-full max-w-md shadow-2xl relative animate-in fade-in zoom-in duration-200">
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-500 hover:text-white"
+                    className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
                 >
                     <X className="w-5 h-5" />
                 </button>
 
-                <h2 className="text-xl font-bold text-white mb-6">Transfer Node Ownership</h2>
+                <h2 className="text-xl font-bold text-foreground mb-6">Transfer Node Ownership</h2>
 
                 {step === 1 ? (
                     <div className="space-y-4">
@@ -67,29 +67,29 @@ export const TransferNodeModal: React.FC<TransferNodeModalProps> = ({ isOpen, on
                         </div>
 
                         <div>
-                            <label className="block text-xs font-medium text-gray-400 mb-1">Target Node ID (Source)</label>
+                            <label className="block text-xs font-medium text-muted-foreground mb-1">Target Node ID (Source)</label>
                             <div className="relative">
-                                <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
+                                <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
                                 <input
                                     type="number"
                                     value={targetNodeId}
                                     onChange={(e) => setTargetNodeId(e.target.value)}
                                     placeholder="Enter Node ID (e.g. 105)"
-                                    className="w-full bg-dark-bg border border-gray-700 text-white rounded-lg pl-10 pr-4 py-2 focus:ring-2 focus:ring-accent-teal focus:border-transparent outline-none transition-all"
+                                    className="w-full bg-background border border-border text-foreground rounded-lg pl-10 pr-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-xs font-medium text-gray-400 mb-1">New Owner User ID (Destination)</label>
+                            <label className="block text-xs font-medium text-muted-foreground mb-1">New Owner User ID (Destination)</label>
                             <div className="relative">
-                                <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
+                                <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
                                 <input
                                     type="number"
                                     value={newOwnerId}
                                     onChange={(e) => setNewOwnerId(e.target.value)}
                                     placeholder="Enter User ID (e.g. 5)"
-                                    className="w-full bg-dark-bg border border-gray-700 text-white rounded-lg pl-10 pr-4 py-2 focus:ring-2 focus:ring-accent-teal focus:border-transparent outline-none transition-all"
+                                    className="w-full bg-background border border-border text-foreground rounded-lg pl-10 pr-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                 />
                             </div>
                         </div>
@@ -97,7 +97,7 @@ export const TransferNodeModal: React.FC<TransferNodeModalProps> = ({ isOpen, on
                         <button
                             onClick={handleTransfer}
                             disabled={isLoading}
-                            className="w-full flex items-center justify-center gap-2 py-2.5 bg-accent-teal hover:bg-teal-600 text-white font-semibold rounded-lg transition-all mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-center gap-2 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg transition-all mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isLoading ? (
                                 <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -110,18 +110,18 @@ export const TransferNodeModal: React.FC<TransferNodeModalProps> = ({ isOpen, on
                     </div>
                 ) : (
                     <div className="text-center py-6 space-y-4">
-                        <div className="w-16 h-16 bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
-                            <CheckCircle className="w-8 h-8 text-green-400" />
+                        <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto">
+                            <CheckCircle className="w-8 h-8 text-green-500" />
                         </div>
-                        <h3 className="text-lg font-bold text-white">Transfer Complete</h3>
-                        <div className="text-sm text-gray-400 bg-dark-bg p-4 rounded-lg border border-gray-800 text-left space-y-2">
+                        <h3 className="text-lg font-bold text-foreground">Transfer Complete</h3>
+                        <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg border border-border text-left space-y-2">
                             <p><strong>Message:</strong> {result?.message}</p>
                             <p><strong>Rebirths Moved:</strong> {result?.rebirthsTransferred}</p>
                             <p><strong>Balance Moved:</strong> ₹{result?.nodeBalance}</p>
                         </div>
                         <button
                             onClick={() => { setStep(1); setTargetNodeId(''); setNewOwnerId(''); onClose(); }}
-                            className="w-full py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                            className="w-full py-2 bg-muted hover:bg-muted/80 text-foreground rounded-lg transition-colors border border-border"
                         >
                             Close
                         </button>

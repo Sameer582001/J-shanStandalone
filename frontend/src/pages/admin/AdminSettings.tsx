@@ -37,20 +37,20 @@ const AdminSettings: React.FC = () => {
 
     return (
         <div className="max-w-4xl mx-auto space-y-8">
-            <h2 className="text-2xl font-bold text-accent-cyan flex items-center">
+            <h2 className="text-2xl font-bold text-secondary flex items-center">
                 <Shield className="w-6 h-6 mr-2" />
                 Admin Settings
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Password Reset Card */}
-                <div className="bg-dark-surface rounded-xl shadow-lg border border-gray-800 overflow-hidden h-full">
-                    <div className="p-6 border-b border-gray-800 bg-gray-800/20">
-                        <h3 className="text-lg font-semibold text-white flex items-center">
-                            <Lock className="w-5 h-5 mr-2 text-accent-teal" />
+                <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden h-full">
+                    <div className="p-6 border-b border-border bg-muted/20">
+                        <h3 className="text-lg font-semibold text-card-foreground flex items-center">
+                            <Lock className="w-5 h-5 mr-2 text-primary" />
                             Force User Password Reset
                         </h3>
-                        <p className="text-sm text-gray-400 mt-1">
+                        <p className="text-sm text-muted-foreground mt-1">
                             Reset any user's password without needing their old password.
                         </p>
                     </div>
@@ -58,29 +58,29 @@ const AdminSettings: React.FC = () => {
                         <form onSubmit={handleResetPassword} className="space-y-6">
                             {/* Inputs ... (Refactored to be cleaner if needed, but keeping existing structure) */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-1">Target User (ID or Email)</label>
+                                <label className="block text-sm font-medium text-muted-foreground mb-1">Target User (ID or Email)</label>
                                 <div className="relative">
-                                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500 pointer-events-none" />
+                                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
                                     <input
                                         type="text"
                                         required
                                         value={userIdOrEmail}
                                         onChange={(e) => setUserIdOrEmail(e.target.value)}
-                                        className="block w-full pl-10 rounded-md border-gray-700 bg-dark-bg text-white shadow-sm focus:border-accent-teal focus:ring-accent-teal sm:text-sm p-2.5 outline-none"
+                                        className="block w-full pl-10 rounded-md border-input bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2.5 outline-none"
                                         placeholder="e.g., 2 or user@example.com"
                                     />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-1">New Password</label>
+                                <label className="block text-sm font-medium text-muted-foreground mb-1">New Password</label>
                                 <div className="relative">
-                                    <Lock className="absolute left-3 top-2.5 h-4 w-4 text-gray-500 pointer-events-none" />
+                                    <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
                                     <input
                                         type="password"
                                         required
                                         value={newPassword}
                                         onChange={(e) => setNewPassword(e.target.value)}
-                                        className="block w-full pl-10 rounded-md border-gray-700 bg-dark-bg text-white shadow-sm focus:border-accent-teal focus:ring-accent-teal sm:text-sm p-2.5 outline-none"
+                                        className="block w-full pl-10 rounded-md border-input bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2.5 outline-none"
                                         placeholder="Enter new secure password"
                                         minLength={6}
                                     />
@@ -95,7 +95,7 @@ const AdminSettings: React.FC = () => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className={`w-full py-2 px-4 rounded-md shadow-sm text-sm font-medium text-white bg-accent-teal hover:bg-teal-700 focus:outline-none transition-all ${loading ? 'opacity-70' : ''}`}
+                                className={`w-full py-2 px-4 rounded-md shadow-sm text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none transition-all ${loading ? 'opacity-70' : ''}`}
                             >
                                 {loading ? 'Resetting...' : 'Reset Password'}
                             </button>
@@ -104,13 +104,13 @@ const AdminSettings: React.FC = () => {
                 </div>
 
                 {/* Node Management Card */}
-                <div className="bg-dark-surface rounded-xl shadow-lg border border-gray-800 overflow-hidden h-full flex flex-col">
-                    <div className="p-6 border-b border-gray-800 bg-gray-800/20">
-                        <h3 className="text-lg font-semibold text-white flex items-center">
+                <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden h-full flex flex-col">
+                    <div className="p-6 border-b border-border bg-muted/20">
+                        <h3 className="text-lg font-semibold text-card-foreground flex items-center">
                             <Shield className="w-5 h-5 mr-2 text-purple-400" />
                             Node Management
                         </h3>
-                        <p className="text-sm text-gray-400 mt-1">
+                        <p className="text-sm text-muted-foreground mt-1">
                             Critical actions for managing node ownership and structure.
                         </p>
                     </div>
@@ -131,13 +131,13 @@ const AdminSettings: React.FC = () => {
                 </div>
 
                 {/* QR Payment Settings Card */}
-                <div className="bg-dark-surface rounded-xl shadow-lg border border-gray-800 overflow-hidden h-full flex flex-col md:col-span-2">
-                    <div className="p-6 border-b border-gray-800 bg-gray-800/20">
-                        <h3 className="text-lg font-semibold text-white flex items-center">
-                            <Shield className="w-5 h-5 mr-2 text-accent-gold" />
+                <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden h-full flex flex-col md:col-span-2">
+                    <div className="p-6 border-b border-border bg-muted/20">
+                        <h3 className="text-lg font-semibold text-card-foreground flex items-center">
+                            <Shield className="w-5 h-5 mr-2 text-yellow-500" />
                             Payment Settings (QR Code)
                         </h3>
-                        <p className="text-sm text-gray-400 mt-1">
+                        <p className="text-sm text-muted-foreground mt-1">
                             Manage the QR Code and UPI ID displayed to users for adding funds.
                         </p>
                     </div>
@@ -191,23 +191,23 @@ function QrSettingsForm() {
         <form onSubmit={handleUpdate} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Payee Name (Checking Name)</label>
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">Payee Name (Checking Name)</label>
                     <input
                         type="text"
                         value={payeeName}
                         onChange={e => setPayeeName(e.target.value)}
-                        className="w-full bg-dark-bg border border-gray-700 rounded px-3 py-2 text-white outline-none focus:border-accent-gold"
+                        className="w-full bg-background border border-input rounded px-3 py-2 text-foreground outline-none focus:border-primary"
                         placeholder="e.g. John Doe / My Business"
                     />
-                    <p className="text-xs text-gray-500 mt-1">This name will appear when users scan the QR.</p>
+                    <p className="text-xs text-muted-foreground mt-1">This name will appear when users scan the QR.</p>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">UPI ID (Required)</label>
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">UPI ID (Required)</label>
                     <input
                         type="text"
                         value={upiId}
                         onChange={e => setUpiId(e.target.value)}
-                        className="w-full bg-dark-bg border border-gray-700 rounded px-3 py-2 text-white outline-none focus:border-accent-gold"
+                        className="w-full bg-background border border-input rounded px-3 py-2 text-foreground outline-none focus:border-primary"
                         placeholder="merchant@upi"
                         required
                     />
@@ -222,7 +222,7 @@ function QrSettingsForm() {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="bg-accent-gold hover:bg-yellow-600 text-black font-bold py-2 px-6 rounded shadow-lg transition-colors"
+                    className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-6 rounded shadow-lg transition-colors"
                 >
                     {loading ? 'Saving...' : 'Save Payment Settings'}
                 </button>

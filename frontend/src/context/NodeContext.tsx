@@ -8,6 +8,8 @@ interface Node {
     walletBalance: string;
     selfPoolTeam?: number;
     autoPoolTeam?: number;
+    selfPoolLevel?: number;
+    autoPoolLevel?: number;
     direct_referrals_count: number;
 }
 

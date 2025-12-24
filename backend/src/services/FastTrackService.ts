@@ -131,15 +131,80 @@ export class FastTrackService {
     }
 
     async getEligibleList() {
-        // Returns list of finalized records + maybe pending ones close to completion? 
-        // Request implies "who all got clamed... settle a clame". So focus on Eligible/Claimed.
-        const res = await query(`
-            SELECT ft.*, u.full_name as user_name, u.email, u.mobile 
+        // 1. Get Finalized/Eligible/Claimed from DB
+        const finalizedRes = await query(`
+            SELECT ft.*, u.full_name as user_name, u.email, u.mobile, 0 as days_remaining 
             FROM FastTrackBenefits ft
             JOIN Users u ON ft.user_id = u.id
-            ORDER BY ft.created_at DESC
         `);
-        return res.rows;
+        const finalized = finalizedRes.rows.map(row => ({
+            ...row,
+            is_active: false,
+            reward_value: parseFloat(row.reward_value) // Ensure number
+        }));
+
+        // 2. Get Active Nodes (Created within last 10 days, NOT in FastTrackBenefits)
+        // We also need their current referral count
+        const activeRes = await query(`
+            SELECT 
+                n.id as node_id, 
+                n.created_at, 
+                n.owner_user_id as user_id,
+                u.full_name as user_name, 
+                u.mobile,
+                (SELECT COUNT(*) FROM Nodes r WHERE r.sponsor_node_id = n.id) as achieved_tier_referrals
+            FROM Nodes n
+            JOIN Users u ON n.owner_user_id = u.id
+            WHERE n.created_at > NOW() - INTERVAL '10 days'
+            AND n.id NOT IN (SELECT node_id FROM FastTrackBenefits)
+        `);
+
+        // Helper to calculate active status
+        const now = new Date();
+        const tenDaysMs = 10 * 24 * 60 * 60 * 1000;
+
+        const active = activeRes.rows.map(row => {
+            const createdAt = new Date(row.created_at);
+            const expiryDate = new Date(createdAt.getTime() + tenDaysMs);
+            const remainingMs = expiryDate.getTime() - now.getTime();
+            const daysRemaining = Math.max(0, Math.ceil(remainingMs / (1000 * 60 * 60 * 24)));
+
+            // Determine potential reward tier for display
+            const currentCount = parseInt(row.achieved_tier_referrals);
+            const tier = this.determineTier(currentCount);
+
+            return {
+                id: `active-${row.node_id}`, // Temp ID for frontend key
+                node_id: row.node_id,
+                user_id: row.user_id,
+                user_name: row.user_name,
+                mobile: row.mobile,
+                achieved_tier_referrals: currentCount,
+                reward_value: tier ? tier.reward_value : 0,
+                status: 'PENDING',
+                product_codes: null,
+                days_remaining: daysRemaining,
+                is_active: true
+            };
+        });
+
+        // 3. Merge and Sort
+        // "one who is very near to clame should be show on very top" -> Sort by Referrals DESC
+        const combined = [...finalized, ...active];
+
+        combined.sort((a, b) => {
+            // Primary: Status Priority (Eligible > Pending > Claimed) ? 
+            // Or just pure referral count as requested? 
+            // "progress... near to clame" implies referral count is key.
+            // Let's sort by Referrals DESC.
+            if (b.achieved_tier_referrals !== a.achieved_tier_referrals) {
+                return b.achieved_tier_referrals - a.achieved_tier_referrals;
+            }
+            // Secondary: If referrals equal, prioritize those with LESS time remaining (urgent)
+            return a.days_remaining - b.days_remaining;
+        });
+
+        return combined;
     }
 
     async settleClaim(claimId: number, productCodes: string) {

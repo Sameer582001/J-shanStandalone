@@ -25,3 +25,25 @@ yarn-error.log*
 
 # Docker
 .dockerignore
+
+# Backend Data
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/dist/
+backend/coverage/
+
+# Frontend Build
+frontend/dist/
+frontend/node_modules/
+
+# IDE & System
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Documentation artifacts if not needed (optional)
+# DEPLOYMENT.md
+

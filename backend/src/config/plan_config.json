@@ -203,5 +203,9 @@
     "governance": {
         "inactivity_days_limit": 30,
         "min_referrals_to_withdraw": 3
+    },
+    "admin": {
+        "mobile": "9999999999",
+        "password": "admin"
     }
 }
