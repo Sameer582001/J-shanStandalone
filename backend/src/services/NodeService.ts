@@ -229,6 +229,19 @@ export class NodeService {
         }
     }
 
+    async getDirectReferrals(nodeId: number) {
+        const res = await query(
+            `SELECT n.id, n.referral_code, u.full_name, n.status, n.created_at 
+             FROM Nodes n 
+             JOIN Users u ON n.owner_user_id = u.id 
+             WHERE n.sponsor_node_id = $1 
+             ORDER BY n.created_at DESC`,
+            [nodeId]
+        );
+        return res.rows;
+    }
+
+
     async getUserNodes(userId: number) {
         const res = await query('SELECT * FROM Nodes WHERE owner_user_id = $1 ORDER BY created_at DESC', [userId]);
         return res.rows;
@@ -239,21 +252,28 @@ export class NodeService {
         if (nodeRes.rows.length === 0) throw new Error('Node not found');
         const node = nodeRes.rows[0];
 
-        // Self Pool Count (Children in Self Pool Tree)
-        const selfPoolRes = await query('SELECT COUNT(*) as count FROM Nodes WHERE self_pool_parent_id = $1', [nodeId]);
-        const selfPoolCount = parseInt(selfPoolRes.rows[0].count);
+        // Level Logic: Fetch highest level from LevelProgress or default to 1
+        const selfLevelRes = await query(
+            "SELECT MAX(level) as lvl FROM LevelProgress WHERE node_id = $1 AND pool_type = 'SELF'",
+            [nodeId]
+        );
+        const selfPoolLevel = selfLevelRes.rows[0].lvl || 1;
 
-        // Auto Pool Count (Children in Auto Pool Tree)
-        const autoPoolRes = await query('SELECT COUNT(*) as count FROM Nodes WHERE auto_pool_parent_id = $1', [nodeId]);
-        const autoPoolCount = parseInt(autoPoolRes.rows[0].count);
+        const autoLevelRes = await query(
+            "SELECT MAX(level) as lvl FROM LevelProgress WHERE node_id = $1 AND pool_type = 'AUTO'",
+            [nodeId]
+        );
+        const autoPoolLevel = autoLevelRes.rows[0].lvl || 1;
 
         return {
             id: node.id,
             referralCode: node.referral_code,
             status: node.status,
-            walletBalance: node.wallet_balance, // "Local Node Wallet" locked asset
-            selfPoolTeam: selfPoolCount,
-            autoPoolTeam: autoPoolCount
+            walletBalance: node.wallet_balance,
+            selfPoolLevel: parseInt(selfPoolLevel),
+            autoPoolLevel: parseInt(autoPoolLevel),
+            // Deprecated counts (kept for safety if needed elsewhere, but user wants Levels)
+            // selfPoolTeam: ...
         };
     }
     async getGenealogy(nodeId: number, type: 'SELF' | 'AUTO' = 'SELF', fetchGlobalRoot: boolean = false) {

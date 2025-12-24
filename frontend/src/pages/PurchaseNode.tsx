@@ -63,23 +63,23 @@ const PurchaseNode: React.FC = () => {
 
     return (
         <div className="max-w-2xl mx-auto space-y-6">
-            <h2 className="text-2xl font-bold text-accent-cyan">Purchase Node</h2>
+            <h2 className="text-2xl font-bold text-secondary">Purchase Node</h2>
 
-            <div className="bg-dark-surface rounded-xl shadow-sm border border-gray-800 p-8">
+            <div className="bg-card rounded-xl shadow-sm border border-border p-8">
                 {/* ... (Header Section same) ... */}
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h3 className="text-lg font-semibold text-white">Standard Node Package</h3>
-                        <p className="text-gray-400 text-sm mt-1">Includes entry to Self Pool & Auto Pool</p>
+                        <h3 className="text-lg font-semibold text-card-foreground">Standard Node Package</h3>
+                        <p className="text-muted-foreground text-sm mt-1">Includes entry to Self Pool & Auto Pool</p>
                     </div>
                     <div className="text-right">
-                        <p className="text-3xl font-bold text-accent-cyan">₹{NODE_PRICE}</p>
+                        <p className="text-3xl font-bold text-secondary">₹{NODE_PRICE}</p>
                     </div>
                 </div>
 
                 <form onSubmit={handlePurchase} className="space-y-6">
                     <div>
-                        <label htmlFor="sponsorCode" className="block text-sm font-medium text-gray-300">
+                        <label htmlFor="sponsorCode" className="block text-sm font-medium text-muted-foreground">
                             Sponsor Code (Referral Code)
                         </label>
                         <div className="mt-1 relative">
@@ -89,15 +89,15 @@ const PurchaseNode: React.FC = () => {
                                 required
                                 value={sponsorCode}
                                 onChange={(e) => setSponsorCode(e.target.value.toUpperCase())}
-                                className={`block w-full rounded-md border-gray-700 bg-dark-bg text-white shadow-sm focus:ring-accent-teal sm:text-sm p-3 border placeholder-gray-500 outline-none
-                                    ${sponsorError ? 'border-red-500 focus:border-red-500' : 'focus:border-accent-teal'}
+                                className={`block w-full rounded-md border-input bg-background text-foreground shadow-sm focus:ring-primary sm:text-sm p-3 border placeholder-muted-foreground outline-none
+                                    ${sponsorError ? 'border-red-500 focus:border-red-500' : 'focus:border-primary'}
                                     ${sponsorName ? 'border-green-500 focus:border-green-500' : ''}
                                 `}
                                 placeholder="Enter Sponsor's Referral Code"
                             />
                             {isChecking && (
                                 <div className="absolute right-3 top-3.5">
-                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-foreground"></div>
                                 </div>
                             )}
                         </div>
@@ -105,13 +105,13 @@ const PurchaseNode: React.FC = () => {
                         {/* Verification Feedback */}
                         <div className="mt-2 min-h-[20px]">
                             {sponsorName && (
-                                <p className="text-sm text-green-400 flex items-center gap-2">
+                                <p className="text-sm text-green-500 flex items-center gap-2">
                                     <CheckCircle className="w-4 h-4" />
                                     Sponsor: <span className="font-bold">{sponsorName}</span>
                                 </p>
                             )}
                             {sponsorError && (
-                                <p className="text-sm text-red-400 flex items-center gap-2">
+                                <p className="text-sm text-red-500 flex items-center gap-2">
                                     <AlertCircle className="w-4 h-4" />
                                     {sponsorError}
                                 </p>
@@ -133,8 +133,8 @@ const PurchaseNode: React.FC = () => {
                     <button
                         type="submit"
                         disabled={loading || !sponsorName}
-                        className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-accent-teal hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-teal transition-colors 
-                            ${(loading || !sponsorName) ? 'opacity-50 cursor-not-allowed bg-gray-600 hover:bg-gray-600' : ''}`}
+                        className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors 
+                            ${(loading || !sponsorName) ? 'opacity-50 cursor-not-allowed bg-muted hover:bg-muted' : ''}`}
                     >
                         {loading ? 'Processing...' : (
                             <>

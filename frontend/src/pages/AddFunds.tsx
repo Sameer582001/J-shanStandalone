@@ -89,18 +89,18 @@ const AddFunds: React.FC = () => {
 
     return (
         <div className="space-y-6">
-            <h1 className="text-2xl font-bold text-white mb-6">Add Funds to Master Wallet</h1>
+            <h1 className="text-2xl font-bold text-foreground mb-6">Add Funds to Master Wallet</h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Left: Payment Section */}
-                <div className="bg-dark-card p-6 rounded-xl border border-gray-800">
-                    <h2 className="text-lg font-semibold text-accent-gold mb-4 flex items-center gap-2">
+                <div className="bg-card p-6 rounded-xl border border-border">
+                    <h2 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
                         <QrCode className="w-5 h-5" />
                         Step 1: Make Payment
                     </h2>
 
                     {qrData ? (
-                        <div className="flex flex-col items-center p-4 bg-white/5 rounded-lg mb-6">
+                        <div className="flex flex-col items-center p-4 bg-muted/20 rounded-lg mb-6">
                             {upiUri ? (
                                 <div className="bg-white p-4 rounded-lg mb-4">
                                     <QRCode
@@ -111,66 +111,66 @@ const AddFunds: React.FC = () => {
                                     />
                                 </div>
                             ) : (
-                                <div className="w-48 h-48 bg-gray-700 flex items-center justify-center text-gray-400 text-sm mb-4 rounded">
+                                <div className="w-48 h-48 bg-muted flex items-center justify-center text-muted-foreground text-sm mb-4 rounded">
                                     QR Not Configured
                                 </div>
                             )}
 
                             {qrData.upiId && (
-                                <div className="flex items-center gap-2 bg-dark-bg px-4 py-2 rounded-lg border border-gray-700 w-full justify-between group cursor-pointer" onClick={() => copyToClipboard(qrData.upiId)}>
+                                <div className="flex items-center gap-2 bg-background px-4 py-2 rounded-lg border border-border w-full justify-between group cursor-pointer" onClick={() => copyToClipboard(qrData.upiId)}>
                                     <div className="text-sm">
-                                        <div className="text-gray-500 text-xs">UPI ID</div>
-                                        <div className="text-white font-mono">{qrData.upiId}</div>
+                                        <div className="text-muted-foreground text-xs">UPI ID</div>
+                                        <div className="text-foreground font-mono">{qrData.upiId}</div>
                                     </div>
-                                    <Copy className="w-4 h-4 text-gray-400 group-hover:text-accent-teal" />
+                                    <Copy className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
                                 </div>
                             )}
                             {qrData.payeeName && (
-                                <div className="mt-2 text-xs text-gray-400">
-                                    Payee: <span className="text-gray-300">{qrData.payeeName}</span>
+                                <div className="mt-2 text-xs text-muted-foreground">
+                                    Payee: <span className="text-foreground">{qrData.payeeName}</span>
                                 </div>
                             )}
                         </div>
                     ) : (
-                        <div className="text-center py-8 text-gray-400">Loading Payment Details...</div>
+                        <div className="text-center py-8 text-muted-foreground">Loading Payment Details...</div>
                     )}
 
-                    <h2 className="text-lg font-semibold text-accent-gold mb-4 flex items-center gap-2 border-t border-gray-800 pt-6">
+                    <h2 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2 border-t border-border pt-6">
                         <AlertCircle className="w-5 h-5" />
                         Step 2: Submit Details
                     </h2>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-1">Amount Paid (₹)</label>
+                            <label className="block text-sm font-medium text-muted-foreground mb-1">Amount (₹)</label>
                             <input
                                 type="number"
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
-                                className="w-full bg-dark-bg border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-accent-blue"
+                                className="w-full bg-background border border-input rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-primary"
                                 placeholder="e.g. 5000"
                                 required
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-1">UTR / Ref Number</label>
+                            <label className="block text-sm font-medium text-muted-foreground mb-1">UTR / Ref Number</label>
                             <input
                                 type="text"
                                 value={utrNumber}
                                 onChange={(e) => setUtrNumber(e.target.value)}
-                                className="w-full bg-dark-bg border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-accent-blue"
+                                className="w-full bg-background border border-input rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-primary"
                                 placeholder="e.g. 123456789012"
                                 required
                             />
-                            <p className="text-xs text-gray-500 mt-1">Please enter the exact UTR number from your payment app.</p>
+                            <p className="text-xs text-muted-foreground mt-1">Please enter the exact UTR number from your payment app.</p>
                         </div>
 
                         <button
                             type="submit"
                             disabled={loading}
                             className={`w-full py-3 rounded-lg font-semibold transition-all ${loading
-                                ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                                : 'bg-gradient-to-r from-accent-blue to-blue-600 text-white hover:opacity-90 shadow-lg shadow-blue-900/20'
+                                ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                                : 'bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:opacity-90 shadow-lg shadow-primary/20'
                                 }`}
                         >
                             {loading ? 'Submitting...' : 'Submit Request'}
@@ -179,18 +179,18 @@ const AddFunds: React.FC = () => {
                 </div>
 
                 {/* Right: History Section */}
-                <div className="bg-dark-card p-6 rounded-xl border border-gray-800 flex flex-col h-full">
-                    <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                        <History className="w-5 h-5 text-accent-teal" />
+                <div className="bg-card p-6 rounded-xl border border-border flex flex-col h-full">
+                    <h2 className="text-lg font-semibold text-card-foreground mb-4 flex items-center gap-2">
+                        <History className="w-5 h-5 text-primary" />
                         Recent Requests
                     </h2>
 
                     <div className="flex-1 overflow-auto">
                         {requests.length === 0 ? (
-                            <div className="text-center text-gray-500 py-10">No requests found.</div>
+                            <div className="text-center text-muted-foreground py-10">No requests found.</div>
                         ) : (
                             <table className="w-full text-left">
-                                <thead className="text-xs text-gray-400 uppercase bg-gray-800/50 sticky top-0">
+                                <thead className="text-xs text-muted-foreground uppercase bg-muted/50 sticky top-0">
                                     <tr>
                                         <th className="px-4 py-3 rounded-tl-lg">Date</th>
                                         <th className="px-4 py-3">Amount</th>
@@ -198,22 +198,22 @@ const AddFunds: React.FC = () => {
                                         <th className="px-4 py-3 rounded-tr-lg text-right">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-800">
+                                <tbody className="divide-y divide-border">
                                     {requests.map((req) => (
-                                        <tr key={req.id} className="text-sm hover:bg-white/5">
-                                            <td className="px-4 py-3 text-gray-300">
+                                        <tr key={req.id} className="text-sm hover:bg-muted/10">
+                                            <td className="px-4 py-3 text-muted-foreground">
                                                 {new Date(req.created_at).toLocaleDateString()}
                                             </td>
-                                            <td className="px-4 py-3 font-medium text-white">
+                                            <td className="px-4 py-3 font-medium text-foreground">
                                                 ₹{req.amount}
                                             </td>
-                                            <td className="px-4 py-3 font-mono text-gray-400 text-xs">
+                                            <td className="px-4 py-3 font-mono text-muted-foreground text-xs">
                                                 {req.utr_number}
                                             </td>
                                             <td className="px-4 py-3 text-right">
                                                 <span className={`px-2 py-1 rounded-full text-xs font-bold ${req.status === 'APPROVED' ? 'bg-green-900/30 text-green-400' :
-                                                    req.status === 'REJECTED' ? 'bg-red-900/30 text-red-400' :
-                                                        'bg-yellow-900/30 text-yellow-400'
+                                                    req.status === 'REJECTED' ? 'bg-red-900/30 text-red-500' :
+                                                        'bg-yellow-900/30 text-yellow-500'
                                                     }`}>
                                                     {req.status}
                                                 </span>

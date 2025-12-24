@@ -157,3 +157,41 @@ CREATE INDEX idx_nodes_owner_user_id ON Nodes(owner_user_id);
 CREATE INDEX idx_nodes_sponsor_node_id ON Nodes(sponsor_node_id);
 CREATE INDEX idx_nodes_self_pool_parent_id ON Nodes(self_pool_parent_id);
 CREATE INDEX idx_nodes_auto_pool_parent_id ON Nodes(auto_pool_parent_id);
+
+-- Gallery Table
+CREATE TABLE Gallery (
+    id SERIAL PRIMARY KEY,
+    image_url VARCHAR(255) NOT NULL,
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Documents Table
+CREATE TABLE Documents (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    file_url VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- FastTrackBenefits Table (Stores User Eligibility Status)
+-- Static rules are in plan_config.json
+CREATE TABLE FastTrackBenefits (
+    id SERIAL PRIMARY KEY,
+    node_id INTEGER NOT NULL REFERENCES Nodes(id),
+    user_id INTEGER NOT NULL REFERENCES Users(id),
+    achieved_tier_referrals INTEGER DEFAULT 0,
+    reward_value DECIMAL(10, 2) NOT NULL,
+    product_codes TEXT,
+    status VARCHAR(20) DEFAULT 'ELIGIBLE', -- ELIGIBLE, CLAIMED
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    claimed_at TIMESTAMP,
+    UNIQUE(node_id)
+);
+
+-- EmailVerifications Table
+CREATE TABLE EmailVerifications (
+    email VARCHAR(255) PRIMARY KEY,
+    code VARCHAR(6) NOT NULL, -- Matched to AuthService.ts
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

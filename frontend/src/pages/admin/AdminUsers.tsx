@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Layers } from 'lucide-react';
+import { Layers, Ghost } from 'lucide-react';
 import { UserNodesModal } from '../../components/admin/UserNodesModal';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 const AdminUsers: React.FC = () => {
     const [users, setUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const navigate = useNavigate();
 
     // Modal State
     const [selectedUser, setSelectedUser] = useState<{ id: number; name: string } | null>(null);
@@ -40,31 +43,64 @@ const AdminUsers: React.FC = () => {
         setIsNodesModalOpen(true);
     };
 
+    const handleGhostLogin = async (userId: number) => {
+        if (!confirm("Are you sure you want to log in as this user? You will be logged out of Admin.")) return;
+
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/impersonate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ userId })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                // Set User Session
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+
+                toast.success(`Logged in as ${data.user.name}`);
+                navigate('/dashboard');
+                window.location.reload(); // Force reload to update context/sidebar
+            } else {
+                toast.error(data.message || 'Ghost login failed');
+            }
+        } catch (error) {
+            console.error('Ghost Login Error:', error);
+            toast.error('Network error requesting ghost login');
+        }
+    };
+
     return (
-        <div className="bg-gray-800 text-white p-6 rounded-lg">
-            <h2 className="text-2xl font-bold mb-4 text-accent-cyan">User Management</h2>
+        <div className="bg-card text-card-foreground p-6 rounded-lg border border-border">
+            <h2 className="text-2xl font-bold mb-4 text-secondary">User Management</h2>
 
             {loading ? (
-                <p className="text-gray-400">Loading users...</p>
+                <p className="text-muted-foreground">Loading users...</p>
             ) : (
                 <div className="overflow-x-auto">
-                    <table className="min-w-full bg-dark-surface rounded-lg overflow-hidden border border-gray-800">
-                        <thead className="bg-dark-bg">
+                    <table className="min-w-full bg-card rounded-lg overflow-hidden border border-border">
+                        <thead className="bg-muted/50">
                             <tr>
-                                <th className="px-4 py-3 text-left">ID</th>
-                                <th className="px-4 py-3 text-left">Name</th>
-                                <th className="px-4 py-3 text-left">Email</th>
-                                <th className="px-4 py-3 text-left">Mobile</th>
-                                <th className="px-4 py-3 text-left">Role</th>
-                                <th className="px-4 py-3 text-left">Nodes</th>
-                                <th className="px-4 py-3 text-left">Balance</th>
-                                <th className="px-4 py-3 text-left">Joined</th>
-                                <th className="px-4 py-3 text-center">Actions</th>
+                                <th className="px-4 py-3 text-left text-muted-foreground font-medium">ID</th>
+                                <th className="px-4 py-3 text-left text-muted-foreground font-medium">Name</th>
+                                <th className="px-4 py-3 text-left text-muted-foreground font-medium">Email</th>
+                                <th className="px-4 py-3 text-left text-muted-foreground font-medium">Mobile</th>
+                                <th className="px-4 py-3 text-left text-muted-foreground font-medium">Role</th>
+                                <th className="px-4 py-3 text-left text-muted-foreground font-medium">Nodes</th>
+                                <th className="px-4 py-3 text-left text-muted-foreground font-medium">Balance</th>
+                                <th className="px-4 py-3 text-left text-muted-foreground font-medium">Joined</th>
+                                <th className="px-4 py-3 text-center text-muted-foreground font-medium">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-800">
+                        <tbody className="divide-y divide-border">
                             {users.map(user => (
-                                <tr key={user.id} className="hover:bg-gray-800/50 transition">
+                                <tr key={user.id} className="hover:bg-muted/10 transition">
                                     <td className="px-4 py-3">{user.id}</td>
                                     <td className="px-4 py-3">{user.full_name}</td>
                                     <td className="px-4 py-3">{user.email}</td>
@@ -74,19 +110,28 @@ const AdminUsers: React.FC = () => {
                                             {user.role}
                                         </span>
                                     </td>
-                                    <td className="px-4 py-3 text-accent-cyan font-semibold">{user.node_count}</td>
+                                    <td className="px-4 py-3 text-primary font-semibold">{user.node_count}</td>
                                     <td className="px-4 py-3">₹{user.master_wallet_balance}</td>
-                                    <td className="px-4 py-3 text-gray-400 text-sm">
+                                    <td className="px-4 py-3 text-muted-foreground text-sm">
                                         {new Date(user.created_at).toLocaleDateString()}
                                     </td>
-                                    <td className="px-4 py-3 text-center">
+                                    <td className="px-4 py-3 text-center flex items-center justify-center gap-2">
                                         <button
                                             onClick={() => handleViewNodes(user)}
-                                            className="p-2 bg-accent-teal/10 hover:bg-accent-teal/20 text-accent-teal rounded-lg transition-colors group"
+                                            className="p-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors group"
                                             title="View Nodes"
                                         >
                                             <Layers className="w-4 h-4" />
                                         </button>
+                                        {user.role !== 'ADMIN' && (
+                                            <button
+                                                onClick={() => handleGhostLogin(user.id)}
+                                                className="p-2 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 rounded-lg transition-colors group"
+                                                title="Ghost Login"
+                                            >
+                                                <Ghost className="w-4 h-4" />
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                             ))}
@@ -99,7 +144,7 @@ const AdminUsers: React.FC = () => {
                 <button
                     disabled={page === 1}
                     onClick={() => setPage(p => Math.max(1, p - 1))}
-                    className="bg-dark-surface border border-gray-700 px-4 py-2 rounded disabled:opacity-50 hover:bg-gray-800 transition-colors"
+                    className="bg-card border border-border px-4 py-2 rounded disabled:opacity-50 hover:bg-muted transition-colors"
                 >
                     Previous
                 </button>
@@ -107,7 +152,7 @@ const AdminUsers: React.FC = () => {
                 <button
                     disabled={page === totalPages}
                     onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                    className="bg-dark-surface border border-gray-700 px-4 py-2 rounded disabled:opacity-50 hover:bg-gray-800 transition-colors"
+                    className="bg-card border border-border px-4 py-2 rounded disabled:opacity-50 hover:bg-muted transition-colors"
                 >
                     Next
                 </button>

@@ -106,16 +106,16 @@ const AdminFundRequests: React.FC = () => {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-white">Fund Requests Verification</h1>
+                <h1 className="text-2xl font-bold text-foreground">Fund Requests Verification</h1>
 
-                <div className="flex space-x-2 bg-dark-card p-1 rounded-lg border border-gray-700">
+                <div className="flex space-x-2 bg-card p-1 rounded-lg border border-border">
                     {['PENDING', 'APPROVED', 'REJECTED', ''].map((status) => (
                         <button
                             key={status || 'ALL'}
                             onClick={() => setFilterStatus(status)}
                             className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${filterStatus === status
-                                ? 'bg-accent-blue text-white shadow-sm'
-                                : 'text-gray-400 hover:text-white'
+                                ? 'bg-primary text-primary-foreground shadow-sm'
+                                : 'text-muted-foreground hover:text-foreground'
                                 }`}
                         >
                             {status || 'All'}
@@ -124,38 +124,38 @@ const AdminFundRequests: React.FC = () => {
                 </div>
             </div>
 
-            <div className="bg-dark-card rounded-xl border border-gray-800 overflow-hidden">
-                <table className="min-w-full divide-y divide-gray-800">
-                    <thead className="bg-gray-900/50">
+            <div className="bg-card rounded-xl border border-border overflow-hidden">
+                <table className="min-w-full divide-y divide-border">
+                    <thead className="bg-muted/50">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">User</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Amount Check</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">UTR Check</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Action</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">User</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Amount Check</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">UTR Check</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
+                            <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Action</th>
                         </tr>
                     </thead>
-                    <tbody className="bg-dark-card divide-y divide-gray-800">
+                    <tbody className="bg-card divide-y divide-border">
                         {loading ? (
-                            <tr><td colSpan={5} className="text-center py-8 text-gray-500">Loading...</td></tr>
+                            <tr><td colSpan={5} className="text-center py-8 text-muted-foreground">Loading...</td></tr>
                         ) : requests.length === 0 ? (
-                            <tr><td colSpan={5} className="text-center py-8 text-gray-500">No requests found.</td></tr>
+                            <tr><td colSpan={5} className="text-center py-8 text-muted-foreground">No requests found.</td></tr>
                         ) : (
                             requests.map((req) => (
-                                <tr key={req.id} className="hover:bg-white/5 transition-colors">
+                                <tr key={req.id} className="hover:bg-muted/10 transition-colors">
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm font-medium text-white">{req.full_name}</div>
-                                        <div className="text-xs text-gray-500">{req.mobile}</div>
+                                        <div className="text-sm font-medium text-foreground">{req.full_name}</div>
+                                        <div className="text-xs text-muted-foreground">{req.mobile}</div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-lg font-bold text-accent-gold">₹{req.amount}</div>
+                                        <div className="text-lg font-bold text-yellow-500">₹{req.amount}</div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="font-mono text-sm text-accent-teal bg-teal-900/20 px-2 py-1 rounded inline-block">
+                                        <div className="font-mono text-sm text-primary bg-primary/10 px-2 py-1 rounded inline-block">
                                             {req.utr_number}
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                                         {new Date(req.created_at).toLocaleDateString()}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -191,9 +191,9 @@ const AdminFundRequests: React.FC = () => {
             {/* Verify Modal */}
             {isVerifyModalOpen && selectedRequest && (
                 <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-                    <div className="bg-dark-card border border-gray-700 rounded-xl max-w-md w-full p-6 shadow-2xl">
-                        <h3 className="text-xl font-bold text-white mb-2">Verify Transaction</h3>
-                        <p className="text-gray-400 text-sm mb-6">
+                    <div className="bg-card border border-border rounded-xl max-w-md w-full p-6 shadow-2xl">
+                        <h3 className="text-xl font-bold text-card-foreground mb-2">Verify Transaction</h3>
+                        <p className="text-muted-foreground text-sm mb-6">
                             Please check your bank statement. Enter the <strong>exact</strong> UTR and Amount you received.
                             <br />The system will only approve if they match the user's request details.
                         </p>
@@ -201,27 +201,27 @@ const AdminFundRequests: React.FC = () => {
                         <div className="space-y-4">
                             <div className="bg-yellow-900/10 border border-yellow-900/30 p-3 rounded mb-4">
                                 <div className="text-xs text-yellow-500 uppercase font-bold">User Claimed:</div>
-                                <div className="text-gray-300 text-sm">Amount: ₹{selectedRequest.amount}</div>
-                                <div className="text-gray-300 text-sm">UTR: {selectedRequest.utr_number}</div>
+                                <div className="text-muted-foreground text-sm">Amount: ₹{selectedRequest.amount}</div>
+                                <div className="text-muted-foreground text-sm">UTR: {selectedRequest.utr_number}</div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-1">Bank Statement Amount</label>
+                                <label className="block text-sm font-medium text-muted-foreground mb-1">Bank Statement Amount</label>
                                 <input
                                     type="number"
                                     value={adminAmount}
                                     onChange={(e) => setAdminAmount(e.target.value)}
-                                    className="w-full bg-black/50 border border-gray-600 rounded px-3 py-2 text-white focus:border-green-500 outline-none"
+                                    className="w-full bg-background border border-input rounded px-3 py-2 text-foreground focus:border-green-500 outline-none"
                                     placeholder="Enter received amount"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-1">Bank Statement UTR</label>
+                                <label className="block text-sm font-medium text-muted-foreground mb-1">Bank Statement UTR</label>
                                 <input
                                     type="text"
                                     value={adminUtr}
                                     onChange={(e) => setAdminUtr(e.target.value)}
-                                    className="w-full bg-black/50 border border-gray-600 rounded px-3 py-2 text-white focus:border-green-500 outline-none"
+                                    className="w-full bg-background border border-input rounded px-3 py-2 text-foreground focus:border-green-500 outline-none"
                                     placeholder="Enter received UTR"
                                 />
                             </div>
@@ -230,7 +230,7 @@ const AdminFundRequests: React.FC = () => {
                         <div className="flex justify-end gap-3 mt-8">
                             <button
                                 onClick={() => setIsVerifyModalOpen(false)}
-                                className="px-4 py-2 text-gray-400 hover:text-white"
+                                className="px-4 py-2 text-muted-foreground hover:text-foreground"
                             >
                                 Cancel
                             </button>
@@ -248,23 +248,23 @@ const AdminFundRequests: React.FC = () => {
             {/* Reject Modal */}
             {isRejectModalOpen && selectedRequest && (
                 <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-                    <div className="bg-dark-card border border-gray-700 rounded-xl max-w-md w-full p-6 shadow-2xl">
-                        <h3 className="text-xl font-bold text-white mb-2">Reject Request</h3>
-                        <p className="text-gray-400 text-sm mb-4">
+                    <div className="bg-card border border-border rounded-xl max-w-md w-full p-6 shadow-2xl">
+                        <h3 className="text-xl font-bold text-card-foreground mb-2">Reject Request</h3>
+                        <p className="text-muted-foreground text-sm mb-4">
                             Are you sure you want to reject this request? Funds will NOT be added.
                         </p>
 
                         <textarea
                             value={rejectReason}
                             onChange={(e) => setRejectReason(e.target.value)}
-                            className="w-full bg-black/50 border border-gray-600 rounded px-3 py-2 text-white h-24 focus:border-red-500 outline-none resize-none"
+                            className="w-full bg-background border border-input rounded px-3 py-2 text-foreground h-24 focus:border-red-500 outline-none resize-none"
                             placeholder="Reason for rejection (e.g. Invalid UTR, Payment not received)"
                         ></textarea>
 
                         <div className="flex justify-end gap-3 mt-6">
                             <button
                                 onClick={() => setIsRejectModalOpen(false)}
-                                className="px-4 py-2 text-gray-400 hover:text-white"
+                                className="px-4 py-2 text-muted-foreground hover:text-foreground"
                             >
                                 Cancel
                             </button>

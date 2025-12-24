@@ -101,38 +101,38 @@ const NodeGenealogy: React.FC = () => {
             {/* Header & Stats Compact Row */}
             <div className="flex flex-col xl:flex-row gap-4 justify-between items-start xl:items-center">
                 <div>
-                    <h1 className="text-xl font-bold text-accent-cyan">Genealogy</h1>
-                    <p className="text-sm text-gray-400">
+                    <h1 className="text-xl font-bold text-secondary">Genealogy</h1>
+                    <p className="text-sm text-muted-foreground">
                         {viewType === 'SELF' ? 'Sponsor Tree' : 'Auto Pool Matrix'}
                     </p>
                 </div>
 
                 {/* Stats */}
                 <div className="flex gap-2 overflow-x-auto pb-1 w-full xl:w-auto">
-                    <div className="flex items-center gap-2 px-3 py-2 bg-dark-surface rounded-lg border border-gray-800 shadow-sm min-w-max">
-                        <Network className="w-4 h-4 text-blue-400" />
-                        <span className="text-xs text-gray-400">Total:</span>
-                        <span className="font-bold text-white">{stats.total}</span>
+                    <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg border border-border shadow-sm min-w-max">
+                        <Network className="w-4 h-4 text-blue-500" />
+                        <span className="text-xs text-muted-foreground">Total:</span>
+                        <span className="font-bold text-foreground">{stats.total}</span>
                     </div>
-                    <div className="flex items-center gap-2 px-3 py-2 bg-dark-surface rounded-lg border border-gray-800 shadow-sm min-w-max">
-                        <Activity className="w-4 h-4 text-green-400" />
-                        <span className="text-xs text-gray-400">Active:</span>
-                        <span className="font-bold text-white">{stats.active}</span>
+                    <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg border border-border shadow-sm min-w-max">
+                        <Activity className="w-4 h-4 text-green-500" />
+                        <span className="text-xs text-muted-foreground">Active:</span>
+                        <span className="font-bold text-foreground">{stats.active}</span>
                     </div>
-                    <div className="flex items-center gap-2 px-3 py-2 bg-dark-surface rounded-lg border border-gray-800 shadow-sm min-w-max">
-                        <Layers className="w-4 h-4 text-purple-400" />
-                        <span className="text-xs text-gray-400">Depth:</span>
-                        <span className="font-bold text-white">{stats.depth}</span>
+                    <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg border border-border shadow-sm min-w-max">
+                        <Layers className="w-4 h-4 text-purple-500" />
+                        <span className="text-xs text-muted-foreground">Depth:</span>
+                        <span className="font-bold text-foreground">{stats.depth}</span>
                     </div>
                 </div>
 
                 {/* Toggle */}
-                <div className="flex bg-dark-surface p-1 rounded-lg border border-gray-800 shadow-sm">
+                <div className="flex bg-card p-1 rounded-lg border border-border shadow-sm">
                     <button
                         onClick={() => setViewType('SELF')}
                         className={`flex items-center px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewType === 'SELF'
-                            ? 'bg-accent-teal text-white shadow-sm'
-                            : 'text-gray-400 hover:text-white'
+                            ? 'bg-primary text-primary-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
                             }`}
                     >
                         <Users className="w-3 h-3 mr-1.5" />
@@ -141,8 +141,8 @@ const NodeGenealogy: React.FC = () => {
                     <button
                         onClick={() => setViewType('AUTO')}
                         className={`flex items-center px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewType === 'AUTO'
-                            ? 'bg-accent-teal text-white shadow-sm'
-                            : 'text-gray-400 hover:text-white'
+                            ? 'bg-primary text-primary-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
                             }`}
                     >
                         <Globe className="w-3 h-3 mr-1.5" />
@@ -152,14 +152,14 @@ const NodeGenealogy: React.FC = () => {
             </div>
 
             {/* Canvas Area */}
-            <div className="flex-1 overflow-hidden bg-dark-bg rounded-xl border border-gray-800 relative">
+            <div className="flex-1 overflow-hidden bg-background rounded-xl border border-border relative">
                 {loading ? (
                     <div className="absolute inset-0 flex items-center justify-center flex-col gap-3">
-                        <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-                        <span className="text-gray-400 text-sm">Building Matrix...</span>
+                        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-muted-foreground text-sm">Building Matrix...</span>
                     </div>
                 ) : error ? (
-                    <div className="absolute inset-0 flex items-center justify-center text-red-400 p-4">
+                    <div className="absolute inset-0 flex items-center justify-center text-red-500 p-4">
                         {error}
                     </div>
                 ) : flatNodes.length > 0 ? (

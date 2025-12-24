@@ -13,6 +13,9 @@ import AdminLayout from './layouts/AdminLayout';
 import Login from './pages/Login';
 import Register from './pages/Register';
 
+// Pages - Landing
+import LandingPage from './pages/LandingPage';
+
 // Pages - User / Master
 import DashboardHome from './pages/DashboardHome';
 import PurchaseNode from './pages/PurchaseNode';
@@ -21,6 +24,7 @@ import Wallet from './pages/Wallet';
 import WalletRequests from './pages/WalletRequests';
 import WalletTransactions from './pages/wallet/WalletTransactions';
 import Profile from './pages/Profile';
+import UserTickets from './pages/tickets/UserTickets';
 
 // Pages - Node
 import NodeDashboard from './pages/node/NodeDashboard';
@@ -36,6 +40,12 @@ import AdminSettings from './pages/admin/AdminSettings';
 import AddFunds from './pages/AddFunds';
 import AdminFundRequests from './pages/admin/AdminFundRequests';
 import AdminFastTrack from './pages/admin/AdminFastTrack';
+import AdminNews from './pages/admin/AdminNews';
+import AdminTickets from './pages/admin/AdminTickets';
+import AdminGallery from './pages/admin/AdminGallery';
+import AdminDocuments from './pages/admin/AdminDocuments';
+import AdminMigration from './pages/admin/AdminMigration';
+
 
 
 const App: React.FC = () => {
@@ -44,13 +54,14 @@ const App: React.FC = () => {
       <Toaster position="top-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
       <BrowserRouter>
         <Routes>
+          {/* Landing Page (Root) */}
+          <Route path="/" element={<LandingPage />} />
+
           {/* Public Routes (Auth) */}
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Route>
-
-
 
           {/* Node Routes (Isolated) */}
           <Route path="/node" element={<NodeLayout />}>
@@ -70,6 +81,11 @@ const App: React.FC = () => {
             <Route path="payouts" element={<AdminPayouts />} />
             <Route path="fund-requests" element={<AdminFundRequests />} />
             <Route path="fast-track" element={<AdminFastTrack />} />
+            <Route path="news" element={<AdminNews />} />
+            <Route path="tickets" element={<AdminTickets />} />
+            <Route path="gallery" element={<AdminGallery />} />
+            <Route path="documents" element={<AdminDocuments />} />
+            <Route path="migration" element={<AdminMigration />} />
             <Route path="settings" element={<AdminSettings />} />
           </Route>
 
@@ -83,10 +99,11 @@ const App: React.FC = () => {
             <Route path="/my-nodes" element={<MyNodes />} />
             <Route path="/wallet/requests" element={<WalletRequests />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/support" element={<UserTickets />} />
           </Route>
 
-          {/* Default Redirect */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          {/* Default Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </NodeProvider>

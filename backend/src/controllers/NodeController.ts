@@ -57,6 +57,16 @@ export class NodeController {
         }
     }
 
+    static async getDirectReferrals(req: any, res: any) {
+        try {
+            const nodeId = parseInt(req.params.id);
+            const referrals = await nodeService.getDirectReferrals(nodeId);
+            res.json(referrals);
+        } catch (error: any) {
+            res.status(500).json({ message: error.message });
+        }
+    }
+
     static async getNodeTransactions(req: any, res: any) {
         try {
             const nodeId = parseInt(req.params.id);

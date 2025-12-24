@@ -9,6 +9,7 @@ router.get('/verify-sponsor/:code', authenticateJWT, NodeController.verifySponso
 router.get('/my-nodes', authenticateJWT, NodeController.getUserNodes);
 router.get('/:id/stats', authenticateJWT, NodeController.getNodeStats);
 router.get('/:id/transactions', authenticateJWT, NodeController.getNodeTransactions);
+router.get('/:id/direct-referrals', authenticateJWT, NodeController.getDirectReferrals);
 router.get('/:id/genealogy', authenticateJWT, NodeController.getGenealogy);
 router.get('/:id/fast-track', authenticateJWT, NodeController.getFastTrackStatus);
 

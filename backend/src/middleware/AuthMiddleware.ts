@@ -50,3 +50,4 @@ export const authorizeRole = (role: string) => {
 };
 
 export const requireAdmin = authorizeRole('ADMIN');
+export const isAdmin = requireAdmin;
