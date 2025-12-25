@@ -40,7 +40,7 @@ services:
       - DATABASE_URL=postgresql://admin:adminpassword@postgres:5432/mlm_database
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - SIB_API_KEY=${SIB_API_KEY} # Inject from host .env
+      - BREVO_API_KEY=${BREVO_API_KEY} # Inject from host .env
     # We need to expose Backend Port 3000 so the Frontend can reach it
     ports:
       - "3000:3000"
