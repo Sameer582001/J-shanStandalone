@@ -98,4 +98,54 @@ export class AuthService {
         const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
         return { token, user: { id: user.id, mobile: user.mobile, role: user.role } };
     }
+    async sendPasswordResetOtp(email: string) {
+        // 1. Check if user exists
+        const userCheck = await query('SELECT id FROM Users WHERE email = $1', [email]);
+        if (userCheck.rows.length === 0) {
+            throw new Error('User with this email does not exist');
+        }
+
+        // 2. Generate and Save OTP (reuse existing logic, creating a helper might be better but for now copy-paste for safety)
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+        const check = await query('SELECT email FROM EmailVerifications WHERE email = $1', [email]);
+        if (check.rows.length > 0) {
+            await query('UPDATE EmailVerifications SET code = $1, expires_at = $2, created_at = CURRENT_TIMESTAMP WHERE email = $3', [code, expiresAt, email]);
+        } else {
+            await query('INSERT INTO EmailVerifications (email, code, expires_at) VALUES ($1, $2, $3)', [email, code, expiresAt]);
+        }
+
+        // 3. Send Email
+        await notificationService.sendOtpEmail(email, code);
+        return { message: 'OTP sent to your email' };
+    }
+
+    async resetPassword(email: string, otp: string, newPassword: string) {
+        // 1. Verify OTP
+        const otpCheck = await query('SELECT code, expires_at FROM EmailVerifications WHERE email = $1', [email]);
+        if (otpCheck.rows.length === 0 || otpCheck.rows[0].code !== otp) {
+            throw new Error('Invalid OTP');
+        }
+        if (new Date() > new Date(otpCheck.rows[0].expires_at)) {
+            throw new Error('OTP expired');
+        }
+
+        // 2. Verify User Exists
+        const userCheck = await query('SELECT id FROM Users WHERE email = $1', [email]);
+        if (userCheck.rows.length === 0) {
+            throw new Error('User not found');
+        }
+
+        // 3. Hash New Password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // 4. Update Password
+        await query('UPDATE Users SET password_hash = $1 WHERE email = $2', [hashedPassword, email]);
+
+        // 5. Cleanup OTP
+        await query('DELETE FROM EmailVerifications WHERE email = $1', [email]);
+
+        return { message: 'Password reset successful' };
+    }
 }

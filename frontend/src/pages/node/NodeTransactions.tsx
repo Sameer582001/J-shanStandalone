@@ -93,11 +93,11 @@ const NodeTransactions: React.FC = () => {
                     <table className="w-full text-left">
                         <thead>
                             <tr className="bg-muted/50 text-muted-foreground text-xs uppercase tracking-wider">
-                                <th className="px-6 py-4 font-medium">Date</th>
-                                <th className="px-6 py-4 font-medium">Description</th>
-                                <th className="px-6 py-4 font-medium text-center">Type</th>
-                                <th className="px-6 py-4 font-medium text-right">Amount</th>
-                                <th className="px-6 py-4 font-medium text-center">Status</th>
+                                <th className="px-4 py-3 font-medium">Date</th>
+                                <th className="px-4 py-3 font-medium">Description</th>
+                                <th className="px-4 py-3 font-medium text-center">Type</th>
+                                <th className="px-4 py-3 font-medium text-right">Amount</th>
+                                <th className="px-4 py-3 font-medium text-center">Status</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border">
@@ -116,16 +116,16 @@ const NodeTransactions: React.FC = () => {
                             ) : (
                                 filteredTransactions.map((tx) => (
                                     <tr key={tx.id} className="hover:bg-muted/30 transition-colors">
-                                        <td className="px-6 py-4 text-sm text-muted-foreground whitespace-nowrap">
+                                        <td className="px-4 py-3 text-sm text-muted-foreground whitespace-nowrap">
                                             {new Date(tx.created_at).toLocaleString('en-IN', {
                                                 day: 'numeric', month: 'short', year: 'numeric',
                                                 hour: '2-digit', minute: '2-digit'
                                             })}
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-foreground">
+                                        <td className="px-4 py-3 text-sm text-foreground">
                                             {tx.description}
                                         </td>
-                                        <td className="px-6 py-4 text-center">
+                                        <td className="px-4 py-3 text-center">
                                             {tx.type === 'CREDIT' ? (
                                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-500">
                                                     <ArrowDownLeft className="w-3 h-3 mr-1" />
@@ -138,10 +138,10 @@ const NodeTransactions: React.FC = () => {
                                                 </span>
                                             )}
                                         </td>
-                                        <td className={`px-6 py-4 text-sm font-bold text-right font-mono ${tx.type === 'CREDIT' ? 'text-green-500' : 'text-red-500'}`}>
+                                        <td className={`px-4 py-3 text-sm font-bold text-right font-mono ${tx.type === 'CREDIT' ? 'text-green-500' : 'text-red-500'}`}>
                                             {tx.type === 'CREDIT' ? '+' : '-'}₹{parseFloat(tx.amount).toFixed(2)}
                                         </td>
-                                        <td className="px-6 py-4 text-center">
+                                        <td className="px-4 py-3 text-center">
                                             <span className="px-2 py-1 text-xs font-medium rounded bg-muted text-muted-foreground">
                                                 {tx.status}
                                             </span>

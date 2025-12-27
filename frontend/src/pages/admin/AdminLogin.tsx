@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
-import { ShieldAlert } from 'lucide-react';
+import { ShieldAlert, Eye, EyeOff } from 'lucide-react';
 
 const AdminLogin: React.FC = () => {
     const [mobile, setMobile] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -129,67 +130,87 @@ const AdminLogin: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8">
-                <div>
-                    <div className="mx-auto h-12 w-12 text-primary flex justify-center">
-                        <ShieldAlert className="w-12 h-12" />
+        <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+            {/* Background Effects */}
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl opacity-30 -translate-y-1/2"></div>
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-3xl opacity-30 translate-y-1/2"></div>
+
+            <div className="max-w-md w-full space-y-8 relative z-10">
+                <div className="text-center">
+                    <div className="mx-auto h-16 w-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 mb-6 transform rotate-3 hover:rotate-6 transition-transform">
+                        <ShieldAlert className="w-8 h-8 text-white" />
                     </div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">
-                        Restricted Access
+                    <h2 className="mt-2 text-3xl font-extrabold text-foreground tracking-tight">
+                        Admin <span className="text-gradient-primary">Access</span>
                     </h2>
-                    <p className="mt-2 text-center text-sm text-muted-foreground">
-                        Authorized Personnel Only
+                    <p className="mt-2 text-sm text-muted-foreground">
+                        Restricted Area • Authorized Personnel Only
                     </p>
                 </div>
-                <form className="mt-8 space-y-6" onSubmit={handleLoginSubmit}>
-                    {error && (
-                        <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded relative" role="alert">
-                            <span className="block sm:inline">{error}</span>
-                        </div>
-                    )}
-                    <div className="rounded-md shadow-sm -space-y-px">
-                        <div>
-                            <label htmlFor="mobile" className="sr-only">
-                                Admin ID
-                            </label>
-                            <input
-                                id="mobile"
-                                name="mobile"
-                                type="text"
-                                required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-border placeholder-muted-foreground text-foreground bg-card rounded-t-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                                placeholder="Admin Mobile"
-                                value={mobile}
-                                onChange={(e) => setMobile(e.target.value)}
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="password" className="sr-only">
-                                Password
-                            </label>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-border placeholder-muted-foreground text-foreground bg-card rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
-                    </div>
 
-                    <div>
-                        <button
-                            type="submit"
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                        >
-                            Authenticate
-                        </button>
-                    </div>
-                </form>
+                <div className="glass-card p-8 rounded-2xl shadow-xl border border-white/20 backdrop-blur-xl bg-white/60">
+                    <form className="space-y-6" onSubmit={handleLoginSubmit}>
+                        {error && (
+                            <div className="bg-rose-500/10 border border-rose-500/20 text-rose-700 px-4 py-3 rounded-xl flex items-center shadow-sm backdrop-blur-sm" role="alert">
+                                <span className="block sm:inline font-medium">{error}</span>
+                            </div>
+                        )}
+                        <div className="space-y-4">
+                            <div>
+                                <label htmlFor="mobile" className="block text-sm font-medium text-muted-foreground mb-1">
+                                    Admin ID
+                                </label>
+                                <input
+                                    id="mobile"
+                                    name="mobile"
+                                    type="text"
+                                    required
+                                    className="block w-full px-4 py-3 rounded-xl border border-input bg-white/50 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                                    placeholder="Enter Admin Mobile"
+                                    value={mobile}
+                                    onChange={(e) => setMobile(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="password" className="block text-sm font-medium text-muted-foreground mb-1">
+                                    Password
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        required
+                                        className="block w-full px-4 py-3 rounded-xl border border-input bg-white/50 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 pr-10"
+                                        placeholder="••••••••"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-primary transition-colors focus:outline-none"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff className="h-5 w-5" aria-hidden="true" />
+                                        ) : (
+                                            <Eye className="h-5 w-5" aria-hidden="true" />
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <button
+                                type="submit"
+                                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-gradient-to-r from-primary to-secondary hover:shadow-lg hover:shadow-primary/25 transform transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                            >
+                                Authenticate Access
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     );

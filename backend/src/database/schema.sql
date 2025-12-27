@@ -4,7 +4,11 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- ==========================================
 -- 1. USERS TABLE
 -- ==========================================
-CREATE TYPE user_role AS ENUM ('USER', 'ADMIN');
+DO $$ BEGIN
+    CREATE TYPE user_role AS ENUM ('USER', 'ADMIN');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 CREATE TABLE IF NOT EXISTS Users (
     id SERIAL PRIMARY KEY,
@@ -33,14 +37,38 @@ CREATE TABLE IF NOT EXISTS Users (
     -- Profile
     profile_image VARCHAR(255),
 
+    -- Address Profile (Added Dec 2025) - Columns ensured via ALTER below
+    address_line TEXT,
+    city TEXT,
+    state TEXT,
+    zip_code TEXT,
+    address_locked BOOLEAN DEFAULT FALSE,
+
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Ensure Address Columns Exist (Idempotent Migration)
+DO $$
+BEGIN
+    ALTER TABLE Users ADD COLUMN IF NOT EXISTS address_line TEXT;
+    ALTER TABLE Users ADD COLUMN IF NOT EXISTS city TEXT;
+    ALTER TABLE Users ADD COLUMN IF NOT EXISTS state TEXT;
+    ALTER TABLE Users ADD COLUMN IF NOT EXISTS zip_code TEXT;
+    ALTER TABLE Users ADD COLUMN IF NOT EXISTS address_locked BOOLEAN DEFAULT FALSE;
+EXCEPTION
+    WHEN others THEN null;
+END $$;
+
+
 -- ==========================================
 -- 2. NODES TABLE
 -- ==========================================
-CREATE TYPE node_status AS ENUM ('INACTIVE', 'ACTIVE');
+DO $$ BEGIN
+    CREATE TYPE node_status AS ENUM ('INACTIVE', 'ACTIVE');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 CREATE TABLE IF NOT EXISTS Nodes (
     id SERIAL PRIMARY KEY,
@@ -57,6 +85,7 @@ CREATE TABLE IF NOT EXISTS Nodes (
     direct_referrals_count INTEGER DEFAULT 0,
     wallet_balance DECIMAL(15, 2) DEFAULT 0.00,
     current_level INT DEFAULT 1,
+    custom_name VARCHAR(100), -- User defined nickname for the node
     
     -- Rebirth Logic
     is_rebirth BOOLEAN DEFAULT FALSE,
@@ -70,8 +99,12 @@ CREATE TABLE IF NOT EXISTS Nodes (
 -- ==========================================
 -- 3. TRANSACTIONS TABLE
 -- ==========================================
-CREATE TYPE transaction_type AS ENUM ('CREDIT', 'DEBIT');
-CREATE TYPE transaction_status AS ENUM ('PENDING', 'COMPLETED', 'FAILED', 'REJECTED');
+DO $$ BEGIN
+    CREATE TYPE transaction_type AS ENUM ('CREDIT', 'DEBIT');
+    CREATE TYPE transaction_status AS ENUM ('PENDING', 'COMPLETED', 'FAILED', 'REJECTED');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 CREATE TABLE IF NOT EXISTS Transactions (
     id SERIAL PRIMARY KEY,

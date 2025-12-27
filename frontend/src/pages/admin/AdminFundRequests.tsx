@@ -98,10 +98,10 @@ const AdminFundRequests: React.FC = () => {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <h1 className="text-2xl font-bold text-foreground">Fund Requests Verification</h1>
 
-                <div className="flex space-x-2 bg-card p-1 rounded-lg border border-border">
+                <div className="flex flex-wrap space-x-2 bg-card p-1 rounded-lg border border-border">
                     {['PENDING', 'APPROVED', 'REJECTED', ''].map((status) => (
                         <button
                             key={status || 'ALL'}
@@ -117,34 +117,41 @@ const AdminFundRequests: React.FC = () => {
                 </div>
             </div>
 
-            <div className="bg-card rounded-xl border border-border overflow-hidden">
-                <table className="min-w-full divide-y divide-border">
-                    <thead className="bg-muted/50">
+            <div className="glass-card rounded-2xl border border-white/20 shadow-xl overflow-hidden backdrop-blur-md bg-white/60">
+                <table className="min-w-full divide-y divide-white/10">
+                    <thead className="bg-primary/5">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">User</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Amount Check</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">UTR Check</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Action</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold text-primary uppercase tracking-wider">User Details</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold text-primary uppercase tracking-wider">Amount Check</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold text-primary uppercase tracking-wider">UTR Check</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold text-primary uppercase tracking-wider">Date</th>
+                            <th className="px-6 py-4 text-right text-xs font-bold text-primary uppercase tracking-wider">Action</th>
                         </tr>
                     </thead>
-                    <tbody className="bg-card divide-y divide-border">
+                    <tbody className="divide-y divide-white/10">
                         {loading ? (
-                            <tr><td colSpan={5} className="text-center py-8 text-muted-foreground">Loading...</td></tr>
+                            <tr><td colSpan={5} className="text-center py-12 text-muted-foreground">Loading requests...</td></tr>
                         ) : requests.length === 0 ? (
-                            <tr><td colSpan={5} className="text-center py-8 text-muted-foreground">No requests found.</td></tr>
+                            <tr><td colSpan={5} className="text-center py-12 text-muted-foreground">No matching requests found.</td></tr>
                         ) : (
                             requests.map((req) => (
-                                <tr key={req.id} className="hover:bg-muted/10 transition-colors">
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm font-medium text-foreground">{req.full_name}</div>
-                                        <div className="text-xs text-muted-foreground">{req.mobile}</div>
+                                <tr key={req.id} className="hover:bg-primary/5 transition-colors duration-200">
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center">
+                                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-primary font-bold mr-3">
+                                                {req.full_name.charAt(0)}
+                                            </div>
+                                            <div>
+                                                <div className="text-sm font-semibold text-foreground">{req.full_name}</div>
+                                                <div className="text-xs text-muted-foreground font-mono">{req.mobile}</div>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-lg font-bold text-yellow-500">₹{req.amount}</div>
+                                        <div className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-amber-800">₹{req.amount}</div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="font-mono text-sm text-primary bg-primary/10 px-2 py-1 rounded inline-block">
+                                        <div className="font-mono text-sm text-primary bg-primary/10 px-2 py-1 rounded inline-block border border-primary/20">
                                             {req.utr_number}
                                         </div>
                                     </td>
@@ -156,19 +163,21 @@ const AdminFundRequests: React.FC = () => {
                                             <div className="flex justify-end gap-2">
                                                 <button
                                                     onClick={() => handleVerifyClick(req)}
-                                                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-xs flex items-center gap-1"
+                                                    className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-1.5"
                                                 >
-                                                    <Check className="w-3 h-3" /> Verify
+                                                    <Check className="w-3.5 h-3.5" /> Verify
                                                 </button>
                                                 <button
                                                     onClick={() => handleRejectClick(req)}
-                                                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs flex items-center gap-1"
+                                                    className="bg-white/50 hover:bg-white text-rose-600 border border-rose-200 px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:shadow-md transition-all flex items-center gap-1.5"
                                                 >
-                                                    <X className="w-3 h-3" /> Reject
+                                                    <X className="w-3.5 h-3.5" /> Reject
                                                 </button>
                                             </div>
                                         ) : (
-                                            <span className={`px-2 py-1 rounded-full text-xs font-bold ${req.status === 'APPROVED' ? 'text-green-400 bg-green-900/20' : 'text-red-400 bg-red-900/20'
+                                            <span className={`px-3 py-1 rounded-full text-xs font-bold border ${req.status === 'APPROVED'
+                                                ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                                                : 'bg-rose-500/10 text-rose-600 border-rose-500/20'
                                                 }`}>
                                                 {req.status}
                                             </span>

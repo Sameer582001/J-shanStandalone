@@ -12,6 +12,21 @@ const DashboardHome: React.FC = () => {
     const [newsList, setNewsList] = useState<any[]>([]);
     const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
     const [cycleCount, setCycleCount] = useState(0);
+
+    // News Rotation Logic
+    useEffect(() => {
+        if (!newsList || newsList.length <= 1) return;
+
+        const interval = setInterval(() => {
+            setCurrentNewsIndex(prev => {
+                const next = (prev + 1) % newsList.length;
+                if (next === 0) setCycleCount(c => c + 1);
+                return next;
+            });
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, [newsList]);
     const [loading, setLoading] = useState(false);
 
     // Fetch Node Specific Stats
@@ -64,20 +79,7 @@ const DashboardHome: React.FC = () => {
         }
     }, []);
 
-    const handleAnimationEnd = () => {
-        // Force update regardless of list length to ensuring replay for single items too (handled by key change)
-        if (newsList.length > 0) {
-            setCycleCount(prev => prev + 1);
-            setCurrentNewsIndex((prev) => (prev + 1) % newsList.length);
-        }
-    };
 
-    // Helper to get animation duration based on length
-    const getDuration = (text: string) => {
-        const baseSpeed = 0.15; // sec per char
-        const minDuration = 10;
-        return Math.max(minDuration, text.length * baseSpeed);
-    };
 
     // Initial Load & activeNode change
     useEffect(() => {
@@ -111,7 +113,7 @@ const DashboardHome: React.FC = () => {
 
     return (
         <div>
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <div>
                     <h2 className="text-2xl font-bold text-secondary flex items-center gap-2">
                         {activeNode ? `Node Dashboard: ${activeNode.referralCode}` : 'Master Dashboard'}
@@ -129,14 +131,14 @@ const DashboardHome: React.FC = () => {
                 {activeNode ? (
                     <button
                         onClick={clearActiveNode}
-                        className="bg-card text-muted-foreground border border-border px-4 py-2 rounded hover:bg-muted transition"
+                        className="w-full md:w-auto bg-card text-muted-foreground border border-border px-4 py-2 rounded hover:bg-muted transition"
                     >
                         Exit Node View
                     </button>
                 ) : (
                     <Link
                         to="/purchase-node"
-                        className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90 transition shadow-sm border border-transparent"
+                        className="w-full md:w-auto text-center bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90 transition shadow-sm border border-transparent"
                     >
                         Purchase New Node
                     </Link>
@@ -148,12 +150,12 @@ const DashboardHome: React.FC = () => {
                 {/* Card 1: Wallet / Earnings */}
                 <div className="glass-card p-6 rounded-xl relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-15 transition-opacity duration-500">
-                        <div className="w-24 h-24 bg-sky-500 rounded-full blur-2xl"></div>
+                        <div className="w-24 h-24 bg-primary/20 rounded-full blur-2xl"></div>
                     </div>
                     <h3 className="text-lg font-medium text-card-foreground">
                         {activeNode ? 'Node Wallet Balance' : 'Master Wallet Balance'}
                     </h3>
-                    <p className="mt-2 text-3xl font-bold text-sky-400 tracking-tight">
+                    <p className="mt-2 text-3xl font-bold text-primary tracking-tight">
                         ₹{activeNode
                             ? (stats?.walletBalance || '0.00')
                             : (masterStats?.walletBalance || '0.00')}
@@ -166,7 +168,7 @@ const DashboardHome: React.FC = () => {
                 {/* Card 2: Self Pool / Directs / News */}
                 <div className="glass-card p-6 rounded-xl relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-15 transition-opacity duration-500">
-                        <div className="w-24 h-24 bg-indigo-500 rounded-full blur-2xl"></div>
+                        <div className="w-24 h-24 bg-secondary/20 rounded-full blur-2xl"></div>
                     </div>
                     {activeNode ? (
                         <>
@@ -180,31 +182,46 @@ const DashboardHome: React.FC = () => {
                             <h3 className="text-lg font-medium text-card-foreground flex items-center gap-2">
                                 <span className="relative flex h-3 w-3">
                                     {newsList[currentNewsIndex] ? (
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
                                     ) : null}
-                                    <span className={`relative inline-flex rounded-full h-3 w-3 ${newsList[currentNewsIndex] ? 'bg-indigo-500' : 'bg-gray-500'}`}></span>
+                                    <span className={`relative inline-flex rounded-full h-3 w-3 ${newsList[currentNewsIndex] ? 'bg-secondary' : 'bg-gray-500'}`}></span>
                                 </span>
-                                Latest Update {newsList.length > 1 && <span className="text-xs text-muted-foreground ml-auto">({currentNewsIndex + 1}/{newsList.length})</span>}
+                                Latest Updates
                             </h3>
-                            <div className="mt-2 text-center h-24 flex flex-col justify-center">
+                            <div className="mt-4 flex-1 flex flex-col justify-center min-h-[100px]">
                                 {newsList[currentNewsIndex] ? (
                                     <div className="animate-in fade-in slide-in-from-right-4 duration-500" key={`${newsList[currentNewsIndex].id}-${cycleCount}`}>
-                                        <p className="text-yellow-400 font-bold mb-2 uppercase tracking-wider text-sm truncate px-2" title={newsList[currentNewsIndex].title}>
-                                            {newsList[currentNewsIndex].title}
-                                        </p>
-                                        <div className="marquee-container w-full bg-black/20 py-2 rounded-md border border-white/5">
-                                            <div
-                                                className="marquee-content text-red-400 font-bold text-lg md:text-xl tracking-wide"
-                                                style={{ animationDuration: `${getDuration(newsList[currentNewsIndex].content)}s` }}
-                                                onAnimationEnd={handleAnimationEnd}
-                                            >
-                                                {newsList[currentNewsIndex].content}
+                                        <div className="bg-gradient-to-br from-secondary/5 to-white border border-secondary/10 rounded-lg p-3 shadow-sm relative overflow-hidden">
+                                            {/* Decorative element */}
+                                            <div className="absolute top-0 right-0 w-16 h-16 bg-secondary/5 rounded-full blur-xl -mr-4 -mt-4 pointer-events-none"></div>
+
+                                            <h4 className="text-secondary font-bold text-sm mb-1 line-clamp-1" title={newsList[currentNewsIndex].title}>
+                                                {newsList[currentNewsIndex].title}
+                                            </h4>
+
+                                            <div className="relative overflow-hidden h-12 flex items-center">
+                                                <p className="text-indigo-900/80 font-medium text-base leading-snug line-clamp-2">
+                                                    {newsList[currentNewsIndex].content}
+                                                </p>
+                                            </div>
+
+                                            <div className="mt-2 flex items-center justify-between text-[10px] text-muted-foreground/70">
+                                                <span>{new Date(newsList[currentNewsIndex].created_at).toLocaleDateString()}</span>
+                                                {newsList.length > 1 && (
+                                                    <span className="bg-secondary/10 text-secondary px-1.5 py-0.5 rounded-full font-medium">
+                                                        {currentNewsIndex + 1} / {newsList.length}
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
-                                        <p className="text-[10px] text-muted-foreground/60 mt-2">{new Date(newsList[currentNewsIndex].created_at).toLocaleDateString()}</p>
                                     </div>
                                 ) : (
-                                    <p className="text-muted-foreground text-sm italic">No recent announcements</p>
+                                    <div className="flex flex-col items-center justify-center text-muted-foreground gap-2 opacity-50">
+                                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                                            <RefreshCw size={16} />
+                                        </div>
+                                        <p className="text-sm font-medium">No active announcements</p>
+                                    </div>
                                 )}
                             </div>
                         </>
@@ -227,20 +244,22 @@ const DashboardHome: React.FC = () => {
                 </div>
             </div>
 
-            {!activeNode && (
-                <div className="mt-8 glass-panel p-6 rounded-xl flex flex-col md:flex-row items-center justify-between">
-                    <div>
-                        <h3 className="text-lg font-bold text-card-foreground mb-1">Manage Your Nodes</h3>
-                        <p className="text-muted-foreground">View performance details and login to specific nodes.</p>
+            {
+                !activeNode && (
+                    <div className="mt-8 glass-panel p-6 rounded-xl flex flex-col md:flex-row items-center justify-between">
+                        <div>
+                            <h3 className="text-lg font-bold text-card-foreground mb-1">Manage Your Nodes</h3>
+                            <p className="text-muted-foreground">View performance details and login to specific nodes.</p>
+                        </div>
+                        <Link
+                            to="/my-nodes"
+                            className="mt-4 md:mt-0 bg-primary text-primary-foreground px-6 py-2 rounded-lg font-semibold hover:bg-primary/90 transition shadow-lg shadow-primary/20"
+                        >
+                            Go to My Nodes
+                        </Link>
                     </div>
-                    <Link
-                        to="/my-nodes"
-                        className="mt-4 md:mt-0 bg-primary text-primary-foreground px-6 py-2 rounded-lg font-semibold hover:bg-primary/90 transition shadow-lg shadow-primary/20"
-                    >
-                        Go to My Nodes
-                    </Link>
-                </div>
-            )}
+                )
+            }
 
             {/* Recent Activity / Transactions */}
             <div className="mt-8 glass-card p-6 rounded-xl">
@@ -256,11 +275,11 @@ const DashboardHome: React.FC = () => {
                     <div className="space-y-4">
                         {transactions.map((tx) => (
                             <div key={tx.id} className="flex justify-between items-center border-b border-border pb-2 last:border-0 last:pb-0">
-                                <div>
-                                    <p className="font-semibold text-foreground">{tx.description}</p>
+                                <div className="min-w-0 flex-1 mr-2">
+                                    <p className="font-semibold text-foreground truncate">{tx.description}</p>
                                     <p className="text-xs text-muted-foreground">{new Date(tx.created_at).toLocaleString()}</p>
                                 </div>
-                                <span className={`font-bold ${tx.type === 'CREDIT' ? 'text-green-500' : 'text-red-500'}`}>
+                                <span className={`font-bold whitespace-nowrap ${tx.type === 'CREDIT' ? 'text-green-500' : 'text-red-500'}`}>
                                     {tx.type === 'CREDIT' ? '+' : '-'}₹{tx.amount}
                                 </span>
                             </div>
@@ -270,7 +289,7 @@ const DashboardHome: React.FC = () => {
                     <p className="text-muted-foreground">No recent activity found.</p>
                 )}
             </div>
-        </div>
+        </div >
     );
 };
 

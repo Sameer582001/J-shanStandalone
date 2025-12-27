@@ -77,17 +77,17 @@ const WalletTransactions: React.FC = () => {
                         placeholder="Search transactions..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="bg-card border border-border text-foreground pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:border-secondary w-full md:w-64"
+                        className="bg-background/50 border border-input text-foreground pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary w-full md:w-64 transition-all"
                     />
                 </div>
             </header>
 
             {/* Transactions Table */}
-            <div className="bg-card rounded-xl border border-border shadow-xl overflow-hidden">
+            <div className="glass-card rounded-xl overflow-hidden shadow-lg border border-white/10">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
-                            <tr className="bg-muted/50 text-muted-foreground text-xs uppercase tracking-wider">
+                            <tr className="bg-white/5 text-muted-foreground text-xs uppercase tracking-wider border-b border-white/10">
                                 <th className="px-6 py-4 font-medium">Date & Time</th>
                                 <th className="px-6 py-4 font-medium">Description</th>
                                 <th className="px-6 py-4 font-medium text-center">Type</th>
@@ -95,7 +95,7 @@ const WalletTransactions: React.FC = () => {
                                 <th className="px-6 py-4 font-medium text-center">Status</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-border">
+                        <tbody className="divide-y divide-white/5">
                             {loading && page === 1 ? (
                                 <tr>
                                     <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">
@@ -110,7 +110,7 @@ const WalletTransactions: React.FC = () => {
                                 </tr>
                             ) : (
                                 filteredTransactions.map((tx) => (
-                                    <tr key={tx.id} className="hover:bg-muted/10 transition-colors">
+                                    <tr key={tx.id} className="hover:bg-white/5 transition-colors group">
                                         <td className="px-6 py-4 text-sm text-muted-foreground whitespace-nowrap">
                                             {new Date(tx.created_at).toLocaleString('en-IN', {
                                                 day: 'numeric', month: 'short', year: 'numeric',
@@ -122,22 +122,22 @@ const WalletTransactions: React.FC = () => {
                                         </td>
                                         <td className="px-6 py-4 text-center">
                                             {tx.type === 'CREDIT' ? (
-                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-900/40 text-green-400">
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100/10 text-emerald-500 border border-emerald-500/20">
                                                     <ArrowDownLeft className="w-3 h-3 mr-1" />
                                                     IN
                                                 </span>
                                             ) : (
-                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-900/40 text-red-500">
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-100/10 text-rose-500 border border-rose-500/20">
                                                     <ArrowUpRight className="w-3 h-3 mr-1" />
                                                     OUT
                                                 </span>
                                             )}
                                         </td>
-                                        <td className={`px-6 py-4 text-sm font-bold text-right font-mono ${tx.type === 'CREDIT' ? 'text-green-500' : 'text-red-500'}`}>
+                                        <td className={`px-6 py-4 text-sm font-bold text-right font-mono ${tx.type === 'CREDIT' ? 'text-emerald-500' : 'text-rose-500'}`}>
                                             {tx.type === 'CREDIT' ? '+' : '-'}₹{parseFloat(tx.amount).toFixed(2)}
                                         </td>
                                         <td className="px-6 py-4 text-center">
-                                            <span className="px-2 py-1 text-xs font-medium rounded bg-muted text-muted-foreground">
+                                            <span className="px-2 py-1 text-xs font-medium rounded bg-secondary/10 text-secondary border border-secondary/20 uppercase tracking-wide">
                                                 {tx.status}
                                             </span>
                                         </td>

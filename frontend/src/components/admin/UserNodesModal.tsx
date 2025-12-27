@@ -12,6 +12,7 @@ interface Node {
     created_at: string;
     is_rebirth: boolean;
     origin_node_id: number | null;
+    custom_name?: string;
 }
 
 interface UserNodesModalProps {
@@ -96,7 +97,16 @@ export const UserNodesModal: React.FC<UserNodesModalProps> = ({ isOpen, onClose,
                                                 <span className={`text-xs font-bold px-2 py-0.5 rounded ${node.is_rebirth ? 'bg-purple-900/50 text-purple-300' : 'bg-primary/20 text-primary'}`}>
                                                     {node.is_rebirth ? 'REBIRTH' : 'ORIGIN'}
                                                 </span>
-                                                <h3 className="text-lg font-mono font-bold text-card-foreground mt-1">{node.referral_code}</h3>
+                                                <h3 className="text-lg font-mono font-bold text-card-foreground mt-1">
+                                                    {node.custom_name ? (
+                                                        <span>
+                                                            {node.custom_name}
+                                                            <span className="block text-xs font-normal text-muted-foreground">{node.referral_code}</span>
+                                                        </span>
+                                                    ) : (
+                                                        node.referral_code
+                                                    )}
+                                                </h3>
                                             </div>
                                             <div className={`w-3 h-3 rounded-full ${node.status === 'ACTIVE' ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]' : 'bg-red-500'}`} title={node.status}></div>
                                         </div>

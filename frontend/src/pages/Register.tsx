@@ -95,8 +95,8 @@ const Register: React.FC = () => {
             </div>
             <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                 {error && (
-                    <div className="bg-red-900/50 border border-red-500/50 text-red-200 px-4 py-3 rounded relative" role="alert">
-                        <span className="block sm:inline">{error}</span>
+                    <div className="bg-rose-500/10 border border-rose-500/20 text-rose-700 px-4 py-3 rounded-xl flex items-center shadow-sm backdrop-blur-sm" role="alert">
+                        <span className="block sm:inline font-medium">{error}</span>
                     </div>
                 )}
                 <div className="rounded-md shadow-sm -space-y-px">

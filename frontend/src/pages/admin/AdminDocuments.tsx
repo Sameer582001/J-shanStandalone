@@ -77,32 +77,38 @@ const AdminDocuments: React.FC = () => {
             <h1 className="text-3xl font-bold text-gradient-primary">Legal Documents Manager</h1>
 
             {/* Upload Section */}
-            <div className="bg-card p-6 rounded-xl border border-border">
-                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                    <Upload className="w-5 h-5 text-primary" /> Upload New Document
-                </h2>
-                <form onSubmit={handleUpload} className="flex flex-col md:flex-row gap-4 items-end">
-                    <div className="w-full md:w-1/3">
-                        <label className="block text-sm font-medium text-muted-foreground mb-1">Select PDF</label>
-                        <input
-                            type="file"
-                            accept=".pdf"
-                            onChange={handleFileChange}
-                            className="block w-full text-sm text-muted-foreground
-                            file:mr-4 file:py-2 file:px-4
-                            file:rounded-full file:border-0
-                            file:text-sm file:font-semibold
-                            file:bg-primary/20 file:text-primary
-                            hover:file:bg-primary/30"
-                        />
+            <div className="glass-card p-8 rounded-2xl border border-white/20 shadow-xl backdrop-blur-md bg-white/60">
+                <h2 className="text-xl font-bold mb-6 flex items-center gap-3 text-foreground">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                        <Upload className="w-6 h-6 text-primary" />
                     </div>
-                    <div className="w-full md:w-1/2">
-                        <label className="block text-sm font-medium text-muted-foreground mb-1">Document Title</label>
+                    Upload New Document
+                </h2>
+                <form onSubmit={handleUpload} className="flex flex-col md:flex-row gap-6 items-end">
+                    <div className="w-full md:w-1/3 space-y-2">
+                        <label className="block text-sm font-bold text-foreground">Select PDF</label>
+                        <div className="relative group">
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={handleFileChange}
+                                className="block w-full text-sm text-muted-foreground
+                                file:mr-4 file:py-2.5 file:px-4
+                                file:rounded-full file:border-0
+                                file:text-sm file:font-bold
+                                file:bg-primary/10 file:text-primary
+                                hover:file:bg-primary/20 cursor-pointer
+                                border border-input rounded-xl bg-white/50 backdrop-blur-sm p-1 transition-all group-hover:border-primary/50"
+                            />
+                        </div>
+                    </div>
+                    <div className="w-full md:w-1/2 space-y-2">
+                        <label className="block text-sm font-bold text-foreground">Document Title</label>
                         <input
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary"
+                            className="w-full px-4 py-2.5 bg-white/50 border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-muted-foreground/70"
                             placeholder="e.g. Terms and Conditions"
                             required
                         />
@@ -110,7 +116,7 @@ const AdminDocuments: React.FC = () => {
                     <button
                         type="submit"
                         disabled={uploading}
-                        className="bg-primary text-primary-foreground px-6 py-2 rounded-lg font-semibold hover:bg-primary/90 disabled:opacity-50"
+                        className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-2.5 rounded-xl font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                     >
                         {uploading ? 'Uploading...' : 'Upload'}
                     </button>
@@ -120,26 +126,26 @@ const AdminDocuments: React.FC = () => {
             {/* List */}
             <div className="grid grid-cols-1 gap-4">
                 {docs.map((doc) => (
-                    <div key={doc.id} className="bg-card p-4 rounded-xl border border-border flex items-center justify-between">
+                    <div key={doc.id} className="glass-card p-4 rounded-xl border border-white/20 flex items-center justify-between hover:bg-white/40 transition-colors group backdrop-blur-md bg-white/60">
                         <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
-                                <FileText className="w-5 h-5 text-foreground" />
+                            <div className="w-12 h-12 bg-gradient-to-br from-red-50 to-red-100 rounded-xl flex items-center justify-center border border-red-200">
+                                <FileText className="w-6 h-6 text-red-500" />
                             </div>
                             <div>
-                                <h3 className="font-bold text-foreground">{doc.title}</h3>
+                                <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{doc.title}</h3>
                                 <a
                                     href={doc.file_url.startsWith('http') ? doc.file_url : `${API_URL}${doc.file_url}`}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="text-xs text-primary hover:underline"
+                                    className="text-xs font-medium text-muted-foreground hover:text-primary hover:underline flex items-center gap-1 mt-0.5"
                                 >
-                                    View PDF
+                                    View PDF document
                                 </a>
                             </div>
                         </div>
                         <button
                             onClick={() => handleDelete(doc.id)}
-                            className="text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-colors"
+                            className="text-rose-400 hover:text-rose-600 hover:bg-rose-50 p-2.5 rounded-lg transition-all"
                             title="Delete"
                         >
                             <Trash2 className="w-5 h-5" />

@@ -12,6 +12,7 @@ import AdminLayout from './layouts/AdminLayout';
 // Pages - Auth
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
 
 // Pages - Landing
 import LandingPage from './pages/LandingPage';
@@ -62,6 +63,7 @@ const App: React.FC = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Route>
+          <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* Node Routes (Isolated) */}
           <Route path="/node" element={<NodeLayout />}>

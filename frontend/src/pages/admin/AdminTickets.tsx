@@ -4,14 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
+
 import { CheckCircle, XCircle, History, Inbox } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -75,7 +68,7 @@ const AdminTickets: React.FC = () => {
     };
 
     return (
-        <div className="p-8 space-y-8 max-w-[1600px] mx-auto">
+        <div className="p-4 md:p-8 space-y-8 max-w-[1600px] mx-auto">
             <div className="flex flex-col gap-2">
                 <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-orange-500">
                     Support Tickets & History
@@ -88,8 +81,8 @@ const AdminTickets: React.FC = () => {
                 <button
                     onClick={() => setViewStatus('OPEN')}
                     className={`flex items-center px-6 py-2 rounded-md text-sm font-medium transition-all ${viewStatus === 'OPEN'
-                            ? 'bg-primary text-primary-foreground shadow-lg'
-                            : 'text-muted-foreground hover:bg-white/5'
+                        ? 'bg-primary text-primary-foreground shadow-lg'
+                        : 'text-muted-foreground hover:bg-white/5'
                         }`}
                 >
                     <Inbox className="w-4 h-4 mr-2" />
@@ -98,8 +91,8 @@ const AdminTickets: React.FC = () => {
                 <button
                     onClick={() => setViewStatus('CLOSED')}
                     className={`flex items-center px-6 py-2 rounded-md text-sm font-medium transition-all ${viewStatus === 'CLOSED'
-                            ? 'bg-primary text-primary-foreground shadow-lg'
-                            : 'text-muted-foreground hover:bg-white/5'
+                        ? 'bg-primary text-primary-foreground shadow-lg'
+                        : 'text-muted-foreground hover:bg-white/5'
                         }`}
                 >
                     <History className="w-4 h-4 mr-2" />
@@ -107,85 +100,90 @@ const AdminTickets: React.FC = () => {
                 </button>
             </div>
 
-            <Card className="glass-card border-none shadow-xl">
-                <CardHeader>
+            <Card className="glass-card border border-white/20 shadow-xl overflow-hidden backdrop-blur-md bg-white/60">
+                <CardHeader className="bg-primary/5 border-b border-white/10">
                     <div className="flex items-center justify-between">
-                        <CardTitle>{viewStatus === 'OPEN' ? 'Open Tickets' : 'Resolved History'}</CardTitle>
-                        <Badge variant="outline" className="px-3 py-1">
+                        <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+                            {viewStatus === 'OPEN' ? <Inbox className="w-5 h-5 text-primary" /> : <History className="w-5 h-5 text-primary" />}
+                            {viewStatus === 'OPEN' ? 'Open Tickets' : 'Resolved History'}
+                        </CardTitle>
+                        <Badge variant="outline" className={`px-3 py-1 border rounded-full ${viewStatus === 'OPEN' ? 'bg-primary/10 text-primary border-primary/20' : 'bg-secondary/10 text-secondary border-secondary/20'}`}>
                             {tickets.length} {viewStatus === 'OPEN' ? 'Pending' : 'Resolved'}
                         </Badge>
                     </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                     {tickets.length === 0 ? (
                         <div className="text-center p-12 flex flex-col items-center justify-center space-y-4">
-                            <div className={`${viewStatus === 'OPEN' ? 'bg-green-500/10 text-green-500' : 'bg-muted/10 text-muted-foreground'} p-4 rounded-full`}>
+                            <div className={`${viewStatus === 'OPEN' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-muted/30 text-muted-foreground'} p-6 rounded-full ring-8 ring-white/5`}>
                                 {viewStatus === 'OPEN' ? <CheckCircle className="h-12 w-12" /> : <History className="h-12 w-12" />}
                             </div>
                             <div>
-                                <h3 className="text-lg font-semibold">
+                                <h3 className="text-lg font-bold text-foreground">
                                     {viewStatus === 'OPEN' ? 'All Caught Up!' : 'No History Found'}
                                 </h3>
-                                <p className="text-muted-foreground">
-                                    {viewStatus === 'OPEN' ? 'No open tickets at the moment.' : 'No resolved tickets yet.'}
+                                <p className="text-muted-foreground mt-1">
+                                    {viewStatus === 'OPEN' ? 'No open tickets at the moment. Great job!' : 'No resolved tickets yet.'}
                                 </p>
                             </div>
                         </div>
                     ) : (
-                        <div className="rounded-md border border-white/10 overflow-hidden">
-                            <Table>
-                                <TableHeader className="bg-muted/50">
-                                    <TableRow>
-                                        <TableHead className="w-[80px]">ID</TableHead>
-                                        <TableHead className="w-[200px]">User</TableHead>
-                                        <TableHead className="w-[250px]">Subject</TableHead>
-                                        <TableHead className="hidden md:table-cell">Date</TableHead>
-                                        {viewStatus === 'CLOSED' && <TableHead className="hidden md:table-cell">Closed At</TableHead>}
-                                        <TableHead className="text-right">Action</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-white/10">
+                                <thead className="bg-primary/5">
+                                    <tr>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-primary uppercase tracking-wider w-[80px]">ID</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-primary uppercase tracking-wider w-[200px]">User</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-primary uppercase tracking-wider">Subject</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-primary uppercase tracking-wider hidden md:table-cell">Date</th>
+                                        {viewStatus === 'CLOSED' && <th className="px-6 py-4 text-left text-xs font-bold text-primary uppercase tracking-wider hidden md:table-cell">Closed At</th>}
+                                        <th className="px-6 py-4 text-right text-xs font-bold text-primary uppercase tracking-wider">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/10">
                                     {tickets.map((ticket) => (
-                                        <TableRow key={ticket.id} className="hover:bg-muted/30 transition-colors">
-                                            <TableCell className="font-mono text-xs text-muted-foreground">
+                                        <tr key={ticket.id} className="hover:bg-primary/5 transition-colors duration-200">
+                                            <td className="px-6 py-4 font-mono text-xs font-medium text-muted-foreground">
                                                 #{ticket.id}
-                                            </TableCell>
-                                            <TableCell className="font-medium">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="h-9 w-9 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-primary text-xs font-bold border border-white/20 shadow-sm">
                                                         {ticket.user_name?.charAt(0).toUpperCase() || 'U'}
                                                     </div>
-                                                    <span>{ticket.user_name}</span>
+                                                    <span className="font-semibold text-sm text-foreground">{ticket.user_name}</span>
                                                 </div>
-                                            </TableCell>
-                                            <TableCell>
+                                            </td>
+                                            <td className="px-6 py-4">
                                                 <div className="space-y-1">
-                                                    <span className="font-medium">{ticket.subject}</span>
+                                                    <span className="font-bold text-sm text-foreground">{ticket.subject}</span>
                                                     <p className="text-xs text-muted-foreground line-clamp-1 max-w-[300px]">
                                                         {ticket.description}
                                                     </p>
                                                 </div>
-                                            </TableCell>
-                                            <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                                            </td>
+                                            <td className="px-6 py-4 hidden md:table-cell text-xs font-medium text-muted-foreground">
                                                 {new Date(ticket.created_at).toLocaleDateString()}
-                                            </TableCell>
+                                            </td>
                                             {viewStatus === 'CLOSED' && (
-                                                <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                                                <td className="px-6 py-4 hidden md:table-cell text-xs font-medium text-muted-foreground">
                                                     {ticket.closed_at ? new Date(ticket.closed_at).toLocaleDateString() : '-'}
-                                                </TableCell>
+                                                </td>
                                             )}
-                                            <TableCell className="text-right">
+                                            <td className="px-6 py-4 text-right">
                                                 <Button
                                                     onClick={() => setSelectedTicket(ticket)}
-                                                    className={`h-8 px-3 text-xs ${viewStatus === 'OPEN' ? "bg-primary/10 text-primary hover:bg-primary/20 border-none shadow-none" : "bg-transparent border border-input hover:bg-accent hover:text-accent-foreground"}`}
+                                                    className={`h-8 px-4 text-xs font-bold rounded-lg transition-all ${viewStatus === 'OPEN'
+                                                        ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg"
+                                                        : "bg-white/50 text-foreground border border-white/20 hover:bg-white/80"}`}
                                                 >
-                                                    {viewStatus === 'OPEN' ? 'Review & Close' : 'View Details'}
+                                                    {viewStatus === 'OPEN' ? 'Review' : 'View'}
                                                 </Button>
-                                            </TableCell>
-                                        </TableRow>
+                                            </td>
+                                        </tr>
                                     ))}
-                                </TableBody>
-                            </Table>
+                                </tbody>
+                            </table>
                         </div>
                     )}
                 </CardContent>

@@ -85,9 +85,9 @@ const AddFunds: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Left: Payment Section */}
-                <div className="bg-card p-6 rounded-xl border border-border">
-                    <h2 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
-                        <QrCode className="w-5 h-5" />
+                <div className="glass-card p-4 md:p-6 rounded-xl border border-white/10 relative overflow-hidden">
+                    <h2 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary mb-4 flex items-center gap-2">
+                        <QrCode className="w-5 h-5 text-primary" />
                         Step 1: Make Payment
                     </h2>
 
@@ -109,12 +109,12 @@ const AddFunds: React.FC = () => {
                             )}
 
                             {qrData.upiId && (
-                                <div className="flex items-center gap-2 bg-background px-4 py-2 rounded-lg border border-border w-full justify-between group cursor-pointer" onClick={() => copyToClipboard(qrData.upiId)}>
+                                <div className="flex items-center gap-2 bg-white/50 px-4 py-2 rounded-lg border border-primary/20 w-full justify-between group cursor-pointer hover:bg-white/80 transition-all" onClick={() => copyToClipboard(qrData.upiId)}>
                                     <div className="text-sm">
-                                        <div className="text-muted-foreground text-xs">UPI ID</div>
-                                        <div className="text-foreground font-mono">{qrData.upiId}</div>
+                                        <div className="text-muted-foreground text-xs font-semibold">UPI ID</div>
+                                        <div className="text-foreground font-mono font-bold">{qrData.upiId}</div>
                                     </div>
-                                    <Copy className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
+                                    <Copy className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
                                 </div>
                             )}
                             {qrData.payeeName && (
@@ -127,8 +127,8 @@ const AddFunds: React.FC = () => {
                         <div className="text-center py-8 text-muted-foreground">Loading Payment Details...</div>
                     )}
 
-                    <h2 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2 border-t border-border pt-6">
-                        <AlertCircle className="w-5 h-5" />
+                    <h2 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary mb-4 flex items-center gap-2 border-t border-dashed border-primary/20 pt-6">
+                        <AlertCircle className="w-5 h-5 text-secondary" />
                         Step 2: Submit Details
                     </h2>
 
@@ -139,7 +139,7 @@ const AddFunds: React.FC = () => {
                                 type="number"
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
-                                className="w-full bg-background border border-input rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-primary"
+                                className="w-full bg-white/40 border border-border/50 rounded-lg px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono font-medium"
                                 placeholder="e.g. 5000"
                                 required
                             />
@@ -150,7 +150,7 @@ const AddFunds: React.FC = () => {
                                 type="text"
                                 value={utrNumber}
                                 onChange={(e) => setUtrNumber(e.target.value)}
-                                className="w-full bg-background border border-input rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-primary"
+                                className="w-full bg-white/40 border border-border/50 rounded-lg px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono font-medium"
                                 placeholder="e.g. 123456789012"
                                 required
                             />
@@ -160,29 +160,40 @@ const AddFunds: React.FC = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className={`w-full py-3 rounded-lg font-semibold transition-all ${loading
+                            className={`w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group ${loading
                                 ? 'bg-muted text-muted-foreground cursor-not-allowed'
-                                : 'bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:opacity-90 shadow-lg shadow-primary/20'
+                                : 'bg-gradient-to-r from-primary via-orange-500 to-secondary text-white shadow-xl shadow-primary/30 hover:shadow-primary/50'
                                 }`}
                         >
-                            {loading ? 'Submitting...' : 'Submit Request'}
+                            <span className="relative z-10 flex items-center justify-center gap-2">
+                                {loading ? (
+                                    <>Processing...</>
+                                ) : (
+                                    <>
+                                        Submit Request
+                                        <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                    </>
+                                )}
+                            </span>
+                            {/* Shine Effect */}
+                            <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent z-0"></div>
                         </button>
                     </form>
                 </div>
 
                 {/* Right: History Section */}
-                <div className="bg-card p-6 rounded-xl border border-border flex flex-col h-full">
-                    <h2 className="text-lg font-semibold text-card-foreground mb-4 flex items-center gap-2">
-                        <History className="w-5 h-5 text-primary" />
+                <div className="glass-card p-4 md:p-6 rounded-xl border border-white/10 flex flex-col h-full relative overflow-hidden">
+                    <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+                        <History className="w-5 h-5 text-secondary" />
                         Recent Requests
                     </h2>
 
-                    <div className="flex-1 overflow-auto">
+                    <div className="flex-1 overflow-x-auto">
                         {requests.length === 0 ? (
                             <div className="text-center text-muted-foreground py-10">No requests found.</div>
                         ) : (
                             <table className="w-full text-left">
-                                <thead className="text-xs text-muted-foreground uppercase bg-muted/50 sticky top-0">
+                                <thead className="text-xs text-muted-foreground uppercase bg-white/5 border-b border-white/5 sticky top-0">
                                     <tr>
                                         <th className="px-4 py-3 rounded-tl-lg">Date</th>
                                         <th className="px-4 py-3">Amount</th>
@@ -192,7 +203,7 @@ const AddFunds: React.FC = () => {
                                 </thead>
                                 <tbody className="divide-y divide-border">
                                     {requests.map((req) => (
-                                        <tr key={req.id} className="text-sm hover:bg-muted/10">
+                                        <tr key={req.id} className="text-sm hover:bg-white/5 transition-colors">
                                             <td className="px-4 py-3 text-muted-foreground">
                                                 {new Date(req.created_at).toLocaleDateString()}
                                             </td>
@@ -203,9 +214,9 @@ const AddFunds: React.FC = () => {
                                                 {req.utr_number}
                                             </td>
                                             <td className="px-4 py-3 text-right">
-                                                <span className={`px-2 py-1 rounded-full text-xs font-bold ${req.status === 'APPROVED' ? 'bg-green-900/30 text-green-400' :
-                                                    req.status === 'REJECTED' ? 'bg-red-900/30 text-red-500' :
-                                                        'bg-yellow-900/30 text-yellow-500'
+                                                <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${req.status === 'APPROVED' ? 'bg-emerald-100/10 text-emerald-600 border-emerald-500/20' :
+                                                    req.status === 'REJECTED' ? 'bg-rose-100/10 text-rose-600 border-rose-500/20' :
+                                                        'bg-amber-100/10 text-amber-600 border-amber-500/20'
                                                     }`}>
                                                     {req.status}
                                                 </span>

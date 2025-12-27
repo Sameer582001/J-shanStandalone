@@ -36,9 +36,9 @@ const Wallet: React.FC = () => {
             </div>
 
             {/* Add Funds Section */}
-            <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+            <div className="bg-card rounded-xl shadow-sm border border-border p-4 md:p-6">
                 <h3 className="text-lg font-semibold text-card-foreground mb-4">Add Funds</h3>
-                <div className="flex gap-4 items-center">
+                <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
                     <div className="flex-1">
                         <p className="text-sm text-muted-foreground mb-2">
                             Add funds to your Master Wallet using QR Code or UPI.
@@ -55,9 +55,9 @@ const Wallet: React.FC = () => {
             </div>
 
             {/* Withdraw Section */}
-            <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+            <div className="bg-card rounded-xl shadow-sm border border-border p-4 md:p-6">
                 <h3 className="text-lg font-semibold text-card-foreground mb-4">Withdraw Funds</h3>
-                <div className="flex gap-4 items-end">
+                <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
                     <div className="flex-1">
                         <p className="text-sm text-muted-foreground mb-2">
                             Request a payout to your bank account. Admin approval required.

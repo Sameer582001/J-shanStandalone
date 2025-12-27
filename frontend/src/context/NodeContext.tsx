@@ -11,6 +11,7 @@ interface Node {
     selfPoolLevel?: number;
     autoPoolLevel?: number;
     direct_referrals_count: number;
+    customName?: string;
 }
 
 interface NodeContextType {

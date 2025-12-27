@@ -44,58 +44,61 @@ const AdminSettings: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Password Reset Card */}
-                <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden h-full">
-                    <div className="p-6 border-b border-border bg-muted/20">
-                        <h3 className="text-lg font-semibold text-card-foreground flex items-center">
-                            <Lock className="w-5 h-5 mr-2 text-primary" />
+                <div className="glass-card rounded-2xl shadow-xl border border-white/20 overflow-hidden backdrop-blur-md bg-white/60 h-full">
+                    <div className="p-6 border-b border-primary/10 bg-primary/5">
+                        <h3 className="text-lg font-bold text-foreground flex items-center">
+                            <div className="p-2 bg-primary/10 rounded-lg mr-3">
+                                <Lock className="w-5 h-5 text-primary" />
+                            </div>
                             Force User Password Reset
                         </h3>
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="text-sm text-muted-foreground mt-1 ml-12">
                             Reset any user's password without needing their old password.
                         </p>
                     </div>
                     <div className="p-6">
                         <form onSubmit={handleResetPassword} className="space-y-6">
-                            {/* Inputs ... (Refactored to be cleaner if needed, but keeping existing structure) */}
                             <div>
-                                <label className="block text-sm font-medium text-muted-foreground mb-1">Target User (ID or Email)</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Target User (ID or Email)</label>
                                 <div className="relative">
-                                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+                                    <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground pointer-events-none" />
                                     <input
                                         type="text"
                                         required
                                         value={userIdOrEmail}
                                         onChange={(e) => setUserIdOrEmail(e.target.value)}
-                                        className="block w-full pl-10 rounded-md border-input bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2.5 outline-none"
+                                        className="block w-full pl-10 px-4 py-3 rounded-xl border border-input bg-white/50 text-foreground shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                         placeholder="e.g., 2 or user@example.com"
                                     />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-muted-foreground mb-1">New Password</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">New Password</label>
                                 <div className="relative">
-                                    <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+                                    <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground pointer-events-none" />
                                     <input
                                         type="password"
                                         required
                                         value={newPassword}
                                         onChange={(e) => setNewPassword(e.target.value)}
-                                        className="block w-full pl-10 rounded-md border-input bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2.5 outline-none"
+                                        className="block w-full pl-10 px-4 py-3 rounded-xl border border-input bg-white/50 text-foreground shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                         placeholder="Enter new secure password"
                                         minLength={6}
                                     />
                                 </div>
                             </div>
                             {message && (
-                                <div className={`p-3 rounded-md flex items-start text-sm ${message.type === 'success' ? 'bg-green-900/40 text-green-200 border border-green-800' : 'bg-red-900/40 text-red-200 border border-red-800'}`}>
-                                    {message.type === 'success' ? <CheckCircle className="w-4 h-4 mr-2 mt-0.5" /> : <AlertCircle className="w-4 h-4 mr-2 mt-0.5" />}
-                                    <span>{message.text}</span>
+                                <div className={`p-4 rounded-xl flex items-start text-sm border backdrop-blur-sm shadow-sm ${message.type === 'success'
+                                    ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20'
+                                    : 'bg-rose-500/10 text-rose-700 border-rose-500/20'}`}>
+                                    {message.type === 'success' ? <CheckCircle className="w-5 h-5 mr-3 mt-0.5" /> : <AlertCircle className="w-5 h-5 mr-3 mt-0.5" />}
+                                    <span className="font-medium">{message.text}</span>
                                 </div>
                             )}
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className={`w-full py-2 px-4 rounded-md shadow-sm text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none transition-all ${loading ? 'opacity-70' : ''}`}
+                                className={`w-full py-3 px-4 rounded-xl shadow-lg text-sm font-bold text-white bg-gradient-to-r from-primary to-secondary hover:shadow-primary/25 transform transition-all hover:-translate-y-0.5 focus:outline-none ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                             >
                                 {loading ? 'Resetting...' : 'Reset Password'}
                             </button>
@@ -104,25 +107,27 @@ const AdminSettings: React.FC = () => {
                 </div>
 
                 {/* Node Management Card */}
-                <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden h-full flex flex-col">
-                    <div className="p-6 border-b border-border bg-muted/20">
-                        <h3 className="text-lg font-semibold text-card-foreground flex items-center">
-                            <Shield className="w-5 h-5 mr-2 text-purple-400" />
+                <div className="glass-card rounded-2xl shadow-xl border border-white/20 overflow-hidden backdrop-blur-md bg-white/60 h-full flex flex-col">
+                    <div className="p-6 border-b border-purple-500/10 bg-purple-500/5">
+                        <h3 className="text-lg font-bold text-foreground flex items-center">
+                            <div className="p-2 bg-purple-500/10 rounded-lg mr-3">
+                                <Shield className="w-5 h-5 text-purple-600" />
+                            </div>
                             Node Management
                         </h3>
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="text-sm text-muted-foreground mt-1 ml-12">
                             Critical actions for managing node ownership and structure.
                         </p>
                     </div>
                     <div className="p-6 flex-1 flex flex-col justify-center space-y-4">
-                        <div className="bg-purple-900/10 border border-purple-800/30 rounded-lg p-4">
-                            <h4 className="font-semibold text-purple-200 mb-2">Transfer Ownership</h4>
-                            <p className="text-xs text-purple-300/70 mb-4">
-                                Transfer a node and all its rebirths to a new user. The wallet balance will also be transferred.
+                        <div className="bg-purple-50 p-6 rounded-2xl border border-purple-100">
+                            <h4 className="font-bold text-purple-900 mb-2 text-lg">Transfer Ownership</h4>
+                            <p className="text-sm text-purple-700/80 mb-6 leading-relaxed">
+                                Transfer a node and all its rebirths to a new user. The wallet balance will also be transferred to the new owner.
                             </p>
                             <button
                                 onClick={() => setShowTransferModal(true)}
-                                className="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center"
+                                className="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-purple-200 hover:shadow-purple-300 flex items-center justify-center transform hover:-translate-y-0.5"
                             >
                                 Open Transfer Tool
                             </button>
@@ -131,13 +136,15 @@ const AdminSettings: React.FC = () => {
                 </div>
 
                 {/* QR Payment Settings Card */}
-                <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden h-full flex flex-col md:col-span-2">
-                    <div className="p-6 border-b border-border bg-muted/20">
-                        <h3 className="text-lg font-semibold text-card-foreground flex items-center">
-                            <Shield className="w-5 h-5 mr-2 text-yellow-500" />
+                <div className="glass-card rounded-2xl shadow-xl border border-white/20 overflow-hidden backdrop-blur-md bg-white/60 h-full flex flex-col md:col-span-2">
+                    <div className="p-6 border-b border-amber-500/10 bg-amber-500/5">
+                        <h3 className="text-lg font-bold text-foreground flex items-center">
+                            <div className="p-2 bg-amber-500/10 rounded-lg mr-3">
+                                <Shield className="w-5 h-5 text-amber-600" />
+                            </div>
                             Payment Settings (QR Code)
                         </h3>
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="text-sm text-muted-foreground mt-1 ml-12">
                             Manage the QR Code and UPI ID displayed to users for adding funds.
                         </p>
                     </div>
