@@ -133,14 +133,15 @@ export class FastTrackService {
     async getEligibleList() {
         // 1. Get Finalized/Eligible/Claimed from DB
         const finalizedRes = await query(`
-            SELECT ft.*, u.full_name as user_name, u.email, u.mobile, 0 as days_remaining 
+            SELECT ft.*, u.full_name as user_name, u.email, u.mobile, u.address_line, u.city, u.state, u.zip_code, 0 as days_remaining 
             FROM FastTrackBenefits ft
             JOIN Users u ON ft.user_id = u.id
         `);
         const finalized = finalizedRes.rows.map(row => ({
             ...row,
             is_active: false,
-            reward_value: parseFloat(row.reward_value) // Ensure number
+            reward_value: parseFloat(row.reward_value), // Ensure number
+            full_address: row.address_line ? `${row.address_line}, ${row.city}, ${row.state} - ${row.zip_code}` : 'No Address Set'
         }));
 
         // 2. Get Active Nodes (Created within last 10 days, NOT in FastTrackBenefits)
@@ -152,6 +153,7 @@ export class FastTrackService {
                 n.owner_user_id as user_id,
                 u.full_name as user_name, 
                 u.mobile,
+                u.address_line, u.city, u.state, u.zip_code,
                 (SELECT COUNT(*) FROM Nodes r WHERE r.sponsor_node_id = n.id) as achieved_tier_referrals
             FROM Nodes n
             JOIN Users u ON n.owner_user_id = u.id
@@ -179,6 +181,10 @@ export class FastTrackService {
                 user_id: row.user_id,
                 user_name: row.user_name,
                 mobile: row.mobile,
+                city: row.city,
+                state: row.state,
+                zip_code: row.zip_code,
+                full_address: row.address_line ? `${row.address_line}, ${row.city}, ${row.state} - ${row.zip_code}` : 'No Address Set',
                 achieved_tier_referrals: currentCount,
                 reward_value: tier ? tier.reward_value : 0,
                 status: 'PENDING',

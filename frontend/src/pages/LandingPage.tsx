@@ -23,7 +23,7 @@ const LandingPage: React.FC = () => {
                     <div className="flex items-center justify-between h-16">
                         <div className="flex items-center">
                             <div className="flex-shrink-0 cursor-pointer" onClick={() => scrollToSection('home')}>
-                                <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sky-400 via-indigo-400 to-purple-400 tracking-tight">
+                                <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary tracking-tight">
                                     JSE System
                                 </h1>
                             </div>
@@ -80,16 +80,16 @@ const LandingPage: React.FC = () => {
             {/* Hero Section */}
             <section id="home" className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
                 {/* Background Blobs */}
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl -z-10 animate-pulse"></div>
-                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl -z-10 animate-pulse delay-700"></div>
+                <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl -z-10 animate-pulse"></div>
+                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl -z-10 animate-pulse delay-700"></div>
 
                 <div className="max-w-7xl mx-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                         <div className="space-y-6">
-                            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground tracking-tight">
+                            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-foreground tracking-tight">
                                 J-SHAN
                                 <br />
-                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-400 via-indigo-400 to-purple-400">ENTERPRISES</span>
+                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary">ENTERPRISES</span>
                             </h1>
 
                             <p className="text-xl text-muted-foreground/80 max-w-lg">Powering Growth. Enabling Enterprise through innovative financial solutions.</p>
@@ -112,32 +112,32 @@ const LandingPage: React.FC = () => {
                         </div>
 
                         <div className="relative">
-                            <div className="absolute inset-0 bg-gradient-to-r from-sky-500 to-purple-500 rounded-full blur-3xl opacity-10"></div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-3xl opacity-10"></div>
                             <div className="relative bg-card/50 backdrop-blur-xl rounded-2xl p-8 border border-white/10 shadow-2xl">
-                                <div className="grid grid-cols-2 gap-6">
+                                <div className="grid grid-cols-2 gap-4 sm:gap-6">
                                     <div className="text-center p-4 rounded-xl hover:bg-white/5 transition-colors">
-                                        <div className="w-16 h-16 bg-gradient-to-br from-sky-400 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-500/20">
+                                        <div className="w-16 h-16 bg-gradient-to-br from-primary to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary/20">
                                             <TrendingUp className="w-8 h-8 text-white" />
                                         </div>
                                         <p className="text-foreground font-bold text-2xl">₹12.28Cr+</p>
                                         <p className="text-muted-foreground text-sm">Earning Potential</p>
                                     </div>
                                     <div className="text-center p-4 rounded-xl hover:bg-white/5 transition-colors">
-                                        <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/20">
+                                        <div className="w-16 h-16 bg-gradient-to-br from-secondary to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-secondary/20">
                                             <Users className="w-8 h-8 text-white" />
                                         </div>
                                         <p className="text-foreground font-bold text-2xl">3x4 Matrix</p>
                                         <p className="text-muted-foreground text-sm">Dual Pool System</p>
                                     </div>
                                     <div className="text-center p-4 rounded-xl hover:bg-white/5 transition-colors">
-                                        <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-orange-500/20">
+                                        <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-orange-500/20">
                                             <Gift className="w-8 h-8 text-white" />
                                         </div>
                                         <p className="text-foreground font-bold text-2xl">Pigeon Brand</p>
                                         <p className="text-muted-foreground text-sm">Premium Products</p>
                                     </div>
                                     <div className="text-center p-4 rounded-xl hover:bg-white/5 transition-colors">
-                                        <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/20">
+                                        <div className="w-16 h-16 bg-gradient-to-br from-teal-400 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/20">
                                             <ShieldCheck className="w-8 h-8 text-white" />
                                         </div>
                                         <p className="text-foreground font-bold text-2xl">₹1,750</p>
@@ -154,8 +154,8 @@ const LandingPage: React.FC = () => {
             <section id="about" className="py-20 px-4 sm:px-6 lg:px-8 bg-card/30">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">About J-SHAN ENTERPRISES</h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-sky-400 via-indigo-400 to-purple-400 mx-auto mb-6 rounded-full"></div>
+                        <h2 className="text-3xl sm:text-5xl font-bold text-foreground mb-4">About J-SHAN ENTERPRISES</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-primary via-secondary to-primary mx-auto mb-6 rounded-full"></div>
                         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                             Revolutionizing the multi-level marketing industry with innovative plans and customer-centric services
                         </p>
@@ -179,8 +179,8 @@ const LandingPage: React.FC = () => {
                         ))}
                     </div>
 
-                    <div className="bg-gradient-to-r from-sky-500/10 via-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-3xl p-12 text-center backdrop-blur-sm">
-                        <h3 className="text-3xl font-bold text-foreground mb-4">Our Commitment</h3>
+                    <div className="bg-gradient-to-r from-sky-500/10 via-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-3xl p-8 sm:p-12 text-center backdrop-blur-sm">
+                        <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">Our Commitment</h3>
                         <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
                             With complete transparency in operations, we are extremely confident that our plans will help people fulfill their dreams and achieve their goal of lifelong financial security.
                         </p>
@@ -192,8 +192,8 @@ const LandingPage: React.FC = () => {
             <section id="products" className="py-20 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">Premium Pigeon Products</h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-sky-400 via-indigo-400 to-purple-400 mx-auto mb-6 rounded-full"></div>
+                        <h2 className="text-3xl sm:text-5xl font-bold text-foreground mb-4">Premium Pigeon Products</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-primary via-secondary to-primary mx-auto mb-6 rounded-full"></div>
                         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                             Quality home appliances worth ₹1,750 and above included in your joining package
                         </p>
@@ -223,14 +223,14 @@ const LandingPage: React.FC = () => {
                     </div>
 
                     {/* Fast Track Rewards */}
-                    <div className="mt-20 bg-card border border-border rounded-2xl p-8 lg:p-12 relative overflow-hidden">
+                    <div className="mt-20 bg-card border border-border rounded-2xl p-6 lg:p-12 relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-32 bg-primary/5 rounded-full blur-3xl -z-10"></div>
 
                         <h3 className="text-2xl font-bold text-foreground mb-8 text-center flex items-center justify-center gap-2">
                             <Gift className="text-primary w-6 h-6" /> Fast Achievement Rewards
                         </h3>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                             {[
                                 { target: '3 Direct', reward: '₹5,000 Products' },
                                 { target: '5 Direct', reward: '₹6,000 Products' },
@@ -259,7 +259,7 @@ const LandingPage: React.FC = () => {
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">Income Plan</h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-sky-400 via-indigo-400 to-purple-400 mx-auto mb-6 rounded-full"></div>
+                        <div className="w-24 h-1 bg-gradient-to-r from-primary via-secondary to-primary mx-auto mb-6 rounded-full"></div>
                         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                             Dual pool system with 3x4 matrix structure
                         </p>
@@ -327,7 +327,7 @@ const LandingPage: React.FC = () => {
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">Support</h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-sky-400 via-indigo-400 to-purple-400 mx-auto mb-6 rounded-full"></div>
+                        <div className="w-24 h-1 bg-gradient-to-r from-primary via-secondary to-primary mx-auto mb-6 rounded-full"></div>
                         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                             We are here to help you grow
                         </p>

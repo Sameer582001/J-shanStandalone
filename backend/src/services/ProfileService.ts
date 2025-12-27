@@ -7,6 +7,7 @@ export class ProfileService {
         const res = await query(
             `SELECT id, full_name, email, mobile, auth_id, 
                     account_holder_name, account_number, ifsc_code, bank_name, bank_details_locked,
+                    address_line, city, state, zip_code, address_locked,
                     created_at 
              FROM Users WHERE id = $1`,
             [userId]
@@ -43,5 +44,35 @@ export class ProfileService {
         );
 
         return { message: 'Bank details updated and locked successfully.' };
+    }
+
+    async updateAddress(userId: number, details: {
+        address: string;
+        city: string;
+        state: string;
+        zip: string;
+    }) {
+        // 1. Check if locked
+        const checkRes = await query('SELECT address_locked FROM Users WHERE id = $1', [userId]);
+        if (checkRes.rows.length === 0) throw new Error('User not found');
+
+        if (checkRes.rows[0].address_locked) {
+            throw new Error('Address is locked and cannot be edited. Contact Admin.');
+        }
+
+        // 2. Update and Lock
+        await query(
+            `UPDATE Users 
+             SET address_line = $1, 
+                 city = $2, 
+                 state = $3, 
+                 zip_code = $4,
+                 address_locked = TRUE,
+                 updated_at = CURRENT_TIMESTAMP
+             WHERE id = $5`,
+            [details.address, details.city, details.state, details.zip, userId]
+        );
+
+        return { message: 'Address updated and locked successfully.' };
     }
 }

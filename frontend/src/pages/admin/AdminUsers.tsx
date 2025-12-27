@@ -77,48 +77,54 @@ const AdminUsers: React.FC = () => {
     };
 
     return (
-        <div className="bg-card text-card-foreground p-6 rounded-lg border border-border">
+        <div className="bg-card text-card-foreground p-4 md:p-6 rounded-lg border border-border">
             <h2 className="text-2xl font-bold mb-4 text-secondary">User Management</h2>
 
             {loading ? (
                 <p className="text-muted-foreground">Loading users...</p>
             ) : (
-                <div className="overflow-x-auto">
-                    <table className="min-w-full bg-card rounded-lg overflow-hidden border border-border">
-                        <thead className="bg-muted/50">
+                <div className="overflow-hidden rounded-xl border border-white/20 shadow-lg">
+                    <table className="min-w-full backdrop-blur-md bg-white/40">
+                        <thead className="bg-primary/5 text-primary">
                             <tr>
-                                <th className="px-4 py-3 text-left text-muted-foreground font-medium">ID</th>
-                                <th className="px-4 py-3 text-left text-muted-foreground font-medium">Name</th>
-                                <th className="px-4 py-3 text-left text-muted-foreground font-medium">Email</th>
-                                <th className="px-4 py-3 text-left text-muted-foreground font-medium">Mobile</th>
-                                <th className="px-4 py-3 text-left text-muted-foreground font-medium">Role</th>
-                                <th className="px-4 py-3 text-left text-muted-foreground font-medium">Nodes</th>
-                                <th className="px-4 py-3 text-left text-muted-foreground font-medium">Balance</th>
-                                <th className="px-4 py-3 text-left text-muted-foreground font-medium">Joined</th>
-                                <th className="px-4 py-3 text-center text-muted-foreground font-medium">Actions</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">ID</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Name</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Email</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Mobile</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Role</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Nodes</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Balance</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Joined</th>
+                                <th className="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-border">
+                        <tbody className="divide-y divide-white/10">
                             {users.map(user => (
-                                <tr key={user.id} className="hover:bg-muted/10 transition">
-                                    <td className="px-4 py-3">{user.id}</td>
-                                    <td className="px-4 py-3">{user.full_name}</td>
-                                    <td className="px-4 py-3">{user.email}</td>
-                                    <td className="px-4 py-3">{user.mobile}</td>
-                                    <td className="px-4 py-3">
-                                        <span className={`px-2 py-1 rounded text-xs font-bold ${user.role === 'ADMIN' ? 'bg-red-900/50 text-red-200' : 'bg-green-900/50 text-green-200'}`}>
+                                <tr key={user.id} className="hover:bg-primary/5 transition-colors duration-200">
+                                    <td className="px-6 py-4 text-sm font-medium text-foreground/80">{user.id}</td>
+                                    <td className="px-6 py-4 text-sm font-semibold text-foreground">{user.full_name}</td>
+                                    <td className="px-6 py-4 text-sm text-muted-foreground">{user.email}</td>
+                                    <td className="px-6 py-4 text-sm text-muted-foreground font-mono">{user.mobile}</td>
+                                    <td className="px-6 py-4">
+                                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold shadow-sm ${user.role === 'ADMIN'
+                                            ? 'bg-rose-500/10 text-rose-600 border border-rose-500/20'
+                                            : 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20'}`}>
                                             {user.role}
                                         </span>
                                     </td>
-                                    <td className="px-4 py-3 text-primary font-semibold">{user.node_count}</td>
-                                    <td className="px-4 py-3">₹{user.master_wallet_balance}</td>
-                                    <td className="px-4 py-3 text-muted-foreground text-sm">
+                                    <td className="px-6 py-4">
+                                        <span className="bg-primary/10 text-primary px-2 py-0.5 rounded font-bold text-sm">
+                                            {user.node_count}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 font-mono font-medium text-foreground">₹{user.master_wallet_balance}</td>
+                                    <td className="px-6 py-4 text-sm text-muted-foreground">
                                         {new Date(user.created_at).toLocaleDateString()}
                                     </td>
-                                    <td className="px-4 py-3 text-center flex items-center justify-center gap-2">
+                                    <td className="px-6 py-4 text-center flex items-center justify-center gap-2">
                                         <button
                                             onClick={() => handleViewNodes(user)}
-                                            className="p-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors group"
+                                            className="p-2 bg-white/50 hover:bg-white border border-white/20 text-primary rounded-lg transition-all shadow-sm hover:shadow-md active:scale-95"
                                             title="View Nodes"
                                         >
                                             <Layers className="w-4 h-4" />
@@ -126,7 +132,7 @@ const AdminUsers: React.FC = () => {
                                         {user.role !== 'ADMIN' && (
                                             <button
                                                 onClick={() => handleGhostLogin(user.id)}
-                                                className="p-2 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 rounded-lg transition-colors group"
+                                                className="p-2 bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 rounded-lg transition-all border border-transparent hover:border-purple-500/20"
                                                 title="Ghost Login"
                                             >
                                                 <Ghost className="w-4 h-4" />

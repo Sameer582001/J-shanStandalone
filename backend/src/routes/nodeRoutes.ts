@@ -12,6 +12,7 @@ router.get('/:id/transactions', authenticateJWT, NodeController.getNodeTransacti
 router.get('/:id/direct-referrals', authenticateJWT, NodeController.getDirectReferrals);
 router.get('/:id/genealogy', authenticateJWT, NodeController.getGenealogy);
 router.get('/:id/fast-track', authenticateJWT, NodeController.getFastTrackStatus);
+router.put('/:id/name', authenticateJWT, NodeController.updateNodeName);
 
 
 export default router;

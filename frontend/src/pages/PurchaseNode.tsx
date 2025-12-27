@@ -65,7 +65,7 @@ const PurchaseNode: React.FC = () => {
         <div className="max-w-2xl mx-auto space-y-6">
             <h2 className="text-2xl font-bold text-secondary">Purchase Node</h2>
 
-            <div className="bg-card rounded-xl shadow-sm border border-border p-8">
+            <div className="bg-card rounded-xl shadow-sm border border-border p-4 md:p-8">
                 {/* ... (Header Section same) ... */}
                 <div className="flex items-center justify-between mb-8">
                     <div>
@@ -120,13 +120,16 @@ const PurchaseNode: React.FC = () => {
                     </div>
 
                     {message && (
-                        <div className={`p-4 rounded-md flex items-start ${message.type === 'success' ? 'bg-green-900/50 text-green-200' : 'bg-red-900/50 text-red-200'}`}>
+                        <div className={`p-4 rounded-xl flex items-start border backdrop-blur-sm ${message.type === 'success'
+                            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-700 shadow-sm'
+                            : 'bg-rose-500/10 border-rose-500/20 text-rose-700 shadow-sm'
+                            }`}>
                             {message.type === 'success' ? (
-                                <CheckCircle className="w-5 h-5 mr-2 mt-0.5" />
+                                <CheckCircle className="w-5 h-5 mr-3 mt-0.5 flex-shrink-0" />
                             ) : (
-                                <AlertCircle className="w-5 h-5 mr-2 mt-0.5" />
+                                <AlertCircle className="w-5 h-5 mr-3 mt-0.5 flex-shrink-0" />
                             )}
-                            <span>{message.text}</span>
+                            <span className="font-medium">{message.text}</span>
                         </div>
                     )}
 

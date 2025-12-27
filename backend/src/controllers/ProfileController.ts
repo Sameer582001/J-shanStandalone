@@ -36,4 +36,24 @@ export class ProfileController {
             res.status(400).json({ message: error.message });
         }
     }
+    static async updateAddress(req: Request, res: Response) {
+        try {
+            const userId = (req as any).user.id;
+            const { address, city, state, zip } = req.body;
+
+            if (!address || !city || !state || !zip) {
+                return res.status(400).json({ message: 'All address fields are required' });
+            }
+
+            const result = await profileService.updateAddress(userId, {
+                address,
+                city,
+                state,
+                zip
+            });
+            res.json(result);
+        } catch (error: any) {
+            res.status(400).json({ message: error.message });
+        }
+    }
 }

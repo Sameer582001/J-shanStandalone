@@ -105,4 +105,20 @@ export class NodeController {
             res.status(500).json({ message: error.message });
         }
     }
+    static async updateNodeName(req: any, res: any) {
+        try {
+            const nodeId = parseInt(req.params.id);
+            const { name } = req.body;
+
+            // Adding basic ownership check
+            const userNodes = await nodeService.getUserNodes(req.user.id);
+            const ownsNode = userNodes.find((n: any) => n.id === nodeId);
+            if (!ownsNode) return res.status(403).json({ message: 'You do not own this node' });
+
+            await nodeService.updateNodeName(nodeId, name);
+            res.json({ message: 'Name updated' });
+        } catch (error: any) {
+            res.status(500).json({ message: error.message });
+        }
+    }
 }

@@ -83,7 +83,7 @@ const WalletRequests: React.FC = () => {
             <h2 className="text-2xl font-bold text-secondary">Withdrawal Requests</h2>
 
             {/* Request Form */}
-            <div className="bg-card p-6 rounded-xl shadow-sm border border-border">
+            <div className="bg-card p-4 md:p-6 rounded-xl shadow-sm border border-border">
                 <h3 className="text-lg font-semibold mb-4 text-card-foreground">New Request</h3>
 
                 {!hasBankDetails && (

@@ -38,4 +38,30 @@ export class AuthController {
             res.status(401).json({ message: error.message });
         }
     }
+    static async sendPasswordResetOtp(req: Request, res: Response) {
+        try {
+            const { email } = req.body;
+            if (!email) {
+                return res.status(400).json({ message: 'Email is required' });
+            }
+            const result = await authService.sendPasswordResetOtp(email);
+            res.status(200).json(result);
+        } catch (error: any) {
+            // For security, arguably we shouldn't reveal if user exists, but usually we do for UX in these apps
+            res.status(400).json({ message: error.message });
+        }
+    }
+
+    static async resetPassword(req: Request, res: Response) {
+        try {
+            const { email, otp, newPassword } = req.body;
+            if (!email || !otp || !newPassword) {
+                return res.status(400).json({ message: 'Email, OTP, and New Password are required' });
+            }
+            const result = await authService.resetPassword(email, otp, newPassword);
+            res.status(200).json(result);
+        } catch (error: any) {
+            res.status(400).json({ message: error.message });
+        }
+    }
 }

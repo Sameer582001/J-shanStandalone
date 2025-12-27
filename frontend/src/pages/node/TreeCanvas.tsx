@@ -88,9 +88,9 @@ export default function TreeCanvas({
         return () => canvas.removeEventListener('wheel', onWheel);
     }, []);
 
-    const NODE_RADIUS = isMobile ? 18 : 25;
-    const LEVEL_HEIGHT = isMobile ? 80 : 120;
-    const HORIZONTAL_SPACING = isMobile ? 50 : 80;
+    const NODE_RADIUS = isMobile ? 22 : 30; // Slightly larger for touch
+    const LEVEL_HEIGHT = isMobile ? 90 : 130;
+    const HORIZONTAL_SPACING = isMobile ? 60 : 90;
 
     const layout = React.useMemo(() => {
         if (!dimensions.width || !dimensions.height) return [];
@@ -194,27 +194,26 @@ export default function TreeCanvas({
             let outer = '#374151'; let inner = '#030712'; let stroke = '#6b7280'; let width = 2;
 
             if (node.status === 'ACTIVE') {
-                outer = '#0f766e';
-                inner = '#042f2e';
+                outer = '#10b981'; // Emerald-500
+                inner = '#064e3b'; // Emerald-900
             } else if (node.status === 'INACTIVE') {
-                outer = '#991b1b';
-                inner = '#450a0a';
+                outer = '#f43f5e'; // Rose-500
+                inner = '#881337'; // Rose-900
             }
 
-            // Rebirth Customization: Yellow Inner Fill
+            // Rebirth Customization: Amber
             // STRICT RULE: Only highlight Rebirth nodes that originated from the CURRENTLY VIEWED MOTHER NODE
-            // We check if origin_node_id matches the passed originIdToCheck
             const isMyRebirth = node.is_rebirth &&
                 originIdToCheck &&
                 node.origin_node_id &&
                 (Number(node.origin_node_id) === Number(originIdToCheck));
 
             if (isMyRebirth) {
-                inner = '#713f12'; // Deep Amber/Brown
-                outer = '#a16207'; // Dark Gold
+                inner = '#78350f'; // Amber-900
+                outer = '#f59e0b'; // Amber-500
             }
 
-            if (node.id === highlightNodeId) { stroke = '#a855f7'; width = 4; }
+            if (node.id === highlightNodeId) { stroke = '#d946ef'; width = 4; } // Secondary (Magenta)
 
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, Math.PI * 2);
@@ -227,15 +226,26 @@ export default function TreeCanvas({
             ctx.lineWidth = width;
             ctx.stroke();
 
-            ctx.fillStyle = '#e5e7eb';
-            ctx.font = 'bold 10px sans-serif';
+            ctx.fillStyle = '#ffffff';
+            // Scale font slightly but keep it readable. 
+            // On mobile, we want it crisp.
+            const fontSize = isMobile ? 11 : 12;
+            ctx.font = `bold ${fontSize}px "Outfit", sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
+
+            // Add subtle shadow for text readability
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.shadowBlur = 4;
 
             // Parse Label: Handle 'JSE-CODE' vs 'RB-TYPE-CODE'
             const parts = node.member_name.split('-');
             const label = parts[0] === 'RB' ? parts[2] : parts[1];
-            ctx.fillText(label?.slice(0, 4) || node.member_name.slice(0, 4), x, y - 2);
+            // Show more chars if possible
+            ctx.fillText(label?.slice(0, 6) || node.member_name.slice(0, 5), x, y + 1);
+
+            // Reset shadow
+            ctx.shadowBlur = 0;
         });
 
         ctx.restore();
@@ -295,96 +305,118 @@ export default function TreeCanvas({
         }
     };
 
-    const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
-        if (e.touches.length === 1) {
-            setIsDragging(true);
-            setDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
-            setLastTouch({ x: e.touches[0].clientX, y: e.touches[0].clientY });
-        } else if (e.touches.length === 2) {
-            const d = Math.hypot(
-                e.touches[1].clientX - e.touches[0].clientX,
-                e.touches[1].clientY - e.touches[0].clientY
-            );
-            setTouchStart({ x: (e.touches[0].clientX + e.touches[1].clientX) / 2, y: (e.touches[0].clientY + e.touches[1].clientY) / 2, distance: d });
-        }
-    };
+    // Native Event Listeners for robust non-passive touch handling
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
 
-    const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
-        if (e.touches.length === 1 && isDragging && lastTouch) {
-            const dx = e.touches[0].clientX - lastTouch.x;
-            const dy = e.touches[0].clientY - lastTouch.y;
-            setOffset(p => ({ x: p.x + dx, y: p.y + dy }));
-            setLastTouch({ x: e.touches[0].clientX, y: e.touches[0].clientY });
-        } else if (e.touches.length === 2 && touchStart) {
-            const d = Math.hypot(
-                e.touches[1].clientX - e.touches[0].clientX,
-                e.touches[1].clientY - e.touches[0].clientY
-            );
-            const scaleChange = d / touchStart.distance;
-            setScale(p => Math.max(0.3, Math.min(3, p * scaleChange)));
-            setTouchStart(prev => prev ? { ...prev, distance: d } : null);
-        }
-    };
+        const onTouchStart = (e: TouchEvent) => {
+            // Prevent default only if necessary, but usually touch-action: none handles it.
+            // keeping it safe:
+            // e.preventDefault(); 
+            if (e.touches.length === 1) {
+                setIsDragging(true);
+                setDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+                setLastTouch({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+            } else if (e.touches.length === 2) {
+                const d = Math.hypot(
+                    e.touches[1].clientX - e.touches[0].clientX,
+                    e.touches[1].clientY - e.touches[0].clientY
+                );
+                setTouchStart({ x: (e.touches[0].clientX + e.touches[1].clientX) / 2, y: (e.touches[0].clientY + e.touches[1].clientY) / 2, distance: d });
+            }
+        };
 
-    const handleTouchEnd = () => {
-        setIsDragging(false);
-        setTouchStart(null);
-        setLastTouch(null);
-    };
+        const onTouchMove = (e: TouchEvent) => {
+            e.preventDefault(); // CRITICAL: Stop browser scrolling/refresh behavior
+            if (e.touches.length === 1 && isDragging && lastTouch) {
+                const dx = e.touches[0].clientX - lastTouch.x;
+                const dy = e.touches[0].clientY - lastTouch.y;
+                setOffset(p => ({ x: p.x + dx, y: p.y + dy }));
+                setLastTouch({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+            } else if (e.touches.length === 2 && touchStart) {
+                const d = Math.hypot(
+                    e.touches[1].clientX - e.touches[0].clientX,
+                    e.touches[1].clientY - e.touches[0].clientY
+                );
+                const scaleChange = d / touchStart.distance;
+                setScale(p => Math.max(0.3, Math.min(3, p * scaleChange)));
+                setTouchStart(prev => prev ? { ...prev, distance: d } : null);
+            }
+        };
+
+        const onTouchEnd = () => {
+            setIsDragging(false);
+            setTouchStart(null);
+            setLastTouch(null);
+        };
+
+        canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+        canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+        canvas.addEventListener('touchend', onTouchEnd);
+        canvas.addEventListener('touchcancel', onTouchEnd);
+
+        return () => {
+            canvas.removeEventListener('touchstart', onTouchStart);
+            canvas.removeEventListener('touchmove', onTouchMove);
+            canvas.removeEventListener('touchend', onTouchEnd);
+            canvas.removeEventListener('touchcancel', onTouchEnd);
+        };
+    }, [isDragging, lastTouch, touchStart]); // Re-bind when state refs change (or use refs for state to avoid re-binding)
 
     const handleReset = () => {
         setScale(1);
         setOffset({ x: 0, y: 0 });
     };
 
+    /* React events removed for Touch, kept for Mouse */
     return (
         <div className="relative w-full h-full" ref={containerRef}>
             <canvas
                 ref={canvasRef}
-                className="w-full h-full bg-card rounded-lg touch-none shadow-inner border border-border"
+                className="w-full h-full rounded-lg touch-none"
                 style={{
                     cursor: 'grab',
-                    touchAction: 'none'
+                    touchAction: 'none',
+                    background: 'transparent' // Let the glass-card container show through
                 }}
                 onMouseMove={handleMouseMove}
                 onMouseDown={handleMouseDown}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
                 onClick={handleClick}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
             />
 
-            {/* Controls */}
-            <div className="absolute top-4 right-4 flex flex-col gap-2 z-20">
+            {/* Controls - Moved to Bottom Right for thumb access on mobile */}
+            <div className="absolute bottom-6 right-6 flex flex-col gap-3 z-20">
                 <button
                     onClick={() => setScale(prev => Math.min(3, prev * 1.2))}
-                    className="p-2 bg-card hover:bg-muted text-foreground rounded-lg border border-border shadow-sm transition-colors"
+                    className="p-3 md:p-2 bg-white/80 backdrop-blur hover:bg-white text-primary rounded-full border border-white/20 shadow-lg transition-all active:scale-95 hover:shadow-primary/20"
                     aria-label="Zoom in"
                 >
-                    +
+                    <span className="text-xl leading-none font-bold">+</span>
                 </button>
                 <button
                     onClick={() => setScale(prev => Math.max(0.3, prev * 0.8))}
-                    className="p-2 bg-card hover:bg-muted text-foreground rounded-lg border border-border shadow-sm transition-colors"
+                    className="p-3 md:p-2 bg-white/80 backdrop-blur hover:bg-white text-primary rounded-full border border-white/20 shadow-lg transition-all active:scale-95 hover:shadow-primary/20"
                     aria-label="Zoom out"
                 >
-                    -
+                    <span className="text-xl leading-none font-bold">-</span>
                 </button>
                 <button
                     onClick={handleReset}
-                    className="px-3 py-2 bg-card hover:bg-muted text-foreground rounded-lg border border-border shadow-sm transition-colors text-xs font-medium"
+                    className="p-3 md:px-3 md:py-2 bg-white/80 backdrop-blur hover:bg-white text-primary rounded-full md:rounded-lg border border-white/20 shadow-lg transition-all text-xs font-bold active:scale-95 flex items-center justify-center hover:shadow-primary/20"
                     aria-label="Reset view"
                 >
-                    Reset
+                    <span className="md:hidden">⟲</span>
+                    <span className="hidden md:inline">Reset</span>
                 </button>
             </div>
 
-            {/* Hover Tooltip */}
+            {/* Hover Tooltip - Styled */}
             {hoveredNode && (
                 <div
-                    className="absolute pointer-events-none bg-card border border-border rounded-xl p-3 shadow-2xl z-30"
+                    className="absolute pointer-events-none bg-white/95 backdrop-blur-xl border border-white/20 rounded-xl p-3 shadow-2xl z-30"
                     style={{
                         left: '50%',
                         bottom: '20px',
@@ -393,11 +425,11 @@ export default function TreeCanvas({
                     }}
                 >
                     <div className="flex items-center gap-2 mb-2">
-                        <div className={`w-3 h-3 rounded-full ${hoveredNode.status === 'ACTIVE' ? 'bg-primary' : 'bg-red-500'}`}></div>
-                        <p className="font-bold text-foreground">{hoveredNode.member_name}</p>
+                        <div className={`w-3 h-3 rounded-full ${hoveredNode.status === 'ACTIVE' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]'}`}></div>
+                        <p className="font-bold text-gray-800">{hoveredNode.member_name}</p>
                     </div>
 
-                    <div className="space-y-1 text-xs text-muted-foreground">
+                    <div className="space-y-1 text-xs text-gray-500">
                         <div className="flex justify-between">
                             <span>Refs:</span>
                             <span className="font-semibold text-secondary">{hoveredNode.direct_referrals_count || 0}</span>
@@ -410,46 +442,45 @@ export default function TreeCanvas({
                 </div>
             )}
 
-            {/* Selected Node Details */}
+            {/* Selected Node Details - Styled */}
             {selectedNode && (
-                <div className="absolute top-4 left-4 bg-card border border-border rounded-xl p-4 shadow-2xl max-w-xs z-30 animate-in fade-in slide-in-from-left-4 duration-200">
+                <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-xl border border-white/20 rounded-xl p-4 shadow-2xl max-w-xs z-30 animate-in fade-in slide-in-from-left-4 duration-200">
                     <div className="flex items-start justify-between mb-4">
                         <div>
-                            <h3 className="font-bold text-lg text-foreground">{selectedNode.member_name}</h3>
-                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${selectedNode.status === 'ACTIVE' ? 'bg-teal-900/50 text-teal-200' : 'bg-red-900/50 text-red-200'}`}>
+                            <h3 className="font-bold text-lg text-gray-800">{selectedNode.member_name}</h3>
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${selectedNode.status === 'ACTIVE' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}`}>
                                 {selectedNode.status}
                             </span>
                         </div>
                         <button
                             onClick={() => setSelectedNode(null)}
-                            className="text-muted-foreground hover:text-foreground"
+                            className="text-gray-400 hover:text-gray-800 transition-colors"
                         >
                             <X className="w-5 h-5" />
                         </button>
                     </div>
 
-                    <div className="space-y-2 text-sm">
-                        <div className="flex justify-between py-1 border-b border-border">
-                            <span className="text-muted-foreground">ID:</span>
-                            <span className="font-medium text-foreground">{selectedNode.id}</span>
+                    <div className="space-y-2 text-sm text-gray-600">
+                        <div className="flex justify-between py-1 border-b border-gray-100">
+                            <span className="text-gray-400">ID:</span>
+                            <span className="font-medium text-gray-800">{selectedNode.id}</span>
                         </div>
-                        <div className="flex justify-between py-1 border-b border-border">
-                            <span className="text-muted-foreground">Direct Referrals:</span>
+                        <div className="flex justify-between py-1 border-b border-gray-100">
+                            <span className="text-gray-400">Direct Referrals:</span>
                             <span className="font-medium text-secondary">{selectedNode.direct_referrals_count || 0}</span>
                         </div>
                         {selectedNode.is_rebirth && selectedNode.origin_node_id && (
-                            <div className="flex justify-between py-1 border-b border-border">
-                                <span className="text-muted-foreground">Origin Node:</span>
-                                <span className="font-medium text-yellow-500">{selectedNode.origin_node_id}</span>
+                            <div className="flex justify-between py-1 border-b border-gray-100">
+                                <span className="text-gray-400">Origin Node:</span>
+                                <span className="font-medium text-amber-500">{selectedNode.origin_node_id}</span>
                             </div>
                         )}
                     </div>
                 </div>
             )}
 
-            <div className="absolute bottom-4 left-4 bg-card/90 backdrop-blur-sm border border-border rounded-lg p-3 text-xs text-muted-foreground z-20 shadow-sm hidden md:block">
-                <p className="flex items-center gap-2"><span className="w-4 h-4 border border-border rounded flex items-center justify-center">🖱️</span> Drag to pan</p>
-                <p className="flex items-center gap-2 mt-1"><span className="w-4 h-4 border border-border rounded flex items-center justify-center">🔍</span> Scroll to zoom</p>
+            <div className="absolute top-4 left-4 bg-white/50 backdrop-blur-md border border-white/20 rounded-lg p-2 text-[10px] text-gray-500 z-10 shadow-sm pointer-events-none select-none">
+                <p> Pinch to Zoom • Drag to Pan</p>
             </div>
         </div>
     );

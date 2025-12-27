@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import { Eye, EyeOff } from 'lucide-react';
 
 const Login: React.FC = () => {
     const [mobile, setMobile] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -36,8 +38,8 @@ const Login: React.FC = () => {
             </div>
             <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                 {error && (
-                    <div className="bg-red-900/50 border border-red-500/50 text-red-200 px-4 py-3 rounded relative" role="alert">
-                        <span className="block sm:inline">{error}</span>
+                    <div className="bg-rose-500/10 border border-rose-500/20 text-rose-700 px-4 py-3 rounded-xl flex items-center shadow-sm backdrop-blur-sm" role="alert">
+                        <span className="block sm:inline font-medium">{error}</span>
                     </div>
                 )}
                 <div className="rounded-md shadow-sm -space-y-px">
@@ -57,21 +59,40 @@ const Login: React.FC = () => {
                             onChange={(e) => setMobile(e.target.value)}
                         />
                     </div>
-                    <div>
+                    <div className="relative">
                         <label htmlFor="password" className="sr-only">
                             Password
                         </label>
                         <input
                             id="password"
                             name="password"
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             autoComplete="current-password"
                             required
-                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-input bg-background/50 text-foreground placeholder-muted-foreground rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-input bg-background/50 text-foreground placeholder-muted-foreground rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm pr-10"
                             placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
+                        <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground focus:outline-none z-20"
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                            {showPassword ? (
+                                <EyeOff className="h-5 w-5" aria-hidden="true" />
+                            ) : (
+                                <Eye className="h-5 w-5" aria-hidden="true" />
+                            )}
+                        </button>
+                    </div>
+                </div>
+
+                <div className="flex items-center justify-end">
+                    <div className="text-sm">
+                        <Link to="/forgot-password" className="font-medium text-primary hover:text-primary/90">
+                            Forgot your password?
+                        </Link>
                     </div>
                 </div>
 

@@ -52,7 +52,7 @@ const NodeDashboard: React.FC = () => {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Node Wallet */}
-                <div className="bg-card rounded-2xl shadow-lg p-6 text-card-foreground relative overflow-hidden border border-primary/30">
+                <div className="bg-card rounded-2xl shadow-lg p-4 md:p-6 text-card-foreground relative overflow-hidden border border-primary/30">
                     <div className="absolute top-0 right-0 p-4 opacity-10">
                         <Wallet className="w-24 h-24 text-primary" />
                     </div>
@@ -63,7 +63,7 @@ const NodeDashboard: React.FC = () => {
 
                 {/* Transfer to Master */}
                 <div className={`rounded-2xl shadow-sm border md:col-span-2 ${isEligible ? 'bg-card border-primary/30' : 'bg-card border-border opacity-75'} transition-all duration-200`}>
-                    <div className="p-8">
+                    <div className="p-4 md:p-8">
                         <div className="flex items-start justify-between mb-6">
                             <div>
                                 <h3 className="text-foreground font-bold text-lg mb-1">Transfer Funds</h3>
@@ -89,10 +89,11 @@ const NodeDashboard: React.FC = () => {
                                             type="number"
                                             value={amount}
                                             onChange={(e) => setAmount(e.target.value)}
-                                            className="w-full pl-4 pr-4 py-3 border-input bg-background rounded-xl text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                                            className="w-full pl-4 pr-4 py-4 md:py-3 border-input bg-background rounded-xl text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none text-lg md:text-base font-medium"
                                             placeholder="0.00"
                                             required
                                             min="1"
+                                            inputMode="decimal" // Better keyboard on mobile
                                         />
                                     </div>
                                     {numAmount > 0 && (
@@ -101,11 +102,11 @@ const NodeDashboard: React.FC = () => {
                                                 <span>Transfer Amount:</span>
                                                 <span className="text-foreground">₹{numAmount.toFixed(2)}</span>
                                             </div>
-                                            <div className="flex justify-between text-yellow-600/90 dark:text-yellow-500/90 text-xs">
+                                            <div className="flex justify-between text-amber-700 font-medium text-xs">
                                                 <span>Service Charge (5%):</span>
                                                 <span>- ₹{serviceCharge.toFixed(2)}</span>
                                             </div>
-                                            <div className="flex justify-between text-yellow-600/90 dark:text-yellow-500/90 text-xs">
+                                            <div className="flex justify-between text-indigo-700 font-medium text-xs">
                                                 <span>TDS Deduction (5%):</span>
                                                 <span>- ₹{tdsCharge.toFixed(2)}</span>
                                             </div>

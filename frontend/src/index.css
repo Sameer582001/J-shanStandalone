@@ -1,96 +1,141 @@
 @import "tailwindcss";
 
 @theme {
-  /* Theme: Professional Multicolor (Nebula) with Yellow Buttons */
-  --color-navy-deep: #020617;
-  /* Deep Slate */
-  --color-navy-surface: #0f172a;
-  /* Slate 900 */
+  /* Theme: Vivid Twilight (Mid-Contrast & Colorful) */
 
-  --color-red-deep: #4f46e5;
-  /* Indigo */
-  --color-red-vibrant: #38bdf8;
-  /* Sky Blue */
+  /* Palette */
+  /* Electric Orange - Primary Action */
+  --color-primary-base: #FF6B00;
+  /* Magenta - Secondary Accent */
+  --color-secondary-base: #D946EF;
 
-  --color-yellow-action: #eab308;
-  /* Yellow 500 */
+  /* Structure Colors */
+  /* Mid-Tone Cool Grey */
+  --color-background-base: #CBD5E1;
+  /* Slate-300 */
+  /* Dark Navy - Main Text */
+  --color-foreground-base: #0F172A;
+  /* Slate-900 */
 
-  /* Aliases for semantic usage */
-  --color-primary: var(--color-yellow-action);
-  --color-primary-foreground: #000000;
-  /* Black text on yellow */
+  /* Pure White - Surface */
+  --color-surface-base: #FFFFFF;
 
-  --color-secondary: var(--color-red-deep);
+  /* Aliases */
+  --color-primary: var(--color-primary-base);
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: var(--color-secondary-base);
   --color-secondary-foreground: #ffffff;
 
-  --color-background: var(--color-navy-deep);
-  --color-foreground: #f8fafc;
+  --color-background: var(--color-background-base);
+  --color-foreground: var(--color-foreground-base);
 
-  --color-surface: var(--color-navy-surface);
+  --color-card: var(--color-surface-base);
+  --color-card-foreground: var(--color-foreground-base);
 
-  --color-card: var(--color-navy-surface);
-  --color-card-foreground: #f8fafc;
-
-  --color-muted: #1e293b;
-  --color-muted-foreground: #94a3b8;
-
-  --color-border: #334155;
-  --color-input: #334155;
-  --color-ring: var(--color-yellow-action);
+  /* Neutrals */
+  --color-muted: #F1F5F9;
+  --color-muted-foreground: #64748B;
+  --color-border: #94A3B8;
+  --color-input: #ffffff;
+  --color-ring: var(--color-primary-base);
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
+}
+
+/* Custom Scrollbar - The "Premium" Touch */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-400/50 rounded-full hover:bg-slate-500/80 transition-colors;
 }
 
 /* Utility Components */
 @layer components {
+
+  /* Global Background - Vivid Twilight */
+  body {
+    @apply bg-background text-foreground min-h-screen selection:bg-primary selection:text-white;
+    font-family: "Outfit", sans-serif;
+
+    /* Mid-Contrast Atmosphere with Vivid Splashes */
+    background-image:
+      radial-gradient(at 0% 0%, rgba(255, 107, 0, 0.15) 0px, transparent 50%),
+      /* Orange */
+      radial-gradient(at 100% 0%, rgba(217, 70, 239, 0.15) 0px, transparent 50%),
+      /* Magenta */
+      radial-gradient(at 50% 100%, rgba(99, 102, 241, 0.15) 0px, transparent 60%);
+    /* Indigo */
+    background-attachment: fixed;
+  }
+
+  /* Cards - Clean White Popped against Grey */
   .glass-panel {
-    @apply bg-card/70 backdrop-blur-xl border border-white/10 shadow-2xl;
+    @apply bg-white/90 backdrop-blur-md border border-white/60;
+    box-shadow: 0 8px 32px -4px rgba(15, 23, 42, 0.1);
   }
 
   .glass-card {
-    @apply bg-card/50 backdrop-blur-lg border border-white/5 hover:bg-card/70 transition-all duration-300;
+    /* Solid White Card with Vivid Border Hint */
+    @apply bg-white/95 backdrop-blur-sm border border-slate-300 transition-all duration-300 ease-out rounded-xl relative overflow-hidden;
+    /* Soft, Layered Shadows for "Float" effect */
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.05),
+      0 2px 4px -1px rgba(0, 0, 0, 0.03),
+      0 10px 15px -3px rgba(0, 0, 0, 0.05);
   }
 
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300;
+  /* Vivid Top Border on Hover */
+  .glass-card::before {
+    content: '';
+    @apply absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary via-secondary to-primary opacity-0 transition-opacity duration-300;
   }
 
-  .text-gradient-primary {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-sky-400 via-indigo-400 to-purple-400;
+  .glass-card:hover::before {
+    @apply opacity-100;
   }
 
-  /* Marquee Animation */
-  .marquee-container {
-    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-    overflow: hidden;
-    white-space: nowrap;
+  .glass-card:hover {
+    @apply -translate-y-1 border-slate-400;
+    box-shadow:
+      0 20px 25px -5px rgba(0, 0, 0, 0.08),
+      0 10px 10px -5px rgba(0, 0, 0, 0.03);
   }
 
-  .marquee-content {
-    display: inline-block;
-    padding-left: 100%;
-    animation: marquee linear forwards;
+  /* Polished Inputs */
+  input,
+  select,
+  textarea {
+    @apply transition-all duration-200 focus:ring-4 focus:ring-primary/10 focus:border-primary shadow-sm bg-white border-slate-300 rounded-lg;
+  }
+
+  /* Gradient Buttons - The "Wow" Factor */
+  button {
+    @apply active:scale-95 transition-all duration-200 ease-in-out shadow-sm hover:shadow-lg hover:shadow-primary/20 hover:brightness-105;
+  }
+
+  /* Specific class for primary buttons if they don't have one, or overriding default button feel */
+  button[class*="bg-primary"],
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary to-[#FF8E25] border-none text-white font-medium tracking-wide;
   }
 }
 
-@keyframes marquee {
+@keyframes shimmer {
   0% {
-    transform: translateX(0);
+    transform: translateX(-100%);
   }
 
   100% {
-    transform: translateX(-100%);
+    transform: translateX(100%);
   }
-}
-
-/* Global Background */
-body {
-  @apply bg-background text-foreground min-h-screen selection:bg-primary/30;
-  background-image:
-    radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(2, 6, 23, 0.8) 0%, transparent 100%);
-  background-attachment: fixed;
 }

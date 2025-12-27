@@ -231,7 +231,7 @@ export class NodeService {
 
     async getDirectReferrals(nodeId: number) {
         const res = await query(
-            `SELECT n.id, n.referral_code, u.full_name, n.status, n.created_at 
+            `SELECT n.id, n.referral_code, u.full_name, n.status, n.created_at, n.custom_name 
              FROM Nodes n 
              JOIN Users u ON n.owner_user_id = u.id 
              WHERE n.sponsor_node_id = $1 
@@ -303,7 +303,7 @@ export class NodeService {
             `WITH RECURSIVE genealogy AS (
                 SELECT 
                     id, referral_code, owner_user_id, sponsor_node_id, self_pool_parent_id, auto_pool_parent_id, 
-                    direct_referrals_count, status, created_at, ${levelColumn} as current_level, is_rebirth, origin_node_id,
+                    direct_referrals_count, status, created_at, ${levelColumn} as current_level, is_rebirth, origin_node_id, custom_name,
                     1 as level, 
                     CAST(id AS VARCHAR) as path
                 FROM Nodes
@@ -311,7 +311,7 @@ export class NodeService {
                 UNION ALL
                 SELECT 
                     n.id, n.referral_code, n.owner_user_id, n.sponsor_node_id, n.self_pool_parent_id, n.auto_pool_parent_id, 
-                    n.direct_referrals_count, n.status, n.created_at, n.${levelColumn} as current_level, n.is_rebirth, n.origin_node_id,
+                    n.direct_referrals_count, n.status, n.created_at, n.${levelColumn} as current_level, n.is_rebirth, n.origin_node_id, n.custom_name,
                     g.level + 1,
                     CAST(g.path || '->' || n.id AS VARCHAR)
                 FROM Nodes n
@@ -430,5 +430,16 @@ export class NodeService {
         } finally {
             client.release();
         }
+    }
+
+    async updateNodeName(nodeId: number, name: string) {
+        if (!name || name.trim().length === 0) throw new Error('Name cannot be empty');
+        if (name.length > 50) throw new Error('Name too long (max 50 chars)');
+
+        await query(
+            'UPDATE Nodes SET custom_name = $1 WHERE id = $2',
+            [name.trim(), nodeId]
+        );
+        return { message: 'Node name updated successfully' };
     }
 }
